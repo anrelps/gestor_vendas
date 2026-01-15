@@ -21,11 +21,8 @@ class UserController extends Controller
                 'email' => 'required|string',
                 'password' => 'required|string|min:8'
             ]);
-
-            $remember = $request->boolean('remember');
-            $res = $this->service->login($credentials, $remember);
+            $res = $this->service->login($credentials);
             if($res) {
-                $request->session()->regenerate(); // Prevent session fixation
                 return $this->successResponse($res, 200);
             }
             return $this->errorResponse('E-mail ou senha incorretos!', 401);

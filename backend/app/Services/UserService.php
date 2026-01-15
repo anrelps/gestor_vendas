@@ -10,8 +10,8 @@ class UserService {
 
     public function __construct(private User $user) {}
 
-    public function login(array $credentials, bool $remember = false) {
-        $authAttempt = Auth::attempt($credentials, $remember);
+    public function login(array $credentials) {
+        $authAttempt = Auth::attempt($credentials);
         if($authAttempt) {
             $token = explode("|", auth()->user()->createToken('accessToken')->plainTextToken)[1];
             return [
