@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
-function Login() {
+const Login = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         rememberMe: false,
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [result, setResult] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -16,12 +17,11 @@ function Login() {
     };
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Usuário digitou:', formData);
     };
 
     return (
         <>
-            <div className='border border-gray-200 rounded-lg max-w-md mt-10 mx-auto shadow overflow-hidden'>
+            <div className='border border-gray-200 rounded-lg mt-10 max-w-md mx-auto shadow overflow-hidden'>
                 <h1 className='text-4xl text-center p-8 bg-primary text-white  '>
                     Acessar
                 </h1>
@@ -123,6 +123,6 @@ function Login() {
             </div>
         </>
     );
-}
+};
 
 export default Login;
