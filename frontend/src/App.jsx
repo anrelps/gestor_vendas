@@ -2,6 +2,7 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from './assets/logo.svg';
+import ClientList from './components/ClientList';
 import Sidebar from './components/layout/Sidebar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -34,18 +35,23 @@ const App = () => {
 
     return (
         <BrowserRouter>
-            <Sidebar
-                logoSrc={logo}
-                user={user}
-                navItems={navItems}
-                onLogout={() => {
-                    // limpar token/session aqui
-                }}
-            />
-            <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/login' element={<Login />} />
-            </Routes>
+            <div className='flex min-h-screen'>
+                <Sidebar
+                    logoSrc={logo}
+                    user={user}
+                    navItems={navItems}
+                    onLogout={() => {
+                        // limpar token/session aqui
+                    }}
+                />
+                <main className='flex-1 bg-gray-50 p-6'>
+                    <Routes>
+                        <Route path='/' element={<Home />} />
+                        <Route path='/login' element={<Login />} />
+                        <Route path='/clientes' element={<ClientList />} />
+                    </Routes>
+                </main>
+            </div>
         </BrowserRouter>
     );
 };

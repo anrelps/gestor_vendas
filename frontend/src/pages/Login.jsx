@@ -20,7 +20,7 @@ const Login = () => {
     };
 
     return (
-        <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4'>
+        <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 p-4'>
             <div className='border border-gray-200 rounded-xl max-w-md w-full mx-auto shadow-xl overflow-hidden bg-white transform transition-all duration-300 hover:shadow-2xl'>
                 <div className='bg-linear-to-r from-primary to-primary/80 p-10'>
                     <h1 className='text-3xl font-bold text-center text-white'>
