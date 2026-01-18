@@ -1,16 +1,32 @@
-// src/App.jsx
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import logo from "./assets/logo.svg";
-import ClientList from "./components/ClientList";
-import Sidebar from "./components/layout/Sidebar";
+
+// Redux
+import { checkAuth } from "./redux/slices/userSlice";
+
+// Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 
+// Components
+import ClientList from "./components/ClientList";
+import Sidebar from "./components/layout/Sidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
+  const dispatch = useDispatch();
+  const { user, token } = useSelector((state) => state.user);
+
+  // Checagem se o usuario ja esta autenticado
+  useEffect(() => {
+    if (token) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch, token]);
+
   const navItems = [
     {
       label: "Dashboard",
@@ -30,9 +46,9 @@ const App = () => {
     { label: "Livros", to: "/livros", icon: "fa-solid fa-book-bookmark" },
   ];
 
-  const user = {
-    name: "Flavio Caca-Rato",
-    role: "Administrador",
+  const authUser = {
+    name: user?.nome || "nome",
+    role: user?.empresa?.nome || "empresa",
     editTo: "/perfil/editar",
   };
 
@@ -41,7 +57,7 @@ const App = () => {
       <div className="flex min-h-screen">
         <Sidebar
           logoSrc={logo}
-          user={user}
+          authUser={authUser}
           navItems={navItems}
           onLogout={() => {
             // limpar token/session aqui

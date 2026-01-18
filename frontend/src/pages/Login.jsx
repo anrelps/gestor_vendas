@@ -97,6 +97,7 @@ const Login = () => {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Digite sua senha"
+                      minLength={8}
                       required
                     />
                     <button
@@ -116,35 +117,6 @@ const Login = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        rememberMe: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 cursor-pointer accent-primary"
-                  />
-                  <label
-                    htmlFor="rememberMe"
-                    className="cursor-pointer text-sm text-gray-600"
-                  >
-                    Manter conectado
-                  </label>
-                </div>
-                <a
-                  href="#"
-                  className="text-sm text-primary hover:text-accent hover:underline transition-colors duration-200"
-                >
-                  Esqueceu a senha?
-                </a>
-              </div>
               <button
                 type="submit"
                 disabled={loading}
@@ -159,7 +131,7 @@ const Login = () => {
 
               {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                  {error}
+                  {error.includes("401") ? "E-mail ou Senha incorreto." : error}
                 </div>
               )}
             </div>

@@ -10,6 +10,10 @@ class UserService {
 
     public function __construct(private User $user) {}
 
+    public function me() {
+        return Auth::user();
+    }
+
     public function login(array $credentials) {
         $authAttempt = Auth::attempt($credentials);
         if($authAttempt) {

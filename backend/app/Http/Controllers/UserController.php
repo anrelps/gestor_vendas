@@ -15,6 +15,15 @@ class UserController extends Controller
 
     public function __construct(private UserService $service) {}
 
+    public function me() {
+        try {
+            $user = $this->service->me();
+            return new UserResource($user);
+        } catch(Exception $e) {
+            return $this->errorResponse('Ocorreu um erro ao tentar obter os dados do usário.', 500);
+        }
+    }
+
     public function login(Request $request) {
         try {
             $credentials = $request->validate([

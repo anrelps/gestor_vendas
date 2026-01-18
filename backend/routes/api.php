@@ -12,6 +12,7 @@ Route::prefix('v1')->group(function() {
     Route::post('/register', [UserController::class, 'register']);
 
     Route::middleware('auth:sanctum')->group(function() {
+        Route::get('/me', [UserController::class, 'me']);
         Route::prefix('/{empresa}')->group(function() {
             Route::apiResource('/clientes', ClienteController::class);
             Route::apiResource('/produtos', ProdutoController::class);

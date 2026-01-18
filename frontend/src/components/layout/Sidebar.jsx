@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 
-export const Sidebar = ({ logoSrc, user, navItems, onLogout }) => {
+export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -79,7 +79,7 @@ export const Sidebar = ({ logoSrc, user, navItems, onLogout }) => {
           collapsed={collapsed}
           homeItem={homeItem}
           navItems={navItems}
-          user={user}
+          authUser={authUser}
           onLogout={handleLogout}
           onNavigate={() => {}}
         />
@@ -112,7 +112,7 @@ export const Sidebar = ({ logoSrc, user, navItems, onLogout }) => {
               collapsed={false}
               homeItem={homeItem}
               navItems={navItems}
-              user={user}
+              user={authUser}
               onLogout={handleLogout}
               onNavigate={closeMobile}
             />
@@ -132,7 +132,7 @@ const SidebarContent = ({
   collapsed,
   homeItem,
   navItems,
-  user,
+  authUser,
   onLogout,
   onNavigate,
 }) => {
@@ -181,9 +181,9 @@ const SidebarContent = ({
         className={["mt-auto w-full", collapsed ? "px-2" : "px-4"].join(" ")}
       >
         <UserCard
-          name={user?.name}
-          role={user?.role}
-          editTo={user?.editTo || "/perfil"}
+          name={authUser?.name}
+          role={authUser?.role}
+          editTo={authUser?.editTo || "/perfil"}
           collapsed={collapsed}
           onNavigate={onNavigate}
         />
@@ -249,7 +249,7 @@ const UserCard = ({ name, role, editTo, collapsed, onNavigate }) => {
         </div>
         <div>
           <h2 className="font-bold text-sm text-primary leading-tight">
-            {name || "Usuário"}
+            {name || "Usuário 123"}
           </h2>
           <p className="text-accent text-xs">{role || ""}</p>
         </div>
