@@ -1,24 +1,30 @@
 import { Edit as EditIcon, Home as HomeIcon, LogOut, User } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/slices/userSlice';
 
-export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const user = useSelector((state) => state.user.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const widthClass = collapsed ? 'w-20' : 'w-64';
-
-    const closeMobile = () => setMobileOpen(false);
+    const authUser = {
+        name: user?.name || user?.nome || 'nome',
+        role: user?.empresa?.nome || 'empresa',
+        editTo: '/perfil/editar',
+    };
 
     const handleLogout = () => {
         dispatch(logout());
         navigate('/login');
     };
+
+    const toggleSidebar = () => setCollapsed((v) => !v);
+    const closeMobile = () => setMobileOpen(false);
+
+    const widthClass = collapsed ? 'w-20' : 'w-64';
 
     const homeItem = useMemo(
         () => ({ label: 'Home', to: '/', icon: HomeIcon }),
@@ -27,6 +33,7 @@ export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
 
     return (
         <>
+            {/* Mobile Header */}
             <header className='md:hidden fixed top-0 left-0 right-0 h-14 bg-primary text-white flex items-center justify-between px-4 shadow-md z-50'>
                 <button
                     type='button'
@@ -36,38 +43,26 @@ export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
                 >
                     <i className='fa-solid fa-bars text-xl' />
                 </button>
-
                 <img src={logoSrc} alt='Logo' className='h-8' />
             </header>
 
+            {/* Sidebar Desktop */}
             <aside
-                className={[
-                    'hidden md:flex fixed left-0 top-0 h-full bg-primary text-white',
-                    'flex-col items-center',
-                    widthClass,
-                    'shadow-[4px_0_15px_rgba(0,0,0,0.3)]',
-                    'transition-[width] duration-200',
-                ].join(' ')}
+                className={`hidden md:flex fixed left-0 top-0 h-full bg-primary text-white flex-col items-center ${widthClass} shadow-[4px_0_15px_rgba(0,0,0,0.3)] transition-[width] duration-200 z-40`}
             >
                 <div
-                    className={`w-full flex px-2 pt-2 bg-a ${
-                        collapsed ? 'justify-center' : 'justify-end'
-                    }`}
+                    className={`w-full flex px-2 pt-2 ${collapsed ? 'justify-center' : 'justify-end'}`}
                 >
                     <button
                         type='button'
                         aria-label={
                             collapsed ? 'Expandir menu' : 'Recolher menu'
                         }
-                        onClick={() => setCollapsed((v) => !v)}
-                        className='h-8 w-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/50 transition-all '
+                        onClick={toggleSidebar}
+                        className='h-8 w-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/50 transition-all'
                     >
                         <i
-                            className={`fa-solid  ${
-                                collapsed
-                                    ? 'fa-chevron-right'
-                                    : 'fa-chevron-left'
-                            } text-sm `}
+                            className={`fa-solid ${collapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-sm`}
                         />
                     </button>
                 </div>
@@ -79,17 +74,134 @@ export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
                         className={collapsed ? 'h-10 my-2' : 'p-4'}
                     />
                 </div>
-                <SidebarContent
-                    variant='desktop'
-                    collapsed={collapsed}
-                    homeItem={homeItem}
-                    navItems={navItems}
-                    authUser={authUser}
-                    onLogout={handleLogout}
-                    onNavigate={() => {}}
-                />
+
+                <div className={`w-full ${collapsed ? 'px-2' : 'px-8'}`}>
+                    <div className='border-b border-gray-500/50 mb-4 pb-4 mt-2'>
+                        <NavLink
+                            to={homeItem.to}
+                            title={collapsed ? homeItem.label : undefined}
+                            onClick={() => {}}
+                            className={({ isActive }) =>
+                                [
+                                    'w-full flex items-center rounded-lg transition-all duration-200',
+                                    collapsed
+                                        ? 'justify-center px-0 py-3'
+                                        : 'p-2',
+                                    'hover:bg-white/10',
+                                    isActive
+                                        ? 'bg-white/10 font-semibold'
+                                        : 'font-medium',
+                                ].join(' ')
+                            }
+                        >
+                            {homeItem.icon && (
+                                <homeItem.icon
+                                    size={20}
+                                    className='w-6 text-center'
+                                />
+                            )}
+                            {!collapsed && (
+                                <span className='ml-3'>{homeItem.label}</span>
+                            )}
+                        </NavLink>
+                    </div>
+
+                    <nav className='mt-4'>
+                        <ul
+                            className={`text-md flex flex-col gap-2 ${collapsed ? 'items-stretch' : ''}`}
+                        >
+                            {navItems.map((item) => (
+                                <li key={item.to}>
+                                    <NavLink
+                                        to={item.to}
+                                        title={
+                                            collapsed ? item.label : undefined
+                                        }
+                                        onClick={() => {}}
+                                        className={({ isActive }) =>
+                                            [
+                                                'w-full flex items-center rounded-lg transition-all duration-200',
+                                                collapsed
+                                                    ? 'justify-center px-0 py-3'
+                                                    : 'p-2',
+                                                'hover:bg-white/10',
+                                                isActive
+                                                    ? 'bg-white/10 font-semibold'
+                                                    : 'font-medium',
+                                            ].join(' ')
+                                        }
+                                    >
+                                        {item.icon && (
+                                            <item.icon
+                                                size={20}
+                                                className='w-6 text-center'
+                                            />
+                                        )}
+                                        {!collapsed && (
+                                            <span className='ml-3'>
+                                                {item.label}
+                                            </span>
+                                        )}
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
+
+                <div
+                    className={`mt-auto w-full ${collapsed ? 'px-2' : 'px-4'}`}
+                >
+                    {collapsed ? (
+                        <div className='mb-4 flex justify-center'>
+                            <NavLink
+                                to={authUser.editTo}
+                                title={`${authUser.name} • ${authUser.role}`}
+                                onClick={() => {}}
+                                className='w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/15 transition-all'
+                            >
+                                <User size={20} className='text-white' />
+                            </NavLink>
+                        </div>
+                    ) : (
+                        <div className='bg-linear-to-br from-white to-gray-400 rounded-xl px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
+                            <div className='flex items-center gap-3 mb-3'>
+                                <div className='w-10 h-10 bg-primary rounded-full flex items-center justify-center'>
+                                    <User size={20} className='text-white' />
+                                </div>
+                                <div>
+                                    <h2 className='font-bold text-sm text-primary leading-tight'>
+                                        {authUser.name}
+                                    </h2>
+                                    <p className='text-accent text-xs'>
+                                        {authUser.role}
+                                    </p>
+                                </div>
+                            </div>
+                            <NavLink
+                                to={authUser.editTo}
+                                onClick={() => {}}
+                                className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
+                            >
+                                <EditIcon size={14} />
+                                Editar Perfil
+                            </NavLink>
+                        </div>
+                    )}
+                    <button
+                        type='button'
+                        onClick={handleLogout}
+                        className='w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-lg hover:bg-white/10 transition-all duration-200 cursor-pointer text-white'
+                    >
+                        <LogOut size={20} />
+                        {!collapsed && (
+                            <span className='font-medium'>Sair</span>
+                        )}
+                    </button>
+                </div>
             </aside>
 
+            {/* Sidebar Mobile Overlay */}
             {mobileOpen && (
                 <>
                     <button
@@ -108,170 +220,74 @@ export const Sidebar = ({ logoSrc, authUser, navItems, onLogout }) => {
                             >
                                 <i className='fa-solid fa-xmark text-xl' />
                             </button>
-
                             <img src={logoSrc} alt='Logo' className='h-8' />
                         </div>
-
-                        <SidebarContent
-                            variant='mobile'
-                            collapsed={false}
-                            homeItem={homeItem}
-                            navItems={navItems}
-                            user={authUser}
-                            onLogout={handleLogout}
-                            onNavigate={closeMobile}
-                        />
+                        <div className='w-full px-6 mt-8'>
+                            <NavLink
+                                to={homeItem.to}
+                                className='flex items-center gap-2 py-3 px-2 rounded-lg hover:bg-white/10 transition-all'
+                                onClick={closeMobile}
+                            >
+                                <HomeIcon size={20} />
+                                <span>{homeItem.label}</span>
+                            </NavLink>
+                            <ul className='text-md flex flex-col gap-2 mt-4'>
+                                {navItems.map((item) => (
+                                    <li key={item.to}>
+                                        <NavLink
+                                            to={item.to}
+                                            className='flex items-center gap-2 py-3 px-2 rounded-lg hover:bg-white/10 transition-all'
+                                            onClick={closeMobile}
+                                        >
+                                            {item.icon && (
+                                                <item.icon size={20} />
+                                            )}
+                                            <span>{item.label}</span>
+                                        </NavLink>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className='mt-8'>
+                                <div className='bg-linear-to-br from-white to-gray-400 rounded-xl px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
+                                    <div className='flex items-center gap-3 mb-3'>
+                                        <div className='w-10 h-10 bg-primary rounded-full flex items-center justify-center'>
+                                            <User
+                                                size={20}
+                                                className='text-white'
+                                            />
+                                        </div>
+                                        <div>
+                                            <h2 className='font-bold text-sm text-primary leading-tight'>
+                                                {authUser.name}
+                                            </h2>
+                                            <p className='text-accent text-xs'>
+                                                {authUser.role}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <NavLink
+                                        to={authUser.editTo}
+                                        onClick={closeMobile}
+                                        className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
+                                    >
+                                        <EditIcon size={14} />
+                                        Editar Perfil
+                                    </NavLink>
+                                </div>
+                                <button
+                                    type='button'
+                                    onClick={handleLogout}
+                                    className='w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-lg hover:bg-white/10 transition-all duration-200 cursor-pointer text-white'
+                                >
+                                    <LogOut size={20} />
+                                    <span className='font-medium'>Sair</span>
+                                </button>
+                            </div>
+                        </div>
                     </aside>
                 </>
             )}
-            <div className='md:hidden h-18' />
-            <div
-                className={[
-                    'hidden md:block',
-                    collapsed ? 'ml-20' : 'ml-64',
-                ].join(' ')}
-            />
         </>
-    );
-};
-
-const SidebarContent = ({
-    variant,
-    collapsed,
-    homeItem,
-    navItems,
-    authUser,
-    onLogout,
-    onNavigate,
-}) => {
-    return (
-        <>
-            <div className={['w-full', collapsed ? 'px-2' : 'px-8'].join(' ')}>
-                <div
-                    className={
-                        // Adiciona mt-8 apenas no mobile (quando variant === 'mobile')
-                        'border-b border-gray-500/50 mb-4 pb-4 mt-2 ' +
-                        (variant === 'mobile' ? 'mt-8' : '')
-                    }
-                >
-                    <SidebarLink
-                        to={homeItem.to}
-                        icon={homeItem.icon}
-                        label={homeItem.label}
-                        collapsed={collapsed}
-                        onNavigate={onNavigate}
-                    />
-                </div>
-                <nav className='mt-4'>
-                    <ul
-                        className={[
-                            'text-md flex flex-col gap-2',
-                            collapsed ? 'items-stretch' : '',
-                        ].join(' ')}
-                    >
-                        {navItems.map((item) => (
-                            <li key={item.to}>
-                                <SidebarLink
-                                    to={item.to}
-                                    icon={item.icon}
-                                    label={item.label}
-                                    collapsed={collapsed}
-                                    onNavigate={onNavigate}
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-            </div>
-            <div
-                className={['mt-auto w-full', collapsed ? 'px-2' : 'px-4'].join(
-                    ' ',
-                )}
-            >
-                <UserCard
-                    name={authUser?.name}
-                    role={authUser?.role}
-                    editTo={authUser?.editTo || '/perfil'}
-                    collapsed={collapsed}
-                    onNavigate={onNavigate}
-                />
-                <button
-                    type='button'
-                    onClick={onLogout}
-                    className={[
-                        'w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-lg',
-                        'hover:bg-white/10 transition-all duration-200 cursor-pointer text-white',
-                    ].join(' ')}
-                >
-                    <LogOut size={20} />
-                    {!collapsed && <span className='font-medium'>Sair</span>}
-                </button>
-            </div>
-        </>
-    );
-};
-
-const SidebarLink = ({ to, icon, label, collapsed, onNavigate }) => {
-    // icon is now a component, not a string
-    const Icon = icon;
-    return (
-        <NavLink
-            to={to}
-            title={collapsed ? label : undefined}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-                [
-                    'w-full flex items-center rounded-lg transition-all duration-200',
-                    collapsed ? 'justify-center px-0 py-3' : 'p-2',
-                    'hover:bg-white/10',
-                    isActive ? 'bg-white/10 font-semibold' : 'font-medium',
-                ].join(' ')
-            }
-        >
-            {Icon ? <Icon size={20} className='w-6 text-center' /> : null}
-            {!collapsed && <span className='ml-3'>{label}</span>}
-        </NavLink>
-    );
-};
-
-const UserCard = ({ name, role, editTo, collapsed, onNavigate }) => {
-    if (collapsed) {
-        return (
-            <div className='mb-4 flex justify-center'>
-                <NavLink
-                    to={editTo}
-                    title={`${name || 'Usuário'} • ${role || ''}`}
-                    onClick={onNavigate}
-                    className='w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/15 transition-all'
-                >
-                    <User size={20} className='text-white' />
-                </NavLink>
-            </div>
-        );
-    }
-
-    return (
-        <div className='bg-linear-to-br from-white to-gray-400 rounded-xl px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
-            <div className='flex items-center gap-3 mb-3'>
-                <div className='w-10 h-10 bg-primary rounded-full flex items-center justify-center'>
-                    <User size={20} className='text-white' />
-                </div>
-                <div>
-                    <h2 className='font-bold text-sm text-primary leading-tight'>
-                        {name || 'Usuário 123'}
-                    </h2>
-                    <p className='text-accent text-xs'>{role || ''}</p>
-                </div>
-            </div>
-            <NavLink
-                to={editTo}
-                onClick={onNavigate}
-                className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
-            >
-                <EditIcon size={14} />
-                Editar Perfil
-            </NavLink>
-        </div>
     );
 };
 

@@ -7,6 +7,7 @@ import {
     UserPen,
 } from 'lucide-react';
 import { useState } from 'react';
+import ConfirmDialog from './ConfirmDialog';
 import EditClientPopup from './EditClientPopup';
 
 const headers = ['Nome', 'Email', 'Telefone'];
@@ -26,6 +27,8 @@ const ClientList = () => {
     const [selectedIdx, setSelectedIdx] = useState(null);
     const [selectedClient, setSelectedClient] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [clientToDeleteIdx, setClientToDeleteIdx] = useState(null);
 
     const handleMenu = (idx) => {
         setOpenMenuIdx(openMenuIdx === idx ? null : idx);
@@ -39,6 +42,22 @@ const ClientList = () => {
                 .toLowerCase()
                 .includes(search.toLowerCase()),
         );
+
+    const handleDelete = (idx) => {
+        setClientToDeleteIdx(idx);
+        setShowDeletePopup(true);
+    };
+
+    const confirmDelete = () => {
+        setClients((prev) => prev.filter((_, i) => i !== clientToDeleteIdx));
+        setShowDeletePopup(false);
+        setClientToDeleteIdx(null);
+    };
+
+    const cancelDelete = () => {
+        setShowDeletePopup(false);
+        setClientToDeleteIdx(null);
+    };
 
     return (
         <div className='w-full flex flex-col items-center mt-10 px-2'>
@@ -93,6 +112,13 @@ const ClientList = () => {
                         }}
                     />
                 )}
+                <ConfirmDialog
+                    open={showDeletePopup}
+                    title='Remover cliente?'
+                    message='Tem certeza que deseja remover este cliente? Esta ação não pode ser desfeita.'
+                    onConfirm={confirmDelete}
+                    onCancel={cancelDelete}
+                />
                 <div className='overflow-x-auto'>
                     <table className='w-full min-w-100'>
                         <thead>
@@ -158,6 +184,11 @@ const ClientList = () => {
                                                 <button
                                                     className='rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none'
                                                     title='Remover'
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            client._idx,
+                                                        )
+                                                    }
                                                 >
                                                     <Trash size={18} />
                                                 </button>
@@ -196,11 +227,14 @@ const ClientList = () => {
                                                         </button>
                                                         <button
                                                             className='block w-full text-left px-3 py-2 hover:bg-red-50 text-red-600 rounded-b-lg'
-                                                            onClick={() =>
+                                                            onClick={() => {
                                                                 setOpenMenuIdx(
                                                                     null,
-                                                                )
-                                                            }
+                                                                );
+                                                                handleDelete(
+                                                                    client._idx,
+                                                                );
+                                                            }}
                                                         >
                                                             Remover
                                                         </button>

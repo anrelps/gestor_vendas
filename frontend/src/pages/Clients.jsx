@@ -1,10 +1,11 @@
 import ClientList from '../components/ClientList';
+import Layout from '../Layout';
 
 const Clients = () => {
     return (
-        <div>
+        <Layout>
             <ClientList />
-        </div>
+        </Layout>
     );
 };
 
