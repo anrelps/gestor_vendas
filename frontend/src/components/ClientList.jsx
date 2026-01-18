@@ -72,16 +72,16 @@ const ClientList = () => {
                 <div className='overflow-x-auto'>
                     <table className='w-full min-w-100'>
                         <thead>
-                            <tr>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold text-gray-700 bg-gray-50 uppercase tracking-wider border-b border-gray-200 rounded-tl-2xl'>
+                            <tr className='bg-gray-50'>
+                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
                                     Nome
                                 </th>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold text-gray-700 bg-gray-50 uppercase tracking-wider border-b border-gray-200'>
+                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
                                     Email
                                 </th>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold text-gray-700 bg-gray-50 uppercase tracking-wider border-b border-gray-200 rounded-tr-2xl'>
+                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold uppercase tracking-wider border-b border-gray-200'>
                                     Telefone{' '}
-                                    <span className='sr-only'>e Ações</span>
+                                    <span className='sr-only'>Ações</span>
                                 </th>
                             </tr>
                         </thead>
