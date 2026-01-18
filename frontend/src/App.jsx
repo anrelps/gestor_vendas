@@ -10,8 +10,8 @@ import Login from './pages/Login';
 const App = () => {
     const navItems = [
         {
-            label: 'Endereços',
-            to: '/enderecos',
+            label: 'Clientes',
+            to: '/clientes',
             icon: 'fa-regular fa-address-card',
         },
         {
