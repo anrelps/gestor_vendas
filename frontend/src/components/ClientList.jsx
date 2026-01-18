@@ -1,3 +1,11 @@
+import {
+    ChevronLeft,
+    ChevronRight,
+    MoreVertical,
+    Plus,
+    Trash,
+    UserPen,
+} from 'lucide-react';
 import { useState } from 'react';
 import EditClientPopup from './EditClientPopup';
 
@@ -35,18 +43,34 @@ const ClientList = () => {
     return (
         <div className='w-full flex flex-col items-center mt-10 px-2'>
             <div className='w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200'>
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 bg-linear-to-r from-primary to-accent px-4 sm:px-8 py-4 sm:py-6'>
+                <div className='flex flex-col gap-3 sm:gap-4 bg-linear-to-r from-primary to-accent px-4 sm:px-8 py-4 sm:py-6'>
                     <h2 className='text-xl sm:text-2xl font-bold text-white tracking-wide drop-shadow text-center sm:text-left'>
                         Lista de Clientes
                     </h2>
-                    <div className='w-full sm:w-auto flex justify-center sm:justify-end'>
-                        <input
-                            type='text'
-                            className='w-full max-w-xs truncate rounded-lg border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 shadow-sm'
-                            placeholder='Buscar cliente...'
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                    <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+                        <div className='flex flex-1 gap-2'>
+                            <input
+                                type='text'
+                                className='w-full max-w-xs truncate rounded-lg border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 shadow-sm'
+                                placeholder='Buscar cliente...'
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <button
+                                className='flex items-center gap-2 bg-white font-semibold rounded-lg px-4 py-2 shadow hover:bg-gray-100 transition-all duration-100 border border-primary focus:outline-none focus:ring-2 focus:ring-primary/30'
+                                onClick={() => {
+                                    setSelectedIdx(null);
+                                    setSelectedClient(null);
+                                    setIsEditing(true);
+                                }}
+                            >
+                                <Plus size={18} />
+                                <span className='hidden sm:inline'>
+                                    Adicionar Cliente
+                                </span>
+                                <span className='sm:hidden'>Novo</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {isEditing && (
@@ -73,13 +97,13 @@ const ClientList = () => {
                     <table className='w-full min-w-100'>
                         <thead>
                             <tr className='bg-gray-50'>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
+                                <th className='py-1 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
                                     Nome
                                 </th>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
+                                <th className='py-1 px-3 sm:px-6 text-left text-base font-semibold  uppercase tracking-wider border-b border-gray-200'>
                                     Email
                                 </th>
-                                <th className='py-2 px-3 sm:px-6 text-left text-base font-semibold uppercase tracking-wider border-b border-gray-200'>
+                                <th className='py-1 px-3 sm:px-6 text-left text-base font-semibold uppercase tracking-wider border-b border-gray-200'>
                                     Telefone{' '}
                                     <span className='sr-only'>Ações</span>
                                 </th>
@@ -105,20 +129,16 @@ const ClientList = () => {
                                                 : 'bg-gray-50'
                                         } hover:bg-primary/5`}
                                     >
-                                        {/* Nome */}
-                                        <td className='py-4 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
+                                        <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
                                             {client['Nome']}
                                         </td>
-                                        {/* Email */}
-                                        <td className='py-4 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
+                                        <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
                                             {client['Email']}
                                         </td>
-                                        {/* Telefone + Ações juntos */}
-                                        <td className='py-4 px-3 sm:px-6 text-gray-800 border-b border-gray-100 flex items-center gap-2 min-w-0'>
+                                        <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100 flex items-center gap-2 min-w-0'>
                                             <span className='flex-1 truncate'>
                                                 {client['Telefone']}
                                             </span>
-                                            {/* Desktop: mostrar botões normais */}
                                             <div className='hidden sm:flex gap-1'>
                                                 <button
                                                     className='rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none'
@@ -133,16 +153,15 @@ const ClientList = () => {
                                                         setIsEditing(true);
                                                     }}
                                                 >
-                                                    <i className='fa fa-edit'></i>
+                                                    <UserPen size={18} />
                                                 </button>
                                                 <button
                                                     className='rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none'
                                                     title='Remover'
                                                 >
-                                                    <i className='fa fa-trash'></i>
+                                                    <Trash size={18} />
                                                 </button>
                                             </div>
-                                            {/* Mobile: mostrar menu de 3 pontinhos */}
                                             <div className='relative flex sm:hidden'>
                                                 <button
                                                     className='rounded-full p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 shadow transition-all duration-100'
@@ -151,7 +170,7 @@ const ClientList = () => {
                                                     }
                                                     title='Ações'
                                                 >
-                                                    <i className='fa fa-ellipsis-v'></i>
+                                                    <MoreVertical size={18} />
                                                 </button>
                                                 {openMenuIdx ===
                                                     client._idx && (
@@ -195,10 +214,9 @@ const ClientList = () => {
                         </tbody>
                     </table>
                 </div>
-                {/* Paginação */}
                 <div className='flex flex-wrap justify-center items-center gap-2 py-6 bg-gray-50 border-t border-gray-100'>
                     <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-                        <i className='fa fa-chevron-left'></i>
+                        <ChevronLeft size={18} />
                     </button>
                     <button className='rounded-lg px-3 py-1 font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-all duration-100'>
                         1
@@ -210,7 +228,7 @@ const ClientList = () => {
                         3
                     </button>
                     <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-                        <i className='fa fa-chevron-right'></i>
+                        <ChevronRight size={18} />
                     </button>
                 </div>
             </div>

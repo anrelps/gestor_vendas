@@ -1,3 +1,4 @@
+import { Bell, BookMarked, LayoutDashboard, Users } from 'lucide-react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
@@ -31,19 +32,19 @@ const App = () => {
         {
             label: 'Dashboard',
             to: '/dashboard',
-            icon: 'fa-solid fa-arrows-down-to-people',
+            icon: LayoutDashboard,
         },
         {
             label: 'Clientes',
             to: '/clientes',
-            icon: 'fa-regular fa-address-card',
+            icon: Users,
         },
         {
             label: 'Notificações',
             to: '/notificacoes',
-            icon: 'fa-solid fa-bell-concierge',
+            icon: Bell,
         },
-        { label: 'Livros', to: '/livros', icon: 'fa-solid fa-book-bookmark' },
+        { label: 'Livros', to: '/livros', icon: BookMarked },
     ];
 
     const authUser = {

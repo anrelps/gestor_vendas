@@ -1,3 +1,4 @@
+import { Mail, Phone, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const EditClientPopup = ({
@@ -34,7 +35,7 @@ const EditClientPopup = ({
                         aria-label='Fechar'
                         className='ml-4 cursor-pointer rounded-full p-1 border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                     >
-                        <i className='fa fa-times'></i>
+                        <X size={18} />
                     </button>
                 </div>
 
@@ -46,7 +47,7 @@ const EditClientPopup = ({
                             </span>
                             <div className='relative'>
                                 <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
-                                    <i className='fa fa-user'></i>
+                                    <User size={16} />
                                 </span>
                                 <input
                                     type='text'
@@ -64,7 +65,7 @@ const EditClientPopup = ({
                             </span>
                             <div className='relative'>
                                 <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
-                                    <i className='fa fa-phone'></i>
+                                    <Phone size={16} />
                                 </span>
                                 <input
                                     type='text'
@@ -83,7 +84,7 @@ const EditClientPopup = ({
                         </span>
                         <div className='relative'>
                             <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
-                                <i className='fa fa-envelope'></i>
+                                <Mail size={16} />
                             </span>
                             <input
                                 type='email'
