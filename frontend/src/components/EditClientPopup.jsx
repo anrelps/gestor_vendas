@@ -7,6 +7,7 @@ const EditClientPopup = ({
     onSave = () => {},
 }) => {
     const [form, setForm] = useState({
+        clientId: '',
         fullName: '',
         telefone: '',
         email: '',
@@ -14,9 +15,10 @@ const EditClientPopup = ({
 
     useEffect(() => {
         setForm({
-            fullName: client.Nome || '',
-            telefone: client.Telefone || '',
-            email: client.Email || '',
+            clientId: client.id || '',
+            fullName: client.nome || '',
+            telefone: client.telefone || '',
+            email: client.email || '',
         });
     }, [client]);
 

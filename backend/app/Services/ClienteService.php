@@ -23,7 +23,7 @@ class ClienteService {
                     ->orWhere('email', 'ILIKE', "%{$filters['pesquisa']}%" )
                     ->orWhere('telefone', 'ILIKE', "%{$filters['pesquisa']}%" );
             })
-            ->orderBy('created_at', 'DESC')->paginate($filters['maxItems']);
+            ->orderBy('created_at', 'DESC')->paginate($maxItems);
         return $clientes;
     }
 

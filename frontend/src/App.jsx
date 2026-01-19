@@ -1,47 +1,47 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
 // Redux
-import { checkAuth } from './redux/slices/userSlice';
+import { checkAuth } from "./redux/slices/userSlice";
 
 // Pages
-import Clients from './pages/Clients';
-import Dashboard from './pages/Dashboard';
-import Home from './pages/Home';
-import Login from './pages/Login';
+import Clients from "./pages/Clients";
+import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 // Components
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
-    const dispatch = useDispatch();
-    const { user, token } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.user);
 
-    useEffect(() => {
-        if (token) {
-            dispatch(checkAuth());
-        }
-    }, [dispatch, token]);
+  useEffect(() => {
+    if (token) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch, token]);
 
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/login' element={<Login />} />
-                <Route
-                    element={
-                        <ProtectedRoute>
-                            <Outlet />
-                        </ProtectedRoute>
-                    }
-                >
-                    <Route path='/clientes' element={<Clients />} />
-                    <Route path='/dashboard' element={<Dashboard />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/clientes" element={<Clients />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
