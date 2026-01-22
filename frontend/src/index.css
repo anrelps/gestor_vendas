@@ -1,17 +1,19 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-primary: hsl(275, 93%, 29%);
-    --color-dark: hsl(240, 2%, 10%);
-    --color-accent: hsl(208, 68%, 16%);
-    --color-muted: hsl(218, 17%, 62%);
-    --color-light: hsl(0, 0%, 75%);
+  --color-primary: hsl(275, 93%, 29%);
+  --color-dark: hsl(240, 2%, 10%);
+  --color-accent: hsl(208, 68%, 16%);
+  --color-muted: hsl(218, 17%, 62%);
+  --color-light: hsl(0, 0%, 75%);
+  --color-background: hsl(0, 0%, 98%);
 }
 
 :root {
-    --font-family: 'Lexend Deca', sans-serif;
+  --font-family: 'Lexend Deca', sans-serif;
 }
 
 body {
-    font-family: var(--font-family);
+  font-family: var(--font-family);
+  background-color: var(--color-background);
 }
