@@ -1,48 +1,71 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { index } from "../redux/slices/clienteSlice";
 
 import {
-  ChevronLeft,
-  ChevronRight,
   MoreVertical,
   Plus,
   Trash,
   UserPen,
 } from "lucide-react";
-import { useState } from "react";
+
 import ConfirmDialog from "./ConfirmDialog";
 import EditClientPopup from "./EditClientPopup";
+import Pagination from "./Pagination";
 
 const headers = ["Nome", "Email", "Telefone"];
 
 const ClientList = () => {
   const dispatch = useDispatch();
-  const { clientes, loading, error } = useSelector((state) => state.cliente);
+  const { clientes, loading, error, pagination } = useSelector((state) => state.cliente);
   const { user } = useSelector((state) => state.user);
+  const [search, setSearch] = useState("");
+
+  // Carrega apenas uma vez ao montar
+    useEffect(() => {
+      if (user?.empresa?.id) {
+        dispatch(index({ 
+          empresa_id: user.empresa.id,
+          page: 1,
+          maxItems: 2,
+          pesquisa: ""
+        }));
+      }
+    }, [dispatch, user?.empresa?.id]);
+
+    // Separa o efeito da busca
+    useEffect(() => {
+      if (!search) return;
+      
+      const timer = setTimeout(() => {
+        if (user?.empresa?.id) {
+          dispatch(index({ 
+            empresa_id: user.empresa.id,
+            page: 1,
+            maxItems: 2,
+            pesquisa: search
+          }));
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }, [search]);
+
+  const handlePageChange = (page) => {
+  dispatch(index({ 
+    empresa_id: user.empresa.id,
+    page,
+    maxItems: 2,
+    pesquisa: search
+  }));
+};
 
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [clients, setClients] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [clientToDeleteId, setClientToDeleteId] = useState(null);
-
-  // ✅ Faça o dispatch apenas quando user estiver disponível
-  useEffect(() => {
-    if (user?.empresa?.id) {
-      dispatch(index({ empresa_id: user.empresa.id }));
-    }
-  }, [dispatch, user?.empresa?.id]);
-
-  // ✅ Sincronize clientes do Redux com estado local
-  useEffect(() => {
-    if (clientes && clientes.length > 0) {
-      setClients(clientes);
-    }
-  }, [clientes]);
 
   const handleMenu = (id) => {
     setOpenMenuId(openMenuId === id ? null : id);
@@ -136,7 +159,7 @@ const ClientList = () => {
               </tr>
             </thead>
             <tbody>
-              {(loading && clients.length === 0) && (
+              {(loading && clientes.length === 0) && (
                 <tr>
                   <td
                     colSpan={3}
@@ -146,7 +169,7 @@ const ClientList = () => {
                   </td>
                 </tr>
               )}
-              {!loading && clients.length === 0 ? (
+              {!loading && clientes.length === 0 ? (
                 <tr>
                   <td
                     colSpan={3}
@@ -156,30 +179,30 @@ const ClientList = () => {
                   </td>
                 </tr>
               ) : (
-                clients.map((client) => (
+                clientes.map((cliente) => (
                   <tr
-                    key={client.id}
+                    key={cliente.id}
                     className={`transition-colors ${
-                      client.id % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      cliente.id % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } hover:bg-primary/5`}
                   >
                     <td className="py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100">
-                      {client.nome}
+                      {cliente.nome}
                     </td>
                     <td className="py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100">
-                      {client.email}
+                      {cliente.email}
                     </td>
                     <td className="py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100 flex items-center gap-2 min-w-0">
                       <span className="flex-1 truncate">
-                        {client.telefone}
+                        {cliente.telefone}
                       </span>
                       <div className="hidden sm:flex gap-1">
                         <button
                           className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none"
                           title="Editar"
                           onClick={() => {
-                            setSelectedId(client.id);
-                            setSelectedClient(client);
+                            setSelectedId(cliente.id);
+                            setSelectedClient(cliente);
                             setIsEditing(true);
                           }}
                         >
@@ -188,7 +211,7 @@ const ClientList = () => {
                         <button
                           className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none"
                           title="Remover"
-                          onClick={() => handleDelete(client.id)}
+                          onClick={() => handleDelete(cliente.id)}
                         >
                           <Trash size={18} />
                         </button>
@@ -196,19 +219,18 @@ const ClientList = () => {
                       <div className="relative flex sm:hidden">
                         <button
                           className="rounded-full p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 shadow transition-all duration-100"
-                          onClick={() => handleMenu(client.id)}
+                          onClick={() => handleMenu(cliente.id)}
                           title="Ações"
                         >
                           <MoreVertical size={18} />
                         </button>
-                        {openMenuId === client.id && (
+                        {openMenuId === cliente.id && (
                           <div className="absolute z-20 right-0 mt-2 w-24 bg-white border border-gray-200 rounded-lg shadow-lg animate-fade-in">
                             <button
                               className="block w-full text-left px-3 py-2 hover:bg-primary/10 text-gray-700 rounded-t-lg"
                               onClick={() => {
                                 setOpenMenuId(null);
-                                setSelectedId(client._id);
-                                setSelectedClient(client);
+                                setSelectedClient(cliente);
                                 setIsEditing(true);
                               }}
                             >
@@ -216,10 +238,6 @@ const ClientList = () => {
                             </button>
                             <button
                               className="block w-full text-left px-3 py-2 hover:bg-red-50 text-red-600 rounded-b-lg"
-                              onClick={() => {
-                                setOpenMenuId(null);
-                                handleDelete(client.id);
-                              }}
                             >
                               Remover
                             </button>
@@ -232,23 +250,11 @@ const ClientList = () => {
               )}
             </tbody>
           </table>
-        </div>
-        <div className="flex flex-wrap justify-center items-center gap-2 py-6 bg-gray-50 border-t border-gray-100">
-          <button className="rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100">
-            <ChevronLeft size={18} />
-          </button>
-          <button className="rounded-lg px-3 py-1 font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-all duration-100">
-            1
-          </button>
-          <button className="rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100">
-            2
-          </button>
-          <button className="rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100">
-            3
-          </button>
-          <button className="rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100">
-            <ChevronRight size={18} />
-          </button>
+          <Pagination
+            current_page={pagination.current_page}
+            lastPage={pagination.last_page}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>
