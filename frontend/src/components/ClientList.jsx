@@ -1,30 +1,17 @@
-<<<<<<< HEAD
 import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { index } from "../redux/slices/clienteSlice";
-=======
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { index } from '../redux/slices/clienteSlice';
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
 
 import {
   MoreVertical,
   Plus,
   Trash,
   UserPen,
-<<<<<<< HEAD
 } from "lucide-react";
 
 import ConfirmDialog from "./ConfirmDialog";
 import EditClientPopup from "./EditClientPopup";
 import Pagination from "./Pagination";
-=======
-} from 'lucide-react';
-import { useState } from 'react';
-import ConfirmDialog from './ConfirmDialog';
-import EditClientPopup from './EditClientPopup';
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
 
 const headers = ['Nome', 'Email', 'Telefone'];
 
@@ -74,11 +61,6 @@ const ClientList = () => {
 };
 
   const [openMenuId, setOpenMenuId] = useState(null);
-<<<<<<< HEAD
-=======
-  const [search, setSearch] = useState('');
-  const [clients, setClients] = useState([]);
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
   const [selectedId, setSelectedId] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -177,11 +159,7 @@ const ClientList = () => {
               </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
               {(loading && clientes.length === 0) && (
-=======
-              {loading && clients.length === 0 && (
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
                 <tr>
                   <td
                     colSpan={3}
@@ -205,7 +183,6 @@ const ClientList = () => {
                   <tr
                     key={cliente.id}
                     className={`transition-colors ${
-<<<<<<< HEAD
                       cliente.id % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } hover:bg-primary/5`}
                   >
@@ -220,20 +197,6 @@ const ClientList = () => {
                         {cliente.telefone}
                       </span>
                       <div className="hidden sm:flex gap-1">
-=======
-                      client.id % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    } hover:bg-primary/5`}
-                  >
-                    <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
-                      {client.nome}
-                    </td>
-                    <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
-                      {client.email}
-                    </td>
-                    <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100 flex items-center gap-2 min-w-0'>
-                      <span className='flex-1 truncate'>{client.telefone}</span>
-                      <div className='hidden sm:flex gap-1'>
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
                         <button
                           className='rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none'
                           title='Editar'
@@ -246,22 +209,15 @@ const ClientList = () => {
                           <UserPen size={18} />
                         </button>
                         <button
-<<<<<<< HEAD
                           className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none"
                           title="Remover"
                           onClick={() => handleDelete(cliente.id)}
-=======
-                          className='rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition-all duration-100 focus:outline-none'
-                          title='Remover'
-                          onClick={() => handleDelete(client.id)}
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
                         >
                           <Trash size={18} />
                         </button>
                       </div>
                       <div className='relative flex sm:hidden'>
                         <button
-<<<<<<< HEAD
                           className="rounded-full p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 shadow transition-all duration-100"
                           onClick={() => handleMenu(cliente.id)}
                           title="Ações"
@@ -270,16 +226,6 @@ const ClientList = () => {
                         </button>
                         {openMenuId === cliente.id && (
                           <div className="absolute z-20 right-0 mt-2 w-24 bg-white border border-gray-200 rounded-lg shadow-lg animate-fade-in">
-=======
-                          className='rounded-full p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 shadow transition-all duration-100'
-                          onClick={() => handleMenu(client.id)}
-                          title='Ações'
-                        >
-                          <MoreVertical size={18} />
-                        </button>
-                        {openMenuId === client.id && (
-                          <div className='absolute z-20 right-0 mt-2 w-24 bg-white border border-gray-200 rounded-lg shadow-lg animate-fade-in'>
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
                             <button
                               className='block w-full text-left px-3 py-2 hover:bg-primary/10 text-gray-700 rounded-t-lg'
                               onClick={() => {
@@ -291,15 +237,7 @@ const ClientList = () => {
                               Editar
                             </button>
                             <button
-<<<<<<< HEAD
                               className="block w-full text-left px-3 py-2 hover:bg-red-50 text-red-600 rounded-b-lg"
-=======
-                              className='block w-full text-left px-3 py-2 hover:bg-red-50 text-red-600 rounded-b-lg'
-                              onClick={() => {
-                                setOpenMenuId(null);
-                                handleDelete(client.id);
-                              }}
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
                             >
                               Remover
                             </button>
@@ -312,31 +250,11 @@ const ClientList = () => {
               )}
             </tbody>
           </table>
-<<<<<<< HEAD
           <Pagination
             current_page={pagination.current_page}
             lastPage={pagination.last_page}
             onPageChange={handlePageChange}
           />
-=======
-        </div>
-        <div className='flex flex-wrap justify-center items-center gap-2 py-6 bg-gray-50 border-t border-gray-100'>
-          <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-            <ChevronLeft size={18} />
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-all duration-100'>
-            1
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100'>
-            2
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100'>
-            3
-          </button>
-          <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-            <ChevronRight size={18} />
-          </button>
->>>>>>> d1e79a2560308feb9db29201f5b66babdf9d3b9e
         </div>
       </div>
     </div>
