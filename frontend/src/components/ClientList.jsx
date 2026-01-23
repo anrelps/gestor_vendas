@@ -21,13 +21,15 @@ const ClientList = () => {
   const { user } = useSelector((state) => state.user);
   const [search, setSearch] = useState("");
 
+  const itemsPerPage = 15;
+
   // Carrega apenas uma vez ao montar
     useEffect(() => {
       if (user?.empresa?.id) {
         dispatch(index({ 
           empresa_id: user.empresa.id,
           page: 1,
-          maxItems: 2,
+          maxItems: itemsPerPage,
           pesquisa: ""
         }));
       }
@@ -42,7 +44,7 @@ const ClientList = () => {
           dispatch(index({ 
             empresa_id: user.empresa.id,
             page: 1,
-            maxItems: 2,
+            maxItems: itemsPerPage,
             pesquisa: search
           }));
         }
@@ -52,13 +54,13 @@ const ClientList = () => {
     }, [search]);
 
   const handlePageChange = (page) => {
-  dispatch(index({ 
-    empresa_id: user.empresa.id,
-    page,
-    maxItems: 2,
-    pesquisa: search
-  }));
-};
+    dispatch(index({ 
+      empresa_id: user.empresa.id,
+      page,
+      maxItems: itemsPerPage,
+      pesquisa: search
+    }));
+  };
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
@@ -122,14 +124,6 @@ const ClientList = () => {
           <EditClientPopup
             client={selectedClient || {}}
             onClose={() => {
-              setIsEditing(false);
-              setSelectedId(null);
-              setSelectedClient(null);
-            }}
-            onSave={(updated) => {
-              setClients((prev) =>
-                prev.map((c, i) => (i === selectedId ? updated : c)),
-              );
               setIsEditing(false);
               setSelectedId(null);
               setSelectedClient(null);

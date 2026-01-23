@@ -1,3 +1,6 @@
+import { useDispatch, useSelector } from 'react-redux';
+import { create } from '../redux/slices/clienteSlice';
+
 import { Mail, Phone, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -6,6 +9,11 @@ const EditClientPopup = ({
     onClose = () => {},
     onSave = () => {},
 }) => {
+
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
+    const { loading } = useSelector((state) => state.cliente);
+
     const [form, setForm] = useState({
         clientId: '',
         fullName: '',
@@ -24,13 +32,37 @@ const EditClientPopup = ({
 
     const handleChange = (key) => (e) =>
         setForm((s) => ({ ...s, [key]: e.target.value }));
+
+    const handleSubmit = async () => {
+        try {
+            const clientData = {
+                nome: form.fullName.trim(),
+                telefone: form.telefone,
+                email: form.email,
+            };
+
+            if(client.id) {
+                // Metodo de editar cliente aqui
+            } else {
+                await dispatch(create({
+                    empresa_id: user.empresa.id,
+                    data: clientData
+                })).unwrap();
+            }
+
+            onClose();
+        } catch(error) {
+            console.log('Error ao salvar cliente: ', error);
+        }
+    };
+
     return (
         <div className='fixed inset-0 flex items-center justify-center z-50'>
             <div className='absolute inset-0 bg-black/40' onClick={onClose} />
             <div className='bg-white rounded-lg p-6 relative z-10 w-full max-w-md'>
                 <div className='flex items-start justify-between mb-4 pb-2 border-b border-gray-200'>
                     <h3 className='text-lg font-semibold'>
-                        Editar informações
+                        {client.id ? 'Editar' : 'Cadastrar'} informações
                     </h3>
                     <button
                         onClick={onClose}
@@ -104,22 +136,17 @@ const EditClientPopup = ({
                         onClick={onClose}
                         className='w-full px-3 py-2 rounded border border-gray-200 bg-white text-gray-700 cursor-pointer'
                         type='button'
+                        disabled={loading}
                     >
                         Cancelar
                     </button>
                     <button
-                        onClick={() =>
-                            onSave({
-                                ...client,
-                                Nome: (form.fullName || '').trim(),
-                                Telefone: form.telefone,
-                                Email: form.email,
-                            })
-                        }
+                        onClick={handleSubmit}
                         className='w-full px-3 py-2 rounded bg-primary text-white cursor-pointer hover:bg-primary/90 transition'
                         type='button'
+                        disabled={loading}
                     >
-                        Salvar
+                        { loading ? 'Salvando...' : 'Salvar' }
                     </button>
                 </div>
             </div>
