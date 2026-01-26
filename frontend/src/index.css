@@ -2,6 +2,8 @@
 
 @theme {
   --color-primary: hsl(275, 93%, 29%);
+  --color-primary-light: hsl(277, 60%, 43%);
+  --color-primary-accent: hsl(276, 76%, 36%);
   --color-dark: hsl(240, 2%, 10%);
   --color-accent: hsl(208, 68%, 16%);
   --color-muted: hsl(218, 17%, 62%);

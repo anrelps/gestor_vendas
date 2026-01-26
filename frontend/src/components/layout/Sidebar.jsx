@@ -1,4 +1,12 @@
-import { CirclePlus, Edit as EditIcon, LogOut, User } from 'lucide-react';
+import {
+  ChevronLeft,
+  Edit as EditIcon,
+  LogOut,
+  Menu,
+  Plus,
+  User,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -26,145 +34,180 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const toggleSidebar = () => setCollapsed((v) => !v);
   const closeMobile = () => setMobileOpen(false);
 
-  const widthClass = collapsed ? 'w-20' : 'w-64';
+  const widthClass = collapsed ? 'w-20' : 'w-96';
 
   return (
     <>
       {/* Mobile Header */}
-      <header className='md:hidden fixed top-0 left-0 right-0 h-14 bg-primary text-white flex items-center justify-between px-4 shadow-md z-50'>
+      <header className='md:hidden fixed top-0 left-0 right-0 h-14 bg-primary text-white flex items-center justify-between px-4 z-50'>
         <button
           type='button'
           aria-label='Abrir menu'
           onClick={() => setMobileOpen(true)}
-          className='h-10 w-10 flex items-center justify-center rounded-lg hover:bg-white/15 active:bg-white/20 transition-all'
+          className='p-2'
         >
-          <i className='fa-solid fa-bars text-xl' />
+          <Menu size={22} />
         </button>
         <img src={logoSrc} alt='Logo' className='h-8' />
       </header>
 
       {/* Sidebar Desktop */}
-      <aside
-        className={`hidden md:flex fixed left-0 top-0 h-full bg-primary text-white flex-col items-center ${widthClass} shadow-[4px_0_15px_rgba(0,0,0,0.3)] transition-[width] duration-200 z-40`}
+      <div
+        className={`hidden md:flex fixed left-0 top-0 h-full bg-linear-60 from-primary bg-primary-accent text-white flex-col ${widthClass} z-40`}
       >
         <div
-          className={`w-full flex px-2 pt-2 ${collapsed ? 'justify-center' : 'justify-end'}`}
+          className={`p-4 ${collapsed ? 'flex justify-center' : 'flex justify-end'}`}
         >
-          <button
-            type='button'
-            aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
-            onClick={toggleSidebar}
-            className='h-8 w-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/50 transition-all'
+          <NavLink
+            to='/nova-venda'
+            title='Nova Venda'
+            className={`flex items-center shadow-lg transition-all duration-200 ${
+              collapsed
+                ? 'justify-center w-12 h-12 bg-primary-light rounded-full p-0'
+                : 'bg-primary-light rounded-full py-2 px-6'
+            }`}
           >
-            <i
-              className={`fa-solid ${collapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-sm`}
-            />
-          </button>
+            <Plus size={collapsed ? 24 : 28} />
+            {!collapsed && (
+              <span className='ml-3 whitespace-nowrap'>Nova Venda</span>
+            )}
+          </NavLink>
         </div>
 
-        <div className='w-full flex justify-center'>
+        {/* Logo */}
+        <div className={`p-4 ${collapsed ? 'flex justify-center' : 'm-auto'}`}>
           <img
             src={logoSrc}
             alt='Logo'
-            className={collapsed ? 'h-10 my-2' : 'p-4'}
+            className={collapsed ? 'w-10' : 'w-64'}
           />
         </div>
 
-        <div className={`w-full ${collapsed ? 'px-2' : 'px-8'}`}>
-          {/* Botão destacado de Nova Venda no topo */}
-          <div className='border-b border-gray-500/50 mb-4 pb-4 mt-2'>
-            <NavLink
-              to='/nova-venda'
-              title={collapsed ? 'Nova Venda' : undefined}
-              className={({ isActive }) =>
-                [
-                  'w-full flex items-center rounded-lg transition-all duration-200',
-                  collapsed ? 'justify-center px-0 py-3' : 'p-2',
-                  'bg-white text-primary border-2 border-primary font-bold ',
-                  isActive ? 'shadow' : '',
-                ].join(' ')
-              }
-            >
-              <CirclePlus size={20} className='w-6 text-center' />
-              {!collapsed && <span className='ml-3'>Nova Venda</span>}
-            </NavLink>
-          </div>
-          <nav className='mt-4'>
+        {/* Menu */}
+        <div className={`flex-1 ${collapsed ? 'px-2' : 'px-8'}`}>
+          <nav>
             <ul
-              className={`text-md flex flex-col gap-2 ${collapsed ? 'items-stretch' : ''}`}
+              className={`flex flex-col gap-2 ${collapsed ? 'items-center' : ''}`}
             >
-              {navItems.map((item) => (
-                <li key={item.to}>
-                  <NavLink
-                    to={item.to}
-                    title={collapsed ? item.label : undefined}
-                    onClick={() => {}}
-                    className={({ isActive }) =>
-                      [
-                        'w-full flex items-center rounded-lg transition-all duration-200',
-                        collapsed ? 'justify-center px-0 py-3' : 'p-2',
-                        'hover:bg-white/10',
-                        isActive ? 'bg-white/10 font-semibold' : 'font-medium',
-                      ].join(' ')
-                    }
-                  >
-                    {item.icon && (
-                      <item.icon size={20} className='w-6 text-center' />
-                    )}
-                    {!collapsed && <span className='ml-3'>{item.label}</span>}
-                  </NavLink>
-                </li>
-              ))}
+              {!collapsed &&
+                navItems.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      title={item.label}
+                      onClick={() => {}}
+                      className={({ isActive }) =>
+                        `flex text-lg items-center py-2 rounded-md transition-all duration-150 hover:bg-primary-light  px-4 cursor-pointer`
+                      }
+                    >
+                      {item.icon && <item.icon size={20} />}
+                      <span className='px-4'>{item.label}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              {collapsed &&
+                navItems.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      title={item.label}
+                      onClick={() => {}}
+                      className={({ isActive }) =>
+                        `flex items-center justify-center p-2 rounded transition-all duration-150 hover:bg-primary-accent  w-12 h-12 cursor-pointer`
+                      }
+                    >
+                      {item.icon && <item.icon size={22} />}
+                    </NavLink>
+                  </li>
+                ))}
             </ul>
           </nav>
         </div>
 
-        <div className={`mt-auto w-full ${collapsed ? 'px-2' : 'px-4'}`}>
+        {/* --- Usuário / Perfil / Sair / Colapsar --- */}
+        {/* Seção do usuário */}
+        <div
+          className={`p-4 flex flex-col gap-2 ${collapsed ? 'items-center' : ''}`}
+        >
           {collapsed ? (
-            <div className='mb-4 flex justify-center'>
-              <button
-                title={`${authUser.name} • ${authUser.role}`}
-                onClick={() => setShowEditProfile(true)}
-                className='w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/15 transition-all'
-                type='button'
-              >
-                <User size={20} className='text-white' />
-              </button>
-            </div>
-          ) : (
-            <div className='bg-linear-to-br from-white/10 to-white/20 rounded-md px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
-              <div className='flex items-center gap-3 mb-3'>
-                <div className='w-10 h-10 bg-white rounded-full flex items-center justify-center'>
-                  <User size={20} className='text-primary' />
-                </div>
-                <div>
-                  <h2 className='font-bold text-sm text-white leading-tight'>
-                    {authUser.name}
-                  </h2>
-                  <p className='text-gray-300 text-xs'>{authUser.role}</p>
-                </div>
+            <>
+              <div className='mb-6 flex justify-center'>
+                <button
+                  title={`${authUser.name} • ${authUser.role}`}
+                  onClick={() => setShowEditProfile(true)}
+                  className='p-3 rounded-full transition cursor-pointer'
+                  type='button'
+                >
+                  <User size={26} />
+                </button>
               </div>
-              <button
-                onClick={() => setShowEditProfile(true)}
-                className=' text-xs text-gray-300 hover:underline flex items-center gap-1 mx-2 mt-4 cursor-pointer'
-                type='button'
-              >
-                <EditIcon size={14} />
-                Editar Perfil
-              </button>
-            </div>
+              <div className='flex flex-col items-center w-full gap-6'>
+                <button
+                  type='button'
+                  onClick={handleLogout}
+                  className='flex items-center justify-center w-12 h-12 rounded-md transition cursor-pointer self-start'
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  <LogOut size={22} />
+                </button>
+                <button
+                  type='button'
+                  aria-label='Expandir menu'
+                  onClick={toggleSidebar}
+                  className='flex items-center justify-center w-12 h-12 rounded-md bg-primary-accent transition mt-2 cursor-pointer self-end'
+                  style={{ alignSelf: 'flex-end' }}
+                >
+                  {/* Substitua <Bars /> por <Menu /> */}
+                  <Menu size={20} />
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className='mb-6 py-6 px-6 rounded-xl border border-primary-light flex flex-col gap-5 bg-linear-to-br from-primary-accent to-primary-light/20'>
+                <div className='flex items-center gap-4'>
+                  <div className='flex items-center justify-center bg-white text-primary rounded-full w-14 h-14'>
+                    <User size={32} />
+                  </div>
+                  <div className='flex flex-col'>
+                    <span className='text-lg font-bold leading-tight mb-1'>
+                      {authUser.name}
+                    </span>
+                    <span className='text-sm text-gray-300 font-light'>
+                      {authUser.role}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowEditProfile(true)}
+                  className='text-sm flex items-center gap-2 cursor-pointer bg-linear-to-br from-primary-light to-primary-light/70 py-3 px-5 font-light rounded-md border border-white/10'
+                  type='button'
+                >
+                  <EditIcon size={16} />
+                  Editar Perfil
+                </button>
+              </div>
+              <div className='flex gap-6 w-full mt-2 border-t rounded-xl border-primary-light pt-4 px-2'>
+                <button
+                  type='button'
+                  onClick={handleLogout}
+                  className='flex items-center justify-center w-12 h-12 min-w-12 min-h-12 rounded-md bg-primary-accent transition cursor-pointer'
+                >
+                  <LogOut size={22} />
+                </button>
+                <button
+                  type='button'
+                  aria-label='Recolher menu'
+                  onClick={toggleSidebar}
+                  className='flex items-center justify-center w-12 h-12 min-w-12 min-h-12 rounded-md bg-primary-accent transition cursor-pointer ml-auto'
+                >
+                  <ChevronLeft size={22} />
+                </button>
+              </div>
+            </>
           )}
-          <button
-            type='button'
-            onClick={handleLogout}
-            className='w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-lg hover:bg-white/10 transition-all duration-200 cursor-pointer text-white'
-          >
-            <LogOut size={20} />
-            {!collapsed && <span className='font-medium'>Sair</span>}
-          </button>
         </div>
-      </aside>
-
+      </div>
       {/* Sidebar Mobile Overlay */}
       {mobileOpen && (
         <>
@@ -172,27 +215,27 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             type='button'
             aria-label='Fechar menu'
             onClick={closeMobile}
-            className='md:hidden fixed inset-0 bg-black/60 z-50'
+            className='md:hidden fixed inset-0 bg-black z-50 opacity-50'
           />
-          <aside className='md:hidden fixed top-0 left-0 h-full w-72 bg-primary text-white z-50 shadow-xl flex flex-col'>
-            <div className='h-14 flex items-center justify-between px-4 border-b border-white/15'>
+          <div className='md:hidden fixed top-0 left-0 h-full w-72 bg-primary text-white z-50 flex flex-col'>
+            <div className='h-14 flex items-center justify-between px-4 border-b'>
               <button
                 type='button'
                 aria-label='Fechar menu'
                 onClick={closeMobile}
-                className='h-10 w-10 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/25 transition-all'
+                className='p-2'
               >
-                <i className='fa-solid fa-xmark text-xl' />
+                <X size={22} />
               </button>
               <img src={logoSrc} alt='Logo' className='h-8' />
             </div>
-            <div className='w-full px-6 mt-8'>
-              <ul className='text-md flex flex-col gap-2 mt-4'>
+            <div className='p-4'>
+              <ul className='flex flex-col gap-2'>
                 {navItems.map((item) => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
-                      className='flex items-center gap-2 py-3 px-2 rounded-lg hover:bg-white/10 transition-all'
+                      className='flex items-center gap-2 p-2'
                       onClick={closeMobile}
                     >
                       {item.icon && <item.icon size={20} />}
@@ -201,17 +244,20 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                   </li>
                 ))}
               </ul>
-              <div className='mt-8'>
-                <div className='bg-linear-to-br from-white to-gray-400 rounded-xl px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
-                  <div className='flex items-center gap-3 mb-3'>
-                    <div className='w-10 h-10 bg-primary rounded-full flex items-center justify-center'>
-                      <User size={20} className='text-white' />
+              {/* --- Usuário Mobile --- */}
+              <div className='mt-10'>
+                <div className='mb-6 p-6 border rounded-xl bg-primary-light/10 flex flex-col gap-5'>
+                  <div className='flex items-center gap-5'>
+                    <div className='flex items-center justify-center bg-primary-light rounded-full w-14 h-14'>
+                      <User size={32} />
                     </div>
-                    <div>
-                      <h2 className='font-bold text-sm text-primary leading-tight'>
+                    <div className='flex flex-col'>
+                      <span className='text-lg font-bold leading-tight mb-1'>
                         {authUser.name}
-                      </h2>
-                      <p className='text-accent text-xs'>{authUser.role}</p>
+                      </span>
+                      <span className='text-sm text-primary/80'>
+                        {authUser.role}
+                      </span>
                     </div>
                   </div>
                   <button
@@ -219,31 +265,31 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                       closeMobile();
                       setShowEditProfile(true);
                     }}
-                    className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
+                    className='text-sm flex items-center gap-2 mt-3 self-start px-3 py-2 rounded-md hover:bg-primary-accent/30 transition font-medium'
                     type='button'
                   >
-                    <EditIcon size={14} />
+                    <EditIcon size={16} />
                     Editar Perfil
                   </button>
                 </div>
                 <button
                   type='button'
                   onClick={handleLogout}
-                  className='w-full flex items-center justify-center gap-2 py-4 mb-2 rounded-lg hover:bg-white/10 transition-all duration-200 cursor-pointer text-white'
+                  className='w-full flex items-center gap-2 p-3 rounded-md bg-primary-accent mt-2 justify-center text-base'
                 >
-                  <LogOut size={20} />
-                  <span className='font-medium'>Sair</span>
+                  <LogOut size={22} />
+                  <span>Sair</span>
                 </button>
               </div>
             </div>
-          </aside>
+          </div>
         </>
       )}
       {showEditProfile && (
         <EditProfilePopup
           profile={authUser}
           onClose={() => setShowEditProfile(false)}
-          onSave={() => setShowEditProfile(false)} // apenas fecha, sem funcionalidade
+          onSave={() => setShowEditProfile(false)}
           loading={false}
         />
       )}
