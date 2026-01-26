@@ -26,9 +26,10 @@ class ProdutoController extends Controller
     public function index(Empresa $empresa, Request $request) {
         try {
             $filters = $request->validate([
-                'nome' => 'nullable|string',
+                'titulo' => 'nullable|string',
                 'valor_min' => 'nullable|numeric',
                 'valor_max' => 'nullable|numeric',
+                'maxItems' =>   'nullable|numeric',
             ]);
             $produtos = $this->service->index($empresa, $filters);
             return ProdutoResource::collection($produtos);

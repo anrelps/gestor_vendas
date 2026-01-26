@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { index } from "../redux/slices/clienteSlice";
+import { index, destroy } from "../redux/slices/clienteSlice";
 
 import {
   MoreVertical,
@@ -37,8 +37,6 @@ const ClientList = () => {
 
     // Separa o efeito da busca
     useEffect(() => {
-      if (!search) return;
-      
       const timer = setTimeout(() => {
         if (user?.empresa?.id) {
           dispatch(index({ 
@@ -78,10 +76,16 @@ const ClientList = () => {
     setShowDeletePopup(true);
   };
 
-  const confirmDelete = () => {
-    setClients((prev) => prev.filter((_, i) => i !== clientToDeleteId));
-    setShowDeletePopup(false);
-    setClientToDeleteId(null);
+  const confirmDelete = async () => {
+    try {
+      await dispatch(destroy({empresa_id: user.empresa.id, cliente_id: clientToDeleteId})).unwrap();
+      setShowDeletePopup(false);
+      setClientToDeleteId(null);
+    } catch (error) {
+      console.log('client delete error: ', error);
+      setShowDeletePopup(false);
+      setClientToDeleteId(null);
+    }
   };
 
   const cancelDelete = () => {

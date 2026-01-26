@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { index, destroy } from '../redux/slices/produtoSlice';
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -6,49 +10,91 @@ import {
   Trash,
   UserPen,
 } from 'lucide-react';
-import { useState } from 'react';
 import ConfirmDialog from './ConfirmDialog';
 import EditProductPopup from './EditProductPopup';
+import Pagination from "./Pagination";
 
 const headers = ['Nome', 'Valor'];
 
-// Produtos hardcodeados para teste de design
-const mockProducts = [
-  { id: 1, nome: 'Notebook Dell', valor: 3500.0 },
-  { id: 2, nome: 'Mouse Logitech', valor: 120.5 },
-  { id: 3, nome: 'Teclado Mecânico', valor: 450.99 },
-  { id: 4, nome: 'Monitor LG 24"', valor: 899.9 },
-  { id: 5, nome: 'Cadeira Gamer', valor: 1299.0 },
-];
-
 const ProductsList = () => {
-  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.user);
+  const { produtos, loading, pagination } = useSelector((state) => state.produto);
+
   const [search, setSearch] = useState('');
-  const [products, setProducts] = useState(mockProducts);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [clientToDeleteId, setClientToDeleteId] = useState(null);
+  const [productToDeleteId, setProductToDeleteId] = useState(null);
+
+  const itemsPerPage = 15;
+
+  // Carregar clientes
+  useEffect(() => {
+    if(user?.empresa?.id) {
+      dispatch(index({
+        empresa_id: user?.empresa?.id,
+        page: 1,
+        maxItems: itemsPerPage,
+        titulo: '',
+        valor_min: '',
+        valor_max: '',
+      }))
+    }
+  }, [user?.empresa?.id, dispatch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if(user?.empresa?.id) {
+        dispatch(index({
+          empresa_id: user?.empresa?.id,
+          page: 1,
+          maxItems: itemsPerPage,
+          titulo: search,
+          valor_min: '',
+          valor_max: '',
+        }))
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, dispatch, user?.empresa?.id]);
 
   const handleMenu = (id) => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
   const handleDelete = (id) => {
-    setClientToDeleteId(id);
+    setProductToDeleteId(id);
     setShowDeletePopup(true);
   };
 
-  const confirmDelete = () => {
-    setProducts((prev) => prev.filter((p) => p.id !== clientToDeleteId));
-    setShowDeletePopup(false);
-    setClientToDeleteId(null);
+  const confirmDelete = async () => {
+    try {
+      await dispatch(destroy({empresa_id: user.empresa.id, produto_id: productToDeleteId})).unwrap();
+      setShowDeletePopup(false);
+      setProductToDeleteId(null);
+    } catch(error) {
+      console.log('Product delete error: ', error);
+    }
   };
 
   const cancelDelete = () => {
     setShowDeletePopup(false);
-    setClientToDeleteId(null);
+    setProductToDeleteId(null);
+  };
+
+  const handlePageChange = (page) => {
+    dispatch(index({ 
+      empresa_id: user.empresa.id,
+      page,
+      maxItems: itemsPerPage,
+      pesquisa: search
+    }));
   };
 
   return (
@@ -71,7 +117,6 @@ const ProductsList = () => {
                 className='flex items-center gap-2 bg-white font-semibold rounded-lg px-4 py-2 shadow hover:bg-gray-100 transition-all duration-100 border border-primary focus:outline-none focus:ring-2 focus:ring-primary/30'
                 onClick={() => {
                   setSelectedId(null);
-                  setSelectedClient(null);
                   setIsEditing(true);
                 }}
               >
@@ -86,14 +131,6 @@ const ProductsList = () => {
           <EditProductPopup
             product={selectedProduct || {}}
             onClose={() => {
-              setIsEditing(false);
-              setSelectedId(null);
-              setSelectedProduct(null);
-            }}
-            onSave={(updated) => {
-              setProducts((prev) =>
-                prev.map((p) => (p.id === updated.id ? updated : p)),
-              );
               setIsEditing(false);
               setSelectedId(null);
               setSelectedProduct(null);
@@ -123,7 +160,7 @@ const ProductsList = () => {
               </tr>
             </thead>
             <tbody>
-              {products.length === 0 ? (
+              {produtos.length === 0 ? (
                 <tr>
                   <td
                     colSpan={3}
@@ -133,7 +170,7 @@ const ProductsList = () => {
                   </td>
                 </tr>
               ) : (
-                products.map((product) => (
+                produtos.map((product) => (
                   <tr
                     key={product.id}
                     className={`transition-colors ${
@@ -141,7 +178,7 @@ const ProductsList = () => {
                     } hover:bg-primary/5`}
                   >
                     <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
-                      {product.nome}
+                      {product.titulo}
                     </td>
                     <td className='py-2 px-3 sm:px-6 text-gray-800 border-b border-gray-100'>
                       R$ {Number(product.valor).toFixed(2)}
@@ -206,23 +243,7 @@ const ProductsList = () => {
               )}
             </tbody>
           </table>
-        </div>
-        <div className='flex flex-wrap justify-center items-center gap-2 py-6 bg-gray-50 border-t border-gray-100'>
-          <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-            <ChevronLeft size={18} />
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-primary bg-primary/10 hover:bg-primary/20 transition-all duration-100'>
-            1
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100'>
-            2
-          </button>
-          <button className='rounded-lg px-3 py-1 font-semibold text-gray-700 hover:bg-primary/10 transition-all duration-100'>
-            3
-          </button>
-          <button className='rounded-full p-2 text-gray-500 hover:bg-primary/10 hover:text-primary transition-all duration-100'>
-            <ChevronRight size={18} />
-          </button>
+          <Pagination current_page={pagination.current_page} lastPage={pagination.last_page} onPageChange={handlePageChange}/>
         </div>
       </div>
     </div>
