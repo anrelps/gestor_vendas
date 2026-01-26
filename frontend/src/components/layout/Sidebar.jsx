@@ -1,11 +1,13 @@
-import { Edit as EditIcon, Home as HomeIcon, LogOut, User } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { CirclePlus, Edit as EditIcon, LogOut, User } from 'lucide-react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/slices/userSlice';
+import EditProfilePopup from '../EditProfilePopup'; // Adiciona importação do popup
 
 const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const authUser = {
     name: user?.name || user?.nome || 'nome',
     role: user?.empresa?.nome || 'empresa',
-    editTo: '/perfil/editar',
+    // editTo removido, não existe
   };
 
   const handleLogout = () => {
@@ -25,11 +27,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const closeMobile = () => setMobileOpen(false);
 
   const widthClass = collapsed ? 'w-20' : 'w-64';
-
-  const homeItem = useMemo(
-    () => ({ label: 'Home', to: '/', icon: HomeIcon }),
-    [],
-  );
 
   return (
     <>
@@ -74,27 +71,24 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         </div>
 
         <div className={`w-full ${collapsed ? 'px-2' : 'px-8'}`}>
+          {/* Botão destacado de Nova Venda no topo */}
           <div className='border-b border-gray-500/50 mb-4 pb-4 mt-2'>
             <NavLink
-              to={homeItem.to}
-              title={collapsed ? homeItem.label : undefined}
-              onClick={() => {}}
+              to='/nova-venda'
+              title={collapsed ? 'Nova Venda' : undefined}
               className={({ isActive }) =>
                 [
                   'w-full flex items-center rounded-lg transition-all duration-200',
                   collapsed ? 'justify-center px-0 py-3' : 'p-2',
-                  'hover:bg-white/10',
-                  isActive ? 'bg-white/10 font-semibold' : 'font-medium',
+                  'bg-white text-primary border-2 border-primary font-bold ',
+                  isActive ? 'shadow' : '',
                 ].join(' ')
               }
             >
-              {homeItem.icon && (
-                <homeItem.icon size={20} className='w-6 text-center' />
-              )}
-              {!collapsed && <span className='ml-3'>{homeItem.label}</span>}
+              <CirclePlus size={20} className='w-6 text-center' />
+              {!collapsed && <span className='ml-3'>Nova Venda</span>}
             </NavLink>
           </div>
-
           <nav className='mt-4'>
             <ul
               className={`text-md flex flex-col gap-2 ${collapsed ? 'items-stretch' : ''}`}
@@ -128,36 +122,36 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         <div className={`mt-auto w-full ${collapsed ? 'px-2' : 'px-4'}`}>
           {collapsed ? (
             <div className='mb-4 flex justify-center'>
-              <NavLink
-                to={authUser.editTo}
+              <button
                 title={`${authUser.name} • ${authUser.role}`}
-                onClick={() => {}}
+                onClick={() => setShowEditProfile(true)}
                 className='w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/15 transition-all'
+                type='button'
               >
                 <User size={20} className='text-white' />
-              </NavLink>
+              </button>
             </div>
           ) : (
-            <div className='bg-linear-to-br from-white to-gray-400 rounded-xl px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
+            <div className='bg-linear-to-br from-white/10 to-white/20 rounded-md px-4 py-6 mb-4 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-500'>
               <div className='flex items-center gap-3 mb-3'>
-                <div className='w-10 h-10 bg-primary rounded-full flex items-center justify-center'>
-                  <User size={20} className='text-white' />
+                <div className='w-10 h-10 bg-white rounded-full flex items-center justify-center'>
+                  <User size={20} className='text-primary' />
                 </div>
                 <div>
-                  <h2 className='font-bold text-sm text-primary leading-tight'>
+                  <h2 className='font-bold text-sm text-white leading-tight'>
                     {authUser.name}
                   </h2>
-                  <p className='text-accent text-xs'>{authUser.role}</p>
+                  <p className='text-gray-300 text-xs'>{authUser.role}</p>
                 </div>
               </div>
-              <NavLink
-                to={authUser.editTo}
-                onClick={() => {}}
-                className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
+              <button
+                onClick={() => setShowEditProfile(true)}
+                className=' text-xs text-gray-300 hover:underline flex items-center gap-1 mx-2 mt-4 cursor-pointer'
+                type='button'
               >
                 <EditIcon size={14} />
                 Editar Perfil
-              </NavLink>
+              </button>
             </div>
           )}
           <button
@@ -193,14 +187,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               <img src={logoSrc} alt='Logo' className='h-8' />
             </div>
             <div className='w-full px-6 mt-8'>
-              <NavLink
-                to={homeItem.to}
-                className='flex items-center gap-2 py-3 px-2 rounded-lg hover:bg-white/10 transition-all'
-                onClick={closeMobile}
-              >
-                <HomeIcon size={20} />
-                <span>{homeItem.label}</span>
-              </NavLink>
               <ul className='text-md flex flex-col gap-2 mt-4'>
                 {navItems.map((item) => (
                   <li key={item.to}>
@@ -228,14 +214,17 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                       <p className='text-accent text-xs'>{authUser.role}</p>
                     </div>
                   </div>
-                  <NavLink
-                    to={authUser.editTo}
-                    onClick={closeMobile}
+                  <button
+                    onClick={() => {
+                      closeMobile();
+                      setShowEditProfile(true);
+                    }}
                     className='text-accent text-xs hover:underline flex items-center gap-1 mx-2 mt-4'
+                    type='button'
                   >
                     <EditIcon size={14} />
                     Editar Perfil
-                  </NavLink>
+                  </button>
                 </div>
                 <button
                   type='button'
@@ -249,6 +238,14 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             </div>
           </aside>
         </>
+      )}
+      {showEditProfile && (
+        <EditProfilePopup
+          profile={authUser}
+          onClose={() => setShowEditProfile(false)}
+          onSave={() => setShowEditProfile(false)} // apenas fecha, sem funcionalidade
+          loading={false}
+        />
       )}
     </>
   );

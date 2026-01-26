@@ -99,7 +99,7 @@ const ProductsList = () => {
 
   return (
     <div className='w-full flex flex-col items-center mt-10 px-2'>
-      <div className='w-full max-w-5xl bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200'>
+      <div className='w-full max-w-5xl bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
         <div className='flex flex-col gap-3 sm:gap-4 bg-linear-to-r from-primary to-accent px-4 sm:px-8 py-4 sm:py-6'>
           <h2 className='text-xl sm:text-2xl font-bold text-white tracking-wide drop-shadow text-center sm:text-left'>
             Lista de Produtos
@@ -108,13 +108,13 @@ const ProductsList = () => {
             <div className='flex flex-1 gap-2'>
               <input
                 type='text'
-                className='w-full max-w-xs truncate rounded-lg border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 shadow-sm'
+                className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 shadow-sm'
                 placeholder='Buscar produto...'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
               <button
-                className='flex items-center gap-2 bg-white font-semibold rounded-lg px-4 py-2 shadow hover:bg-gray-100 transition-all duration-100 border border-primary focus:outline-none focus:ring-2 focus:ring-primary/30'
+                className='flex items-center gap-2 bg-white font-semibold rounded-sm px-4 py-2 shadow hover:bg-gray-100 transition-all duration-100 border border-primary focus:outline-none focus:ring-2 focus:ring-primary/30'
                 onClick={() => {
                   setSelectedId(null);
                   setIsEditing(true);
