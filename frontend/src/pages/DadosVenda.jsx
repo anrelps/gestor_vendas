@@ -113,7 +113,7 @@ const DadosVenda = () => {
             </Combobox>
           </div>
           <button
-            className='mt-6 md:mt-0 md:w-auto md:flex-shrink-0 px-4 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition md:ml-2'
+            className='mt-6 md:mt-0 md:w-auto md:shrink-0 px-4 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition md:ml-2'
             style={{ minWidth: 120 }}
             onClick={() => setShowNewClient(true)}
           >
@@ -163,7 +163,7 @@ const DadosVenda = () => {
         )}
       </div>
       <div className='fixed left-1/2 transform -translate-x-1/2 bottom-8 md:bottom-12 z-50'>
-        <div className='bg-white border border-gray-200 rounded-md px-6 py-4 flex flex-col gap-3 w-[340px] max-w-full mx-auto'>
+        <div className='bg-white border border-gray-200 rounded-md px-6 py-4 flex flex-col gap-3 w-85 max-w-full mx-auto'>
           <div className='flex gap-4 mb-2'>
             <div className='flex-1'>
               <label className='block text-xs text-gray-500 mb-1'>

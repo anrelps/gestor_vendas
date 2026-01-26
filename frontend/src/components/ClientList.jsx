@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { index, destroy } from "../redux/slices/clienteSlice";
-=======
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { index } from '../redux/slices/clienteSlice';
->>>>>>> 09c6f36f2cc7e3da804d6b26b8092ad9b6466f3a
 
 import { MoreVertical, Plus, Trash, UserPen } from 'lucide-react';
 
