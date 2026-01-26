@@ -14,9 +14,14 @@ export const indexClientes = async ({ empresa_id, page = 1, maxItems = 20, pesqu
   return res.data;
 };
 export const createCliente = async ({ empresa_id, data }) => {
-  console.log(data);
   const res = await api.post(`/${empresa_id}/clientes`, data);
   return res.data;
 };
-export const deleteCliente = async () => {};
-export const updateCliente = async () => {};
+export const updateCliente = async ({ empresa_id, cliente_id, data }) => {
+  const res = await api.put(`/${empresa_id}/clientes/${cliente_id}`, data);
+  return res.data;
+};
+export const destroyCliente = async ({empresa_id, cliente_id}) => {
+  const res = await api.delete(`/${empresa_id}/clientes/${cliente_id}`);
+  return res.data;
+};

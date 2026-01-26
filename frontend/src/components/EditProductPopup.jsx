@@ -1,27 +1,62 @@
-import { DollarSign, Tag, X } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { create, update } from '../redux/slices/produtoSlice';
+
 import { useEffect, useState } from 'react';
+import { DollarSign, Tag, X } from 'lucide-react';
 
 const EditProductPopup = ({
   product = {},
   onClose = () => {},
   onSave = () => {},
 }) => {
+
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.produto);
+
   const [form, setForm] = useState({
     productId: '',
-    nome: '',
+    titulo: '',
     valor: '',
   });
 
   useEffect(() => {
     setForm({
       productId: product.id || '',
-      nome: product.nome || '',
+      titulo: product.titulo || '',
       valor: product.valor || '',
     });
   }, [product]);
 
   const handleChange = (key) => (e) =>
     setForm((s) => ({ ...s, [key]: e.target.value }));
+
+  const handleSubmit = async () => {
+    try {
+      const productData = {
+        titulo: form.titulo,
+        valor: form.valor,
+        descricao: null,
+      }
+
+      if(product.id) {
+        await dispatch(update({
+          empresa_id: user.empresa.id,
+          produto_id: product.id,
+          data: productData,
+        })).unwrap();
+      } else {
+        await dispatch(create({
+          empresa_id: user.empresa.id,
+          data: productData,
+        })).unwrap();
+      }
+
+      onClose();
+    } catch(error) {
+      console.log('Product submit error: ', error);
+    }
+  };
   return (
     <div className='fixed inset-0 flex items-center justify-center z-50'>
       <div className='absolute inset-0 bg-black/40' onClick={onClose} />
@@ -49,8 +84,8 @@ const EditProductPopup = ({
                 </span>
                 <input
                   type='text'
-                  value={form.nome}
-                  onChange={handleChange('nome')}
+                  value={form.titulo}
+                  onChange={handleChange('titulo')}
                   placeholder='Ex: Notebook Dell'
                   className='w-full pl-10 pr-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/40 transition'
                 />
@@ -82,21 +117,17 @@ const EditProductPopup = ({
             onClick={onClose}
             className='w-full px-3 py-2 rounded border border-gray-200 bg-white text-gray-700 cursor-pointer'
             type='button'
+            disabled={loading}
           >
             Cancelar
           </button>
           <button
-            onClick={() =>
-              onSave({
-                ...product,
-                nome: (form.nome || '').trim(),
-                valor: form.valor,
-              })
-            }
+            onClick={handleSubmit}
             className='w-full px-3 py-2 rounded bg-primary text-white cursor-pointer hover:bg-primary/90 transition'
             type='button'
+            disabled={loading}
           >
-            Salvar
+            {loading ? 'Salvando...' : 'Salvar'}
           </button>
         </div>
       </div>

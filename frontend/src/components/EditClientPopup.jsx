@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { create } from '../redux/slices/clienteSlice';
+import { create, update } from '../redux/slices/clienteSlice';
 
 import { Mail, Phone, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -42,7 +42,11 @@ const EditClientPopup = ({
             };
 
             if(client.id) {
-                // Metodo de editar cliente aqui
+                await dispatch(update({
+                    empresa_id: user.empresa.id,
+                    cliente_id: client.id,
+                    data: clientData,
+                })).unwrap();
             } else {
                 await dispatch(create({
                     empresa_id: user.empresa.id,

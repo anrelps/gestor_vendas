@@ -1,6 +1,12 @@
+<<<<<<< HEAD
+import { useEffect, useState, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { index, destroy } from "../redux/slices/clienteSlice";
+=======
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { index } from '../redux/slices/clienteSlice';
+>>>>>>> 09c6f36f2cc7e3da804d6b26b8092ad9b6466f3a
 
 import { MoreVertical, Plus, Trash, UserPen } from 'lucide-react';
 
@@ -34,14 +40,11 @@ const ClientList = () => {
     }
   }, [dispatch, user?.empresa?.id]);
 
-  // Separa o efeito da busca
-  useEffect(() => {
-    if (!search) return;
-
-    const timer = setTimeout(() => {
-      if (user?.empresa?.id) {
-        dispatch(
-          index({
+    // Separa o efeito da busca
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (user?.empresa?.id) {
+          dispatch(index({ 
             empresa_id: user.empresa.id,
             page: 1,
             maxItems: itemsPerPage,
@@ -81,10 +84,16 @@ const ClientList = () => {
     setShowDeletePopup(true);
   };
 
-  const confirmDelete = () => {
-    setClients((prev) => prev.filter((_, i) => i !== clientToDeleteId));
-    setShowDeletePopup(false);
-    setClientToDeleteId(null);
+  const confirmDelete = async () => {
+    try {
+      await dispatch(destroy({empresa_id: user.empresa.id, cliente_id: clientToDeleteId})).unwrap();
+      setShowDeletePopup(false);
+      setClientToDeleteId(null);
+    } catch (error) {
+      console.log('client delete error: ', error);
+      setShowDeletePopup(false);
+      setClientToDeleteId(null);
+    }
   };
 
   const cancelDelete = () => {

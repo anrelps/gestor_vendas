@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { indexClientes, createCliente } from "../services/clienteService";
+import { indexClientes, createCliente, updateCliente, destroyCliente } from "../services/clienteService";
 
 export const index = createAsyncThunk(
   "cliente/index",
@@ -14,6 +14,22 @@ export const create = createAsyncThunk(
   async({ empresa_id, data }) => {
     const res = await createCliente({empresa_id, data});
     return res;
+  }
+);
+
+export const update = createAsyncThunk(
+  "cliente/update",
+  async({ empresa_id, cliente_id, data }) => {
+    const res = await updateCliente({empresa_id, cliente_id, data});
+    return res;
+  }
+);
+
+export const destroy = createAsyncThunk(
+  "cliente/delete",
+  async({ empresa_id, cliente_id }) => {
+    const res = await destroyCliente({ empresa_id, cliente_id });
+    return { cliente_id };
   }
 );
 
@@ -65,6 +81,36 @@ const clienteSlice = createSlice({
         state.pagination.total += 1;
       })
       .addCase(create.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(update.pending, function(state) {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(update.fulfilled, function(state, action) {
+        state.loading = false;
+        state.error = null;
+        state.cliente = action.payload.data;
+        const index = state.clientes.findIndex(c => c.id === action.payload.data.id);
+        if(index !== - 1) {
+          state.clientes[index] = action.payload.data;
+        }
+      })
+      .addCase(update.rejected, function(state, action) {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(destroy.pending, function(state) {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(destroy.fulfilled, function(state, action) {
+        state.loading = false;
+        state.error = null;
+        state.clientes = state.clientes.filter((c) => c.id !== action.payload.cliente_id)
+      })
+      .addCase(destroy.rejected, function(state, action) {
         state.loading = false;
         state.error = action.error.message;
       });

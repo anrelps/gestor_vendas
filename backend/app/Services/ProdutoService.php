@@ -18,8 +18,8 @@ class ProdutoService {
         $maxItems = $filters['maxItems'] ?? 20;
 
         return $empresa->produtos()
-            ->when(data_get($filters, 'nome'), function($q, $nome) {
-                $q->where('nome', 'ILIKE', "%{$nome}%");
+            ->when(data_get($filters, 'titulo'), function($q, $titulo) {
+                $q->where('titulo', 'ILIKE', "%{$titulo}%");
             })
             ->when(data_get($filters, 'valor_min'), function($q, $min) {
                 $q->where('valor', '>=', $min);
