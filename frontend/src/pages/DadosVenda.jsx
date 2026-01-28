@@ -1,7 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Combobox, ComboboxOption, ComboboxOptions } from '@headlessui/react';
-import { ChevronRight, Pencil, Plus, User } from 'lucide-react'; // adicionado Plus
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxOption,
+  ComboboxOptions,
+} from '@headlessui/react';
+import { ChevronRight, Pencil, Plus, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import Layout from '../Layout';
 import EditClientPopup from '../components/EditClientPopup';
@@ -45,7 +50,6 @@ const DadosVenda = () => {
 
   const [busca, setBusca] = useState('');
   const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [open, setOpen] = useState(false);
   const [showNewClient, setShowNewClient] = useState(false);
   const [tituloVenda, setTituloVenda] = useState(`Venda ${Date.now()}`);
   const [descricaoVenda, setDescricaoVenda] = useState('');
@@ -58,11 +62,6 @@ const DadosVenda = () => {
   const clientesFiltrados = clientes.filter((c) =>
     c.nome.toLowerCase().includes(busca.toLowerCase()),
   );
-
-  // Fecha o dropdown ao perder o foco do input
-  const handleBlur = (e) => {
-    setTimeout(() => setOpen(false), 100);
-  };
 
   // Função para lidar com seleção/deseleção de produtos
   const handleProdutoCheck = (produto) => {
@@ -143,10 +142,7 @@ const DadosVenda = () => {
               onChange={setClienteSelecionado}
             >
               <div className='relative'>
-                <Combobox.Button
-                  className='w-full'
-                  onClick={() => setOpen((prev) => !prev)}
-                >
+                <ComboboxButton className='w-full'>
                   <div
                     className='flex items-center w-full px-4 py-3 rounded-sm border border-gray-300 bg-gray-50 hover:bg-gray-100 transition cursor-pointer shadow-sm'
                     style={{ minHeight: 56 }}
@@ -164,32 +160,34 @@ const DadosVenda = () => {
                     </span>
                     <ChevronRight size={22} className='text-gray-400 ml-auto' />
                   </div>
-                </Combobox.Button>
-                {open && (
-                  <ComboboxOptions className='absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-2 max-h-56 overflow-y-auto shadow'>
-                    {clientes.length === 0 && (
-                      <div className='px-4 py-3 text-gray-400'>
-                        Nenhum cliente encontrado
-                      </div>
-                    )}
-                    {clientes.map((cliente) => (
-                      <ComboboxOption
-                        key={cliente.id}
-                        value={cliente.id}
-                        className={`flex items-center px-4 py-3 cursor-pointer rounded-lg ${
-                          clienteSelecionado === cliente.id
+                </ComboboxButton>
+                <ComboboxOptions className='absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-2 max-h-56 overflow-y-auto shadow'>
+                  {clientes.length === 0 && (
+                    <div className='px-4 py-3 text-gray-400'>
+                      Nenhum cliente encontrado
+                    </div>
+                  )}
+                  {clientes.map((cliente) => (
+                    <ComboboxOption
+                      key={cliente.id}
+                      value={cliente.id}
+                      className={({ active, selected }) =>
+                        [
+                          'flex items-center px-4 py-3 cursor-pointer',
+                          selected
                             ? 'bg-primary/10'
-                            : 'bg-white'
-                        }`}
-                        onClick={() => setOpen(false)}
-                      >
-                        <span className='text-base text-gray-700 truncate'>
-                          {cliente.nome}
-                        </span>
-                      </ComboboxOption>
-                    ))}
-                  </ComboboxOptions>
-                )}
+                            : active
+                              ? 'bg-gray-100'
+                              : 'bg-white',
+                        ].join(' ')
+                      }
+                    >
+                      <span className='text-base text-gray-700 truncate'>
+                        {cliente.nome}
+                      </span>
+                    </ComboboxOption>
+                  ))}
+                </ComboboxOptions>
               </div>
             </Combobox>
           </div>
