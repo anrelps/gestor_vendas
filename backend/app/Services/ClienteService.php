@@ -19,9 +19,11 @@ class ClienteService {
 
         $clientes = $empresa->clientes()
             ->when(isset($filters['pesquisa']), function($q) use ($filters) {
-                $q->where('nome', 'ILIKE', "%{$filters['pesquisa']}%")
-                    ->orWhere('email', 'ILIKE', "%{$filters['pesquisa']}%" )
-                    ->orWhere('telefone', 'ILIKE', "%{$filters['pesquisa']}%" );
+                $q->where(function($q) use ($filters) {
+                    $q->where('nome', 'ILIKE', "%{$filters['pesquisa']}%")
+                        ->orWhere('email', 'ILIKE', "%{$filters['pesquisa']}%")
+                        ->orWhere('telefone', 'ILIKE', "%{$filters['pesquisa']}%");
+                });
             })
             ->orderBy('created_at', 'DESC')->paginate($maxItems);
         return $clientes;

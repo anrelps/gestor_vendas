@@ -1,28 +1,50 @@
+import { useSelector, useDispatch } from 'react-redux';
+
 import { Combobox, ComboboxOption, ComboboxOptions } from '@headlessui/react';
 import { format } from 'date-fns';
 import { ChevronRight, Pencil, Plus, User } from 'lucide-react'; // adicionado Plus
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Layout from '../Layout';
 import EditClientPopup from '../components/EditClientPopup';
 
-const mockClientes = [
-  { id: 1, nome: 'João da Silva' },
-  { id: 2, nome: 'Maria Oliveira' },
-  { id: 3, nome: 'Carlos Souza' },
-  { id: 4, nome: 'Ana Paula' },
-  { id: 5, nome: 'Fernanda Lima' },
-  { id: 6, nome: 'Pedro Santos' },
-];
-
-const mockProdutos = [
-  { id: 1, nome: 'Notebook Dell', valor: 3500.0 },
-  { id: 2, nome: 'Mouse Logitech', valor: 120.5 },
-  { id: 3, nome: 'Teclado Mecânico', valor: 450.99 },
-  { id: 4, nome: 'Monitor LG 24"', valor: 899.9 },
-  { id: 5, nome: 'Cadeira Gamer', valor: 1299.0 },
-];
+import { index as indexClientes } from '../redux/slices/clienteSlice';
+import { index as indexProdutos } from '../redux/slices/produtoSlice';
+import { create } from '../redux/slices/vendaSlice';
 
 const DadosVenda = () => {
+
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.user);
+  const { clientes, loading } = useSelector((state) => state.cliente);
+  const { produtos } = useSelector((state) => state.produto);
+
+  useEffect(() => {
+    if (user?.empresa?.id) {
+      dispatch(
+        indexClientes({
+          empresa_id: user.empresa.id,
+          page: 1,
+          maxItems: 999,
+          pesquisa: '',
+        }),
+      );
+    }
+  }, [dispatch, user?.empresa?.id]);
+
+  useEffect(() => {
+    if (user?.empresa?.id) {
+      dispatch(
+        indexProdutos({
+          empresa_id: user.empresa.id,
+          page: 1,
+          maxItems: 999,
+          pesquisa: '',
+        }),
+      );
+    }
+  }, [dispatch, user?.empresa?.id]);
+
   const [busca, setBusca] = useState('');
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [open, setOpen] = useState(false);
@@ -31,11 +53,13 @@ const DadosVenda = () => {
     `Venda ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
   );
   const [descricaoVenda, setDescricaoVenda] = useState('');
-  const [produtosSelecionados, setProdutosSelecionados] = useState([]);
+  const [produtosSelecionados, setProdutosSelecionados] = useState({});
+  const [valorTotal, setValorTotal] = useState(0);
+  const [valorPago, setValorPago] = useState(0);
   const inputRef = useRef();
 
   // Filtra clientes pelo nome
-  const clientesFiltrados = mockClientes.filter((c) =>
+  const clientesFiltrados = clientes.filter((c) =>
     c.nome.toLowerCase().includes(busca.toLowerCase()),
   );
 
@@ -45,11 +69,45 @@ const DadosVenda = () => {
   };
 
   // Função para lidar com seleção/deseleção de produtos
-  const handleProdutoCheck = (id) => {
-    setProdutosSelecionados((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id],
-    );
+  const handleProdutoCheck = (produto) => {
+    let pid = produto.id;
+    setProdutosSelecionados((prev) => {
+      const newState = {...prev};
+
+      if(newState[pid]) {
+        delete newState[pid];
+      } else {
+        newState[pid] = {
+          produto_id: pid,
+          quantidade: 1,
+          valor: produto.valor,
+          porcentagem_desconto: 0
+        };
+      }
+
+      return newState;
+    });
   };
+
+  const handleSubmit = async () => {
+    try {
+        const data = {
+        cliente: clienteSelecionado,
+        titulo: tituloVenda,
+        descricao: descricaoVenda,
+        valor_total: valorTotal,
+        valor_pago: valorPago,
+        produtos: produtosSelecionados,
+      };
+
+      await dispatch(create({
+        empresa_id: user.empresa.id,
+        data
+      })).unwrap();
+    } catch(error) {
+      console.log('error submit venda: ', error)
+    }
+  }
 
   return (
     <Layout>
@@ -100,7 +158,7 @@ const DadosVenda = () => {
                     </span>
                     <span className='text-base text-gray-700 truncate'>
                       {(() => {
-                        const c = mockClientes.find(
+                        const c = clientes.find(
                           (c) => c.id === clienteSelecionado,
                         );
                         return c ? c.nome : 'Selecione um cliente';
@@ -111,12 +169,12 @@ const DadosVenda = () => {
                 </Combobox.Button>
                 {open && (
                   <ComboboxOptions className='absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-2 max-h-56 overflow-y-auto shadow'>
-                    {clientesFiltrados.length === 0 && (
+                    {clientes.length === 0 && (
                       <div className='px-4 py-3 text-gray-400'>
                         Nenhum cliente encontrado
                       </div>
                     )}
-                    {clientesFiltrados.map((cliente) => (
+                    {clientes.map((cliente) => (
                       <ComboboxOption
                         key={cliente.id}
                         value={cliente.id}
@@ -149,11 +207,11 @@ const DadosVenda = () => {
         <div className='mt-6'>
           <div className='font-semibold text-black mb-2 text-lg'>Produtos</div>
           <div className='flex flex-col gap-0 rounded-md border border-gray-200 shadow-sm bg-white'>
-            {mockProdutos.map((produto, idx) => (
+            {produtos.map((produto, idx) => (
               <div
                 key={produto.id}
                 className={`flex items-center w-full px-4 py-3 ${
-                  idx !== mockProdutos.length - 1
+                  idx !== produtos.length - 1
                     ? 'border-b border-gray-100'
                     : ''
                 }`}
@@ -161,10 +219,10 @@ const DadosVenda = () => {
                 <input
                   type='checkbox'
                   className='accent-primary mr-3'
-                  checked={produtosSelecionados.includes(produto.id)}
-                  onChange={() => handleProdutoCheck(produto.id)}
+                  checked={produto.id in produtosSelecionados}
+                  onChange={() => handleProdutoCheck(produto)}
                 />
-                <span className='flex-1 text-gray-800'>{produto.nome}</span>
+                <span className='flex-1 text-gray-800'>{produto.titulo}</span>
                 <span className='text-gray-500 text-sm'>
                   R$ {Number(produto.valor).toFixed(2)}
                 </span>
@@ -187,10 +245,10 @@ const DadosVenda = () => {
                 Valor Total
               </label>
               <input
-                type='text'
+                type='number'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
-                disabled
+                onChange={(e) => setValorTotal(e.target.value)}
               />
             </div>
             <div className='flex-1'>
@@ -198,10 +256,10 @@ const DadosVenda = () => {
                 Valor Pago
               </label>
               <input
-                type='text'
+                type='number'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
-                disabled
+                onChange={(e) => setValorPago(e.target.value)}
               />
             </div>
           </div>
@@ -209,8 +267,8 @@ const DadosVenda = () => {
             <button className='flex-1 px-3 py-2 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition'>
               Cancelar
             </button>
-            <button className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition'>
-              Salvar
+            <button onClick={handleSubmit} disabled={loading} className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition'>
+              { loading ? 'Carregando...' : 'Salvar' }
             </button>
           </div>
         </div>
