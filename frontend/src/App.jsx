@@ -7,11 +7,13 @@ import { checkAuth } from './redux/slices/userSlice';
 
 // Pages
 import Clients from './pages/Clients';
-import DadosVenda from './pages/DadosVenda';
 import Dashboard from './pages/Dashboard';
+import EditarVenda from './pages/EditarVenda';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import NovaVenda from './pages/NovaVenda';
 import Products from './pages/Products';
+import Vendas from './pages/Vendas';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
@@ -42,7 +44,9 @@ const App = () => {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/produtos' element={<Products />} />
         </Route>
-        <Route path='/nova-venda' element={<DadosVenda />} />
+        <Route path='/vendas' element={<Vendas />} />
+        <Route path='/nova-venda' element={<NovaVenda />} />
+        <Route path='/vendas/:id/editar' element={<EditarVenda />} />
       </Routes>
     </BrowserRouter>
   );

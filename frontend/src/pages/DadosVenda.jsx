@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Combobox, ComboboxOption, ComboboxOptions } from '@headlessui/react';
-import { format } from 'date-fns';
 import { ChevronRight, Pencil, Plus, User } from 'lucide-react'; // adicionado Plus
 import { useEffect, useRef, useState } from 'react';
 import Layout from '../Layout';
@@ -48,9 +47,7 @@ const DadosVenda = () => {
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [open, setOpen] = useState(false);
   const [showNewClient, setShowNewClient] = useState(false);
-  const [tituloVenda, setTituloVenda] = useState(
-    `Venda ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
-  );
+  const [tituloVenda, setTituloVenda] = useState(`Venda ${Date.now()}`);
   const [descricaoVenda, setDescricaoVenda] = useState('');
   const [produtosSelecionados, setProdutosSelecionados] = useState({});
   const [valorTotal, setValorTotal] = useState(0);
@@ -208,25 +205,99 @@ const DadosVenda = () => {
         <div className='mt-6'>
           <div className='font-semibold text-black mb-2 text-lg'>Produtos</div>
           <div className='flex flex-col gap-0 rounded-md border border-gray-200 shadow-sm bg-white'>
-            {produtos.map((produto, idx) => (
-              <div
-                key={produto.id}
-                className={`flex items-center w-full px-4 py-3 ${
-                  idx !== produtos.length - 1 ? 'border-b border-gray-100' : ''
-                }`}
-              >
-                <input
-                  type='checkbox'
-                  className='accent-primary mr-3'
-                  checked={produto.id in produtosSelecionados}
-                  onChange={() => handleProdutoCheck(produto)}
-                />
-                <span className='flex-1 text-gray-800'>{produto.titulo}</span>
-                <span className='text-gray-500 text-sm'>
-                  R$ {Number(produto.valor).toFixed(2)}
-                </span>
-              </div>
-            ))}
+            {produtos.map((produto, idx) => {
+              const checked = produto.id in produtosSelecionados;
+              const quantidade = checked
+                ? produtosSelecionados[produto.id].quantidade
+                : 1;
+              // Zebra: itens pares (idx % 2 === 1) recebem bg cinza muito claro
+              const zebraBg = idx % 2 === 1 ? 'bg-gray-50' : 'bg-white';
+              return (
+                <div
+                  key={produto.id}
+                  className={`flex items-center w-full px-4 py-3 ${zebraBg} ${
+                    idx !== produtos.length - 1
+                      ? 'border-b border-gray-100'
+                      : ''
+                  }`}
+                >
+                  <input
+                    type='checkbox'
+                    className='accent-primary mr-3'
+                    checked={checked}
+                    onChange={() => handleProdutoCheck(produto)}
+                  />
+                  <span className='flex-1 text-gray-800 font-light'>
+                    {produto.titulo}
+                  </span>
+                  <div
+                    className='flex items-center mr-4 border border-gray-200 rounded-md overflow-hidden bg-white'
+                    style={{ minWidth: 66, height: 28 }}
+                  >
+                    <button
+                      className={`w-6 h-6 flex items-center justify-center transition text-base ${
+                        checked
+                          ? 'bg-gray-100 text-gray-600'
+                          : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                      }`}
+                      type='button'
+                      onClick={() => {
+                        if (!checked) return;
+                        setProdutosSelecionados((prev) => {
+                          const newState = { ...prev };
+                          if (newState[produto.id]?.quantidade > 1) {
+                            newState[produto.id] = {
+                              ...newState[produto.id],
+                              quantidade: newState[produto.id].quantidade - 1,
+                            };
+                          }
+                          return newState;
+                        });
+                      }}
+                      tabIndex={-1}
+                      disabled={!checked}
+                      style={{ border: 'none', borderRadius: 0 }}
+                    >
+                      -
+                    </button>
+                    <span
+                      className={`w-6 text-center select-none text-sm ${checked ? '' : 'text-gray-300'}`}
+                    >
+                      {quantidade}
+                    </span>
+                    <button
+                      className={`w-6 h-6 flex items-center justify-center transition text-base ${
+                        checked
+                          ? 'bg-gray-100 text-gray-600'
+                          : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                      }`}
+                      type='button'
+                      onClick={() => {
+                        if (!checked) return;
+                        setProdutosSelecionados((prev) => {
+                          const newState = { ...prev };
+                          if (checked) {
+                            newState[produto.id] = {
+                              ...newState[produto.id],
+                              quantidade: newState[produto.id].quantidade + 1,
+                            };
+                          }
+                          return newState;
+                        });
+                      }}
+                      tabIndex={-1}
+                      disabled={!checked}
+                      style={{ border: 'none', borderRadius: 0 }}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className='text-gray-500 text-sm'>
+                    R$ {Number(produto.valor).toFixed(2)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
         {showNewClient && (
@@ -241,17 +312,6 @@ const DadosVenda = () => {
           <div className='flex gap-4 mb-2'>
             <div className='flex-1'>
               <label className='block text-xs text-gray-500 mb-1'>
-                Valor Total
-              </label>
-              <input
-                type='number'
-                className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
-                placeholder='R$ 0,00'
-                onChange={(e) => setValorTotal(e.target.value)}
-              />
-            </div>
-            <div className='flex-1'>
-              <label className='block text-xs text-gray-500 mb-1'>
                 Valor Pago
               </label>
               <input
@@ -259,6 +319,17 @@ const DadosVenda = () => {
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 onChange={(e) => setValorPago(e.target.value)}
+              />
+            </div>
+            <div className='flex-1'>
+              <label className='block text-xs text-gray-500 mb-1'>
+                Valor Total
+              </label>
+              <input
+                type='number'
+                className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
+                placeholder='R$ 0,00'
+                onChange={(e) => setValorTotal(e.target.value)}
               />
             </div>
           </div>
