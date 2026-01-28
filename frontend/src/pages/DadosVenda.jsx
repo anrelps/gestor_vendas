@@ -210,7 +210,6 @@ const DadosVenda = () => {
               const quantidade = checked
                 ? produtosSelecionados[produto.id].quantidade
                 : 1;
-              // Zebra: itens pares (idx % 2 === 1) recebem bg cinza muito claro
               const zebraBg = idx % 2 === 1 ? 'bg-gray-50' : 'bg-white';
               return (
                 <div
