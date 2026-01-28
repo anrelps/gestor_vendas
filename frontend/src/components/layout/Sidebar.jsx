@@ -112,6 +112,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                       to={item.to}
                       title={item.label}
                       onClick={() => {}}
+                      pointer
                       className={({ isActive }) =>
                         `flex items-center justify-center p-2 rounded transition-all duration-150 hover:bg-primary-accent  w-12 h-12 cursor-pointer`
                       }

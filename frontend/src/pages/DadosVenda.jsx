@@ -1,9 +1,9 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Combobox, ComboboxOption, ComboboxOptions } from '@headlessui/react';
 import { format } from 'date-fns';
 import { ChevronRight, Pencil, Plus, User } from 'lucide-react'; // adicionado Plus
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Layout from '../Layout';
 import EditClientPopup from '../components/EditClientPopup';
 
@@ -12,7 +12,6 @@ import { index as indexProdutos } from '../redux/slices/produtoSlice';
 import { create } from '../redux/slices/vendaSlice';
 
 const DadosVenda = () => {
-
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
@@ -72,16 +71,16 @@ const DadosVenda = () => {
   const handleProdutoCheck = (produto) => {
     let pid = produto.id;
     setProdutosSelecionados((prev) => {
-      const newState = {...prev};
+      const newState = { ...prev };
 
-      if(newState[pid]) {
+      if (newState[pid]) {
         delete newState[pid];
       } else {
         newState[pid] = {
           produto_id: pid,
           quantidade: 1,
           valor: produto.valor,
-          porcentagem_desconto: 0
+          porcentagem_desconto: 0,
         };
       }
 
@@ -91,7 +90,7 @@ const DadosVenda = () => {
 
   const handleSubmit = async () => {
     try {
-        const data = {
+      const data = {
         cliente: clienteSelecionado,
         titulo: tituloVenda,
         descricao: descricaoVenda,
@@ -100,14 +99,16 @@ const DadosVenda = () => {
         produtos: produtosSelecionados,
       };
 
-      await dispatch(create({
-        empresa_id: user.empresa.id,
-        data
-      })).unwrap();
-    } catch(error) {
-      console.log('error submit venda: ', error)
+      await dispatch(
+        create({
+          empresa_id: user.empresa.id,
+          data,
+        }),
+      ).unwrap();
+    } catch (error) {
+      console.log('error submit venda: ', error);
     }
-  }
+  };
 
   return (
     <Layout>
@@ -150,7 +151,7 @@ const DadosVenda = () => {
                   onClick={() => setOpen((prev) => !prev)}
                 >
                   <div
-                    className='flex items-center w-full px-4 py-3 rounded-md border border-gray-300 bg-gray-50 hover:bg-gray-100 transition cursor-pointer shadow-sm'
+                    className='flex items-center w-full px-4 py-3 rounded-sm border border-gray-300 bg-gray-50 hover:bg-gray-100 transition cursor-pointer shadow-sm'
                     style={{ minHeight: 56 }}
                   >
                     <span className='flex items-center justify-center w-9 h-9 rounded-full bg-primary mr-3'>
@@ -211,9 +212,7 @@ const DadosVenda = () => {
               <div
                 key={produto.id}
                 className={`flex items-center w-full px-4 py-3 ${
-                  idx !== produtos.length - 1
-                    ? 'border-b border-gray-100'
-                    : ''
+                  idx !== produtos.length - 1 ? 'border-b border-gray-100' : ''
                 }`}
               >
                 <input
@@ -267,8 +266,12 @@ const DadosVenda = () => {
             <button className='flex-1 px-3 py-2 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition'>
               Cancelar
             </button>
-            <button onClick={handleSubmit} disabled={loading} className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition'>
-              { loading ? 'Carregando...' : 'Salvar' }
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition'
+            >
+              {loading ? 'Carregando...' : 'Salvar'}
             </button>
           </div>
         </div>
