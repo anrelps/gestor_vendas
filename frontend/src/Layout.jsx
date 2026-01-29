@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
         setCollapsed={setCollapsed}
       />
       <main
-        className={`flex-1 bg-gray-50 p-6 transition-all duration-200 ${
+        className={`flex-1 p-6 transition-all duration-200 ${
           collapsed ? 'md:ml-20' : 'md:ml-96'
         }`}
       >
