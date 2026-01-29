@@ -2,6 +2,7 @@ import { ChevronRight, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { index } from '../redux/slices/clienteSlice';
+import NewButton from './layout/NewButton';
 
 import EditClientPopup from './EditClientPopup';
 import Pagination from './Pagination';
@@ -75,20 +76,18 @@ const ClientList = () => {
           Clientes
         </h2>
         <div className='bg-white rounded-md shadow-sm overflow-hidden border border-gray-200'>
-          <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-gradient-to-r from-white via-white/30 to-black/1 border-black/2'>
+          <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
-                <button
-                  className='cursor-pointer px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition flex items-center gap-2 font-semibold min-w-[120px]'
+                <NewButton
+                  label='Novo Cliente'
+                  shortLabel='Novo'
+                  icon={<Plus size={18} />}
                   onClick={() => {
                     setEditClient({});
                     setShowNewClient(true);
                   }}
-                >
-                  <Plus size={18} className='inline-block' />
-                  <span className='hidden sm:inline'>Novo Cliente</span>
-                  <span className='sm:hidden'>Novo</span>
-                </button>
+                />
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
@@ -111,7 +110,7 @@ const ClientList = () => {
               </div>
             )}
             {!loading && clientes.length > 0 && (
-              <div className='border border-gray-200 rounded-lg m-4'>
+              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
                 <ul className='flex flex-col'>
                   {clientes.map((cliente, idx) => (
                     <li
@@ -121,13 +120,13 @@ const ClientList = () => {
                       } hover:bg-primary/5 ${idx !== clientes.length - 1 ? 'border-b-2 border-b-gray-100' : ''}`}
                       onClick={() => handleDropdown(cliente.id)}
                     >
-                      <div className='flex items-center'>
-                        <div className='flex-1 min-w-0 text-base text-gray-800 truncate font-medium'>
+                      <div className='flex items-center cursor-pointer'>
+                        <div className='flex-1 min-w-0 text-base text-gray-800 truncate font-medium cursor-pointer'>
                           {cliente.nome}
                         </div>
                         <ChevronRight
                           size={20}
-                          className={`text-gray-400 ml-2 transition-transform duration-150 ${
+                          className={`text-gray-400 ml-2 transition-transform duration-150 cursor-pointer ${
                             openDropdownId === cliente.id ? 'rotate-90' : ''
                           }`}
                         />
@@ -139,7 +138,7 @@ const ClientList = () => {
                         >
                           <div className='flex flex-col gap-1 flex-1'>
                             <div className='flex items-center gap-2'>
-                              <span className='text-gray-500 font-semibold min-w-[60px]'>
+                              <span className='text-gray-500 font-semibold min-w-15'>
                                 Email:
                               </span>
                               <span className='text-gray-700'>
@@ -151,7 +150,7 @@ const ClientList = () => {
                               </span>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <span className='text-gray-500 font-semibold min-w-[60px]'>
+                              <span className='text-gray-500 font-semibold min-w-15'>
                                 Telefone:
                               </span>
                               <span className='text-gray-700'>
@@ -165,7 +164,7 @@ const ClientList = () => {
                           </div>
                           <div className='flex items-end justify-end ml-4 gap-2'>
                             <button
-                              className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center'
+                              className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center cursor-pointer'
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditClient(cliente);
@@ -175,7 +174,7 @@ const ClientList = () => {
                               Editar
                             </button>
                             <button
-                              className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center'
+                              className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center cursor-pointer'
                               title='Remover cliente'
                               onClick={(e) => {
                                 e.stopPropagation();

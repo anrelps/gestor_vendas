@@ -1,9 +1,10 @@
 import { endOfMonth, format, startOfMonth } from 'date-fns';
-import { Logs, Plus } from 'lucide-react';
+import { Calendar, Logs, Plus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { index } from '../redux/slices/vendaSlice';
+import NewButton from './layout/NewButton';
 
 const VendaList = () => {
   const [search, setSearch] = useState('');
@@ -45,14 +46,12 @@ const VendaList = () => {
           <div className='flex flex-col gap-3 px-6 py-3 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
-                <button
-                  className='cursor-pointer px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition flex items-center gap-2 font-semibold min-w-30'
+                <NewButton
+                  label='Nova Venda'
+                  shortLabel='Nova'
+                  icon={<Plus size={18} />}
                   onClick={() => navigate('/nova-venda')}
-                >
-                  <Plus size={18} className='inline-block' />
-                  <span className='hidden sm:inline'>Nova Venda</span>
-                  <span className='sm:hidden'>Nova</span>
-                </button>
+                />
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
@@ -62,76 +61,91 @@ const VendaList = () => {
                 />
               </div>
             </div>
-            <div className='flex gap-4 mt-1 items-center'>
+            <div className='flex flex-wrap gap-4 mt-1 items-center'>
               <button
                 className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 hover:text-black transition text-sm font-medium shadow-none cursor-pointer'
                 title='Mostrar apenas vendas não pagas'
               >
                 Não pagas
               </button>
-              <div
-                className='flex items-center relative pl-2 pr-1 cursor-pointer'
-                onClick={() =>
-                  dateStartRef.current &&
-                  dateStartRef.current.showPicker &&
-                  dateStartRef.current.showPicker()
-                }
-                tabIndex={0}
-                role='button'
-                style={{ userSelect: 'none', minWidth: 0 }}
-              >
-                <label
-                  className='text-xs text-gray-500 mr-1 cursor-pointer'
-                  htmlFor='dateStart'
+              {/* Datas: mobile em coluna, desktop em linha */}
+              <div className='flex flex-col w-full gap-2 sm:flex-row sm:w-auto sm:gap-2'>
+                {/* Data início */}
+                <div
+                  className='flex items-center gap-2 relative cursor-pointer group flex-1'
+                  onClick={() =>
+                    dateStartRef.current &&
+                    dateStartRef.current.showPicker &&
+                    dateStartRef.current.showPicker()
+                  }
+                  tabIndex={0}
+                  role='button'
                 >
-                  Início:
-                </label>
-                <input
-                  id='dateStart'
-                  ref={dateStartRef}
-                  type='date'
-                  value={dateStart}
-                  onChange={(e) => setDateStart(e.target.value)}
-                  className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-33.75 cursor-pointer'
-                  title='Filtrar por data inicial'
-                  readOnly
-                  onFocus={(e) => e.target.removeAttribute('readOnly')}
-                  style={{ position: 'relative', zIndex: 1 }}
-                />
-                <span
-                  className='absolute right-1 pointer-events-none flex items-center'
-                  style={{ zIndex: 2 }}
-                ></span>
-              </div>
-              <div
-                className='flex items-center relative pl-2 pr-1 cursor-pointer'
-                onClick={() =>
-                  dateEndRef.current &&
-                  dateEndRef.current.showPicker &&
-                  dateEndRef.current.showPicker()
-                }
-                tabIndex={0}
-                role='button'
-                style={{ userSelect: 'none', minWidth: 0 }}
-              >
-                <label
-                  className='text-xs text-gray-500 mr-1 cursor-pointer'
-                  htmlFor='dateEnd'
+                  <label className='text-xs text-gray-500' htmlFor='dateStart'>
+                    Início:
+                  </label>
+                  <div className='relative flex items-center w-full max-w-31.25 sm:max-w-none sm:w-31.25'>
+                    <input
+                      id='dateStart'
+                      type='text'
+                      inputMode='none'
+                      value={dateStart}
+                      readOnly
+                      className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 pr-9 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-full cursor-pointer text-center'
+                      title='Filtrar por data inicial'
+                      tabIndex={-1}
+                    />
+                    <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
+                      <Calendar size={18} className='text-gray-400' />
+                    </span>
+                    <input
+                      ref={dateStartRef}
+                      type='date'
+                      value={dateStart}
+                      onChange={(e) => setDateStart(e.target.value)}
+                      className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
+                      tabIndex={-1}
+                    />
+                  </div>
+                </div>
+                {/* Data fim */}
+                <div
+                  className='flex items-center gap-2 relative cursor-pointer group flex-1'
+                  onClick={() =>
+                    dateEndRef.current &&
+                    dateEndRef.current.showPicker &&
+                    dateEndRef.current.showPicker()
+                  }
+                  tabIndex={0}
+                  role='button'
                 >
-                  Fim:
-                </label>
-                <input
-                  id='dateEnd'
-                  ref={dateEndRef}
-                  type='date'
-                  value={dateEnd}
-                  onChange={(e) => setDateEnd(e.target.value)}
-                  className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-33.75 cursor-pointer'
-                  title='Filtrar por data final'
-                  readOnly
-                  onFocus={(e) => e.target.removeAttribute('readOnly')}
-                  style={{ position: 'relative', zIndex: 1 }}
-                />
+                  <label className='text-xs text-gray-500' htmlFor='dateEnd'>
+                    Fim:
+                  </label>
+                  <div className='relative flex items-center w-full max-w-31.25 sm:max-w-none sm:w-31.25'>
+                    <input
+                      id='dateEnd'
+                      type='text'
+                      inputMode='none'
+                      value={dateEnd}
+                      readOnly
+                      className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 pr-9 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-full cursor-pointer text-center'
+                      title='Filtrar por data final'
+                      tabIndex={-1}
+                    />
+                    <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
+                      <Calendar size={18} className='text-gray-400' />
+                    </span>
+                    <input
+                      ref={dateEndRef}
+                      type='date'
+                      value={dateEnd}
+                      onChange={(e) => setDateEnd(e.target.value)}
+                      className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
+                      tabIndex={-1}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -142,47 +156,58 @@ const VendaList = () => {
               </div>
             )}
             {vendas.length > 0 && (
-              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
-                <ul className='flex flex-col'>
-                  {vendas.map((venda, idx) => (
+              <div className='m-4 overflow-hidden rounded-lg'>
+                <ul className='flex flex-col gap-4'>
+                  {vendas.map((venda) => (
                     <li
                       key={venda.id}
-                      className={`flex flex-col px-4 py-3 cursor-pointer transition-colors ${
-                        idx % 2 === 0 ? 'bg-white' : 'bg-white/85'
-                      } hover:bg-primary/5 ${
-                        idx !== vendas.length - 1
-                          ? 'border-b-2 border-b-gray-100'
-                          : ''
-                      }`}
+                      className='flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 hover:border-primary transition-colors duration-150 p-5 h-full min-h-30'
                     >
-                      <div className='flex items-center'>
-                        <div className='flex-1 min-w-0 flex items-center gap-3'>
-                          <span className='text-base text-gray-800 truncate font-semibold'>
+                      <div className='flex flex-col gap-2 flex-1'>
+                        <div className='flex items-center gap-2'>
+                          <span className='text-base font-semibold text-gray-800 truncate max-w-[60%]'>
                             {venda.titulo}
                           </span>
-                          <span className='text-gray-600'>-</span>
-                          <span className='text-base text-gray-700 truncate font-medium'>
+                          <span className='text-gray-400 text-xs shrink-0 ml-auto'>
+                            {venda.data ? (
+                              <span className='block truncate max-w-22.5 text-ellipsis overflow-hidden'>
+                                {venda.data}
+                              </span>
+                            ) : (
+                              'Sem Data'
+                            )}
+                          </span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <span className='text-base text-gray-700 truncate font-medium max-w-[60%]'>
                             {venda.cliente.nome}
                           </span>
                           {venda.valor_pago < venda.valor_total ? (
-                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200'>
-                              R$ {Number(venda.valor_pago).toFixed(2)} / R$ {''}
+                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 truncate max-w-27.5 ml-auto'>
+                              R$ {Number(venda.valor_pago).toFixed(2)} / R${' '}
                               {Number(venda.valor_total).toFixed(2)}
                             </span>
                           ) : (
-                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100'>
+                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 truncate max-w-27.5 ml-auto'>
                               R$ {Number(venda.valor_total).toFixed(2)}
                             </span>
                           )}
-                          <span className='ml-2 text-xs text-gray-400'>
-                            {venda.data ?? 'Sem Data'}
-                          </span>
                         </div>
+                        {venda.descricao && (
+                          <span className='text-xs text-gray-500 mt-1 line-clamp-2'>
+                            {venda.descricao}
+                          </span>
+                        )}
+                      </div>
+                      <div className='flex items-center justify-end mt-4 gap-2'>
                         <Link
                           to={`/vendas/${venda.id}/editar`}
-                          className='ml-4 text-primary hover:text-primary/70'
-                          title='Editar venda'
+                          className='flex items-center gap-5 text-primary hover:text-primary/70 transition'
+                          title='Ir até a venda'
                         >
+                          <span className='text-xs font-semibold'>
+                            Ir até a venda
+                          </span>
                           <Logs size={20} />
                         </Link>
                       </div>

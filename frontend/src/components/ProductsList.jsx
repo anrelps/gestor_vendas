@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { destroy, index } from '../redux/slices/produtoSlice';
 import ConfirmDialog from './ConfirmDialog';
 import EditProductPopup from './EditProductPopup';
+import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
 
 const ProductsList = () => {
@@ -97,14 +98,12 @@ const ProductsList = () => {
           <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
-                <button
-                  className='cursor-pointer px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition flex items-center gap-2 font-semibold min-w-30'
+                <NewButton
+                  label='Novo Produto'
+                  shortLabel='Novo'
+                  icon={<Plus size={18} />}
                   onClick={() => setShowNewProduct(true)}
-                >
-                  <Plus size={18} className='inline-block' />
-                  <span className='hidden sm:inline'>Novo Produto</span>
-                  <span className='sm:hidden'>Novo</span>
-                </button>
+                />
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
@@ -127,7 +126,7 @@ const ProductsList = () => {
               </div>
             )}
             {!loading && produtos.length > 0 && (
-              <div className='border border-gray-200 rounded-lg m-4'>
+              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
                 <ul className='flex flex-col'>
                   {produtos.map((produto, idx) => (
                     <li
@@ -139,8 +138,10 @@ const ProductsList = () => {
                     >
                       <div className='flex items-center'>
                         <div className='flex-1 min-w-0 flex items-center gap-3'>
-                          <span className='text-base text-gray-800 truncate font-medium'>
-                            {produto.titulo}
+                          <span className='text-base text-gray-800 truncate font-medium max-w-45 sm:max-w-none'>
+                            {produto.titulo.length > 25
+                              ? produto.titulo.slice(0, 22) + '...'
+                              : produto.titulo}
                           </span>
                           <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100'>
                             R$ {Number(produto.valor).toFixed(2)}
@@ -155,45 +156,55 @@ const ProductsList = () => {
                       </div>
                       {openDropdownId === produto.id && (
                         <div
-                          className='mt-3 pl-2 flex flex-row gap-2 text-sm items-start'
+                          className='mt-3 pl-2 flex flex-col gap-2 text-sm items-start'
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className='flex flex-col gap-1 flex-1'>
-                            <div className='flex items-center gap-2'>
-                              <span className='text-gray-500 font-semibold min-w-15'>
-                                Descrição:
-                              </span>
-                              <span className='text-gray-700'>
-                                {produto.descricao || (
-                                  <span className='italic text-gray-300'>
-                                    Não informado
-                                  </span>
-                                )}
-                              </span>
-                            </div>
+                          <div className='mb-1 w-full'>
+                            <span className='block text-xs text-gray-400 font-semibold mb-0.5'>
+                              Nome:
+                            </span>
+                            <span className='block text-gray-900 font-medium wrap-break-word'>
+                              {produto.titulo}
+                            </span>
                           </div>
-                          <div className='flex items-end justify-end ml-4 gap-2'>
-                            <button
-                              className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center'
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditProduct(produto);
-                              }}
-                              type='button'
-                            >
-                              Editar
-                            </button>
-                            <button
-                              className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center'
-                              title='Remover produto'
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveProduct(produto.id);
-                              }}
-                              type='button'
-                            >
-                              <Trash size={16} />
-                            </button>
+                          <div className='flex flex-row gap-2 w-full'>
+                            <div className='flex flex-col gap-1 flex-1'>
+                              <div className='flex items-center gap-2'>
+                                <span className='text-gray-500 font-semibold min-w-15'>
+                                  Descrição:
+                                </span>
+                                <span className='text-gray-700'>
+                                  {produto.descricao || (
+                                    <span className='italic text-gray-300'>
+                                      Não informado
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                            <div className='flex items-end justify-end ml-4 gap-2'>
+                              <button
+                                className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditProduct(produto);
+                                }}
+                                type='button'
+                              >
+                                Editar
+                              </button>
+                              <button
+                                className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center'
+                                title='Remover produto'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveProduct(produto.id);
+                                }}
+                                type='button'
+                              >
+                                <Trash size={16} />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
