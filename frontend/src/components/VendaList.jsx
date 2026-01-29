@@ -1,42 +1,27 @@
-import { Logs, Plus } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
-// Mock vendas
-const mockVendas = [
-  {
-    id: 1,
-    titulo: 'Venda 001',
-    cliente: 'João Silva',
-    valor_total: 150.75,
-    valor_pago: 150.75,
-    data: '2026-01-28',
-  },
-  {
-    id: 2,
-    titulo: 'Venda 002',
-    cliente: 'Maria Oliveira',
-    valor_total: 320.0,
-    valor_pago: 200.0, // incompleto
-    data: '2026-01-27',
-  },
-  {
-    id: 3,
-    titulo: 'Venda 003',
-    cliente: 'Carlos Souza',
-    valor_total: 89.99,
-    valor_pago: 89.99,
-    data: '2026-01-26',
-  },
-];
+import { index } from '../redux/slices/vendaSlice';
+
+import { Logs, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const VendaList = () => {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
-  const vendasFiltradas = mockVendas.filter((venda) =>
-    venda.cliente.toLowerCase().includes(search.toLowerCase()),
-  );
+  const dispatch = useDispatch();
+
+  const { vendas } = useSelector((state) => state.venda);
+  const { user } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if(user?.empresa?.id) {
+      dispatch(index({empresa_id: user?.empresa?.id}));
+    }
+  }, [dispatch, user?.empresa?.id]);
+
+  console.log(vendas);
 
   return (
     <div className='w-full flex flex-col items-center mt-4 px-2 bg-gray-50'>
@@ -84,21 +69,21 @@ const VendaList = () => {
             {/* fim filtros extras */}
           </div>
           <div className='divide-y divide-gray-100'>
-            {vendasFiltradas.length === 0 && (
+            {vendas.length === 0 && (
               <div className='py-6 px-3 sm:px-6 text-center text-gray-400'>
                 Nenhuma venda encontrada.
               </div>
             )}
-            {vendasFiltradas.length > 0 && (
+            {vendas.length > 0 && (
               <div className='border border-gray-200 rounded-lg m-4'>
                 <ul className='flex flex-col'>
-                  {vendasFiltradas.map((venda, idx) => (
+                  {vendas.map((venda, idx) => (
                     <li
                       key={venda.id}
                       className={`flex flex-col px-4 py-3 cursor-pointer transition-colors ${
                         idx % 2 === 0 ? 'bg-white' : 'bg-white/85'
                       } hover:bg-primary/5 ${
-                        idx !== vendasFiltradas.length - 1
+                        idx !== vendas.length - 1
                           ? 'border-b-2 border-b-gray-100'
                           : ''
                       }`}
@@ -110,7 +95,7 @@ const VendaList = () => {
                           </span>
                           <span className='text-gray-600'>-</span>
                           <span className='text-base text-gray-700 truncate font-medium'>
-                            {venda.cliente}
+                            {venda.cliente.nome}
                           </span>
                           {venda.valor_pago < venda.valor_total ? (
                             <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200'>
@@ -123,7 +108,7 @@ const VendaList = () => {
                             </span>
                           )}
                           <span className='ml-2 text-xs text-gray-400'>
-                            {venda.data}
+                            {venda.data ?? 'Sem Data'}
                           </span>
                         </div>
                         <Link

@@ -2,15 +2,19 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { indexVendas, createVenda, updateVenda, destroyVenda } from "../services/vendaService";
 
 export const index = createAsyncThunk(
-    'vendas/index',
-    async({ empresa_id, page = 1, maxItems = 20, valor_min = '', valor_max = '', cliente = '', data_min = '', data_max = '', pendencias = '' }) => {
-        const res = await indexVendas({empresa_id, page, maxItems, valor_min, valor_max, cliente, data_min, data_max, pendencias});
-        return res.data;
+    'venda/index',
+    async({empresa_id, page = 1, maxItems = 20, valor_min = '', valor_max = '', cliente = '', data_min = '', data_max = '', pendencias = '' }) => {
+        try {            
+            const res = await indexVendas({empresa_id, page, maxItems, valor_min, valor_max, cliente, data_min, data_max, pendencias});
+            return res.data;
+        } catch(error) {
+            console.log(error);
+        }
     },
 );
 
 export const create = createAsyncThunk(
-    'vendas/create',
+    'venda/create',
     async({empresa_id, data}) => {
         const res = await createVenda({empresa_id, data});
         return res.data;
@@ -18,7 +22,7 @@ export const create = createAsyncThunk(
 );
 
 export const update = createAsyncThunk(
-    'vendas/update',
+    'venda/update',
     async({empresa_id, venda_id, data}) => {
         const res = await updateVenda({empresa_id, venda_id, data});
         return res.data;
@@ -26,7 +30,7 @@ export const update = createAsyncThunk(
 );
 
 export const destroy = createAsyncThunk(
-    'vendas/destroy',
+    'venda/destroy',
     async({empresa_id, venda_id}) => {
         const res = await destroyVenda({empresa_id, venda_id});
         return { venda_id };
