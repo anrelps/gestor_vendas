@@ -1,23 +1,35 @@
-import { useSelector, useDispatch } from 'react-redux';
-
-import { index } from '../redux/slices/vendaSlice';
-
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Logs, Plus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { index } from '../redux/slices/vendaSlice';
 
 const VendaList = () => {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
-
   const { vendas } = useSelector((state) => state.venda);
   const { user } = useSelector((state) => state.user);
 
+  const getMonthRange = () => {
+    const now = new Date();
+    const start = startOfMonth(now);
+    const end = endOfMonth(now);
+    const toISO = (d) => format(d, 'yyyy-MM-dd');
+    return { start: toISO(start), end: toISO(end) };
+  };
+
+  const { start, end } = getMonthRange();
+  const [dateStart, setDateStart] = useState(start);
+  const [dateEnd, setDateEnd] = useState(end);
+
+  const dateStartRef = useRef(null);
+  const dateEndRef = useRef(null);
+
   useEffect(() => {
-    if(user?.empresa?.id) {
-      dispatch(index({empresa_id: user?.empresa?.id}));
+    if (user?.empresa?.id) {
+      dispatch(index({ empresa_id: user?.empresa?.id }));
     }
   }, [dispatch, user?.empresa?.id]);
 
@@ -50,23 +62,78 @@ const VendaList = () => {
                 />
               </div>
             </div>
-            {/* Filtros extras */}
-            <div className='flex gap-2 mt-1'>
+            <div className='flex gap-4 mt-1 items-center'>
               <button
-                className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 hover:text-black transition text-sm font-medium shadow-none'
+                className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 hover:text-black transition text-sm font-medium shadow-none cursor-pointer'
                 title='Mostrar apenas vendas não pagas'
-                // onClick={...} // implementar depois
               >
                 Não pagas
               </button>
-              <input
-                type='date'
-                className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none'
-                title='Filtrar por data'
-                // onChange={...} // implementar depois
-              />
+              <div
+                className='flex items-center relative pl-2 pr-1 cursor-pointer'
+                onClick={() =>
+                  dateStartRef.current &&
+                  dateStartRef.current.showPicker &&
+                  dateStartRef.current.showPicker()
+                }
+                tabIndex={0}
+                role='button'
+                style={{ userSelect: 'none', minWidth: 0 }}
+              >
+                <label
+                  className='text-xs text-gray-500 mr-1 cursor-pointer'
+                  htmlFor='dateStart'
+                >
+                  Início:
+                </label>
+                <input
+                  id='dateStart'
+                  ref={dateStartRef}
+                  type='date'
+                  value={dateStart}
+                  onChange={(e) => setDateStart(e.target.value)}
+                  className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-33.75 cursor-pointer'
+                  title='Filtrar por data inicial'
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readOnly')}
+                  style={{ position: 'relative', zIndex: 1 }}
+                />
+                <span
+                  className='absolute right-1 pointer-events-none flex items-center'
+                  style={{ zIndex: 2 }}
+                ></span>
+              </div>
+              <div
+                className='flex items-center relative pl-2 pr-1 cursor-pointer'
+                onClick={() =>
+                  dateEndRef.current &&
+                  dateEndRef.current.showPicker &&
+                  dateEndRef.current.showPicker()
+                }
+                tabIndex={0}
+                role='button'
+                style={{ userSelect: 'none', minWidth: 0 }}
+              >
+                <label
+                  className='text-xs text-gray-500 mr-1 cursor-pointer'
+                  htmlFor='dateEnd'
+                >
+                  Fim:
+                </label>
+                <input
+                  id='dateEnd'
+                  ref={dateEndRef}
+                  type='date'
+                  value={dateEnd}
+                  onChange={(e) => setDateEnd(e.target.value)}
+                  className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-33.75 cursor-pointer'
+                  title='Filtrar por data final'
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readOnly')}
+                  style={{ position: 'relative', zIndex: 1 }}
+                />
+              </div>
             </div>
-            {/* fim filtros extras */}
           </div>
           <div className='divide-y divide-gray-100'>
             {vendas.length === 0 && (
@@ -75,7 +142,7 @@ const VendaList = () => {
               </div>
             )}
             {vendas.length > 0 && (
-              <div className='border border-gray-200 rounded-lg m-4'>
+              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
                 <ul className='flex flex-col'>
                   {vendas.map((venda, idx) => (
                     <li
