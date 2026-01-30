@@ -13,14 +13,28 @@ import EditClientPopup from '../components/EditClientPopup';
 
 import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index as indexProdutos } from '../redux/slices/produtoSlice';
-import { create } from '../redux/slices/vendaSlice';
+import { create, show } from '../redux/slices/vendaSlice';
 
-const DadosVenda = () => {
+const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.user);
   const { clientes, loading } = useSelector((state) => state.cliente);
   const { produtos } = useSelector((state) => state.produto);
+  const { venda } = useSelector((state) => state.venda);
+
+  // Edit venda
+  useEffect(() => {
+    if(isEditing && user?.empresa?.id) {
+      console.log('editing');
+      dispatch(show({
+        empresa_id: user.empresa.id,
+        venda_id: vendaId,
+      }));
+    }
+  }, [isEditing, vendaId, user?.empresa?.id])
+  
+  // End edit venda
 
   useEffect(() => {
     if (user?.empresa?.id) {
@@ -58,13 +72,29 @@ const DadosVenda = () => {
   const [valorPago, setValorPago] = useState(0);
   const inputRef = useRef();
 
-  // Filtra clientes pelo nome
-  const clientesFiltrados = clientes.filter((c) =>
-    c.nome.toLowerCase().includes(busca.toLowerCase()),
-  );
+  useEffect(() => {
+    if(isEditing && venda?.id) {
+      setTituloVenda(venda.titulo);
+      setClienteSelecionado(venda.cliente.id);
+      setDescricaoVenda(venda.descricao);
+      setValorPago(venda.valor_pago);
+      setValorTotal(venda.valor_total);
+
+      let detalhesVenda = venda.detalhesVenda;
+      const produtosMap = {};
+
+      detalhesVenda.forEach(detalhe => {
+        produtosMap[detalhe.produto_id] = detalhe;
+      });
+
+      setProdutosSelecionados(produtosMap);
+    }
+
+  }, [isEditing, venda])
 
   // Função para lidar com seleção/deseleção de produtos
   const handleProdutoCheck = (produto) => {
+    console.log(produto);
     let pid = produto.id;
     setProdutosSelecionados((prev) => {
       const newState = { ...prev };
@@ -79,7 +109,7 @@ const DadosVenda = () => {
           porcentagem_desconto: 0,
         };
       }
-
+      console.log(newState);
       return newState;
     });
   };
@@ -212,7 +242,7 @@ const DadosVenda = () => {
               return (
                 <div
                   key={produto.id}
-                  className={`flex items-center w-full px-4 py-3 ${zebraBg} ${
+                  className={`flex items-center w-full px-4 py-3 ${checked ? 'bg-primary/30' : zebraBg} ${
                     idx !== produtos.length - 1
                       ? 'border-b border-gray-100'
                       : ''
@@ -315,6 +345,7 @@ const DadosVenda = () => {
                 type='number'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
+                value={valorPago}
                 onChange={(e) => setValorPago(e.target.value)}
               />
             </div>
@@ -326,6 +357,7 @@ const DadosVenda = () => {
                 type='number'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
+                value={valorTotal}
                 onChange={(e) => setValorTotal(e.target.value)}
               />
             </div>

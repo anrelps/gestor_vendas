@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { indexVendas, createVenda, updateVenda, destroyVenda } from "../services/vendaService";
+import { indexVendas, createVenda, updateVenda, destroyVenda, showVenda } from "../services/vendaService";
 
 export const index = createAsyncThunk(
     'venda/index',
@@ -11,6 +11,18 @@ export const index = createAsyncThunk(
             console.log(error);
         }
     },
+);
+
+export const show = createAsyncThunk(
+    'venda/show',
+    async({empresa_id, venda_id}) => {
+        try {
+            const res = await showVenda({empresa_id, venda_id});
+            return res;
+        } catch(error) {
+            console.log(error);
+        }
+    }
 );
 
 export const create = createAsyncThunk(
@@ -74,7 +86,20 @@ const vendaSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message;
             })
-            .addCase(create.pending, function(state, action) {
+            .addCase(show.pending, function(state) {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(show.fulfilled, function(state, action) {
+                state.loading = false;
+                state.error = null;
+                state.venda = action.payload.data;
+            })
+            .addCase(show.rejected, function(state, action) {
+                state.loading = false;
+                state.error = action.error.message;
+            })
+            .addCase(create.pending, function(state) {
                 state.loading = true;
                 state.error = null;
             })
@@ -113,7 +138,7 @@ const vendaSlice = createSlice({
             .addCase(destroy.fulfilled, function(state, action) {
                 state.loading = false;
                 state.error = null;
-                state.vendas = state.produtos.filter((v) => v.id !== action.payload.venda_id);
+                state.vendas = state.vendas.filter((v) => v.id !== action.payload.venda_id);
             })
             .addCase(destroy.rejected, function(state, action) {
                 state.loading = false;

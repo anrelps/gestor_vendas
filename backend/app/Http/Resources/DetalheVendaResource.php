@@ -15,9 +15,7 @@ class DetalheVendaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => (Integer) $this->id,
-            'produto' => new ProdutoResource($this->produto),
-            'venda' => new VendaResource($this->venda),
+            'produto_id' => (Integer) $this->produto_id,
             'quantidade' => (Integer) $this->quantidade,
             'valor' => (Float) $this->valor,
             'porcentagem_desconto' => (Integer) $this->porcentagem_desconto,

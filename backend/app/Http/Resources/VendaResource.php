@@ -18,6 +18,7 @@ class VendaResource extends JsonResource
             'id' => (Integer) $this->id,
             'cliente' => new ClienteResource($this->cliente),
             'empresa' => new EmpresaResource($this->empresa),
+            'detalhesVenda' => DetalheVendaResource::collection($this->detalhesVendas),
             'titulo' => (String) $this->titulo,
             'descricao' => (String) $this->descricao,
             'valor_total' => (Float) $this->valor_total,

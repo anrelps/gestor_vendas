@@ -29,6 +29,11 @@ export const indexVendas = async ({ empresa_id, page = 1, maxItems = 20, valor_m
     return res;
 }
 
+export const showVenda = async({empresa_id, venda_id}) => {
+    const res = await api.get(`/${empresa_id}/vendas/${venda_id}`);
+    return res.data;
+}
+
 export const createVenda = async ({empresa_id, data}) => {
     const res = await api.post(`/${empresa_id}/vendas`, data);
     return res;
