@@ -6,11 +6,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { index } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
 
+import { useLoading } from '../context/LoadingContext';
+
 const VendaList = () => {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { vendas } = useSelector((state) => state.venda);
+  const { vendas, loading } = useSelector((state) => state.venda);
   const { user } = useSelector((state) => state.user);
 
   const getMonthRange = () => {
@@ -20,6 +22,12 @@ const VendaList = () => {
     const toISO = (d) => format(d, 'yyyy-MM-dd');
     return { start: toISO(start), end: toISO(end) };
   };
+
+  const { setLoading } = useLoading();
+  
+  useEffect(() => {
+    setLoading(loading);
+  }, [loading]);
 
   const { start, end } = getMonthRange();
   const [dateStart, setDateStart] = useState(start);
@@ -33,8 +41,6 @@ const VendaList = () => {
       dispatch(index({ empresa_id: user?.empresa?.id }));
     }
   }, [dispatch, user?.empresa?.id]);
-
-  console.log(vendas);
 
   return (
     <div className='w-full flex flex-col items-center mt-4 px-2 bg-gray-50'>

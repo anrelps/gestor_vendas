@@ -7,6 +7,8 @@ import EditProductPopup from './EditProductPopup';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
 
+import { useLoading } from '../context/LoadingContext';
+
 const ProductsList = () => {
   const dispatch = useDispatch();
   const { produtos, loading, pagination } = useSelector(
@@ -21,6 +23,13 @@ const ProductsList = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   const itemsPerPage = 15;
+
+  const { setLoading } = useLoading();
+
+  useEffect(() => {
+    setLoading(loading);
+  }, [loading]);
+
 
   useEffect(() => {
     if (user?.empresa?.id) {
@@ -115,11 +124,6 @@ const ProductsList = () => {
             </div>
           </div>
           <div className='divide-y divide-gray-100'>
-            {loading && (
-              <div className='py-8 px-3 sm:px-6 text-center text-gray-400'>
-                <div className='w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin m-auto'></div>
-              </div>
-            )}
             {!loading && produtos.length === 0 && (
               <div className='py-8 px-3 sm:px-6 text-center text-gray-400'>
                 Nenhum produto encontrado.

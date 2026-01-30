@@ -7,6 +7,8 @@ import NewButton from './layout/NewButton';
 import EditClientPopup from './EditClientPopup';
 import Pagination from './Pagination';
 
+import { useLoading } from '../context/LoadingContext';
+
 const ClientList = () => {
   const dispatch = useDispatch();
   const { clientes, loading, pagination } = useSelector(
@@ -18,6 +20,12 @@ const ClientList = () => {
   const [showNewClient, setShowNewClient] = useState(false);
   const [editClient, setEditClient] = useState(null);
   const [removeClientId, setRemoveClientId] = useState(null);
+
+  const { setLoading } = useLoading();
+
+  useEffect(() => {
+    setLoading(loading);
+  }, [loading]);
 
   const itemsPerPage = 15;
 
@@ -99,11 +107,6 @@ const ClientList = () => {
             </div>
           </div>
           <div className='divide-y divide-gray-100'>
-            {loading && (
-              <div className='py-8 px-3 sm:px-6 text-center text-gray-400'>
-                <div className='w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin m-auto'></div>
-              </div>
-            )}
             {!loading && clientes.length === 0 && (
               <div className='py-8 px-3 sm:px-6 text-center text-gray-400'>
                 Nenhum cliente encontrado.
