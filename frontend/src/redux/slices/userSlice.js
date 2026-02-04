@@ -1,37 +1,39 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { userLogin, getUserData } from "../services/userService";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getUserData, userLogin } from '../services/userService';
 
 // AsyncThunks
 export const login = createAsyncThunk(
-  "user/login",
+  'user/login',
   async ({ email, password }) => {
     const res = await userLogin({ email, password });
     return res;
   },
 );
 
-export const checkAuth = createAsyncThunk("user/checkAuth", async () => {
+export const checkAuth = createAsyncThunk('user/checkAuth', async () => {
   const res = await getUserData();
   return res;
 });
 // End AssyncThunks
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: {
     user: null,
-    token: localStorage.getItem("token") ?? null,
+    token: localStorage.getItem('token') ?? null,
     loading: false,
     error: null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    isAuthenticated: false,
+    authChecked: false,
   },
   reducers: {
     logout: (state) => {
       state.token = null;
       state.isAuthenticated = false;
+      state.authChecked = true;
       state.user = null;
       state.error = null;
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
     },
   },
   extraReducers: (builder) => {
@@ -47,16 +49,18 @@ const userSlice = createSlice({
         state.error = null;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.authChecked = true;
         state.token = action.payload.token;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.authChecked = true;
         state.token = null;
         state.error = action.error.message;
-        localStorage.removeItem("token");
+        localStorage.removeItem('token');
       })
 
       // CheckAuth
@@ -67,16 +71,30 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.data;
         state.isAuthenticated = true;
+        state.authChecked = true;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.authChecked = true;
         state.token = null;
-        localStorage.removeItem("token");
+        localStorage.removeItem('token');
       });
   },
 });
 
 export const { logout } = userSlice.actions;
+
+// Selectors
+export const selectAuthUserDisplayName = (state) => {
+  const user = state.user.user;
+  return user?.name || user?.nome || 'Usuário';
+};
+
+export const selectCompanyName = (state) => {
+  const user = state.user.user;
+  return user?.empresa?.nome || 'Empresa';
+};
+
 export default userSlice.reducer;

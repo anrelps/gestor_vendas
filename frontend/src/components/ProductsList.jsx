@@ -9,6 +9,11 @@ import Pagination from './Pagination';
 
 import { useLoading } from '../context/LoadingContext';
 
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
+
 const ProductsList = () => {
   const dispatch = useDispatch();
   const { produtos, loading, pagination } = useSelector(
@@ -57,7 +62,7 @@ const ProductsList = () => {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [dispatch, user?.empresa?.id, itemsPerPage, search]);
 
   const handlePageChange = (page) => {
     dispatch(
@@ -147,7 +152,7 @@ const ProductsList = () => {
                               : produto.titulo}
                           </span>
                           <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100'>
-                            R$ {Number(produto.valor).toFixed(2)}
+                            {currencyFormatter.format(Number(produto.valor))}
                           </span>
                         </div>
                         <ChevronRight

@@ -19,6 +19,7 @@ const NewButton = ({
 }) => {
   return (
     <button
+      type='button'
       className={`cursor-pointer px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition flex items-center gap-1.5 font-semibold min-w-30 max-w-full ${className}`}
       onClick={onClick}
       {...props}
@@ -27,9 +28,7 @@ const NewButton = ({
         <span className='inline-block text-base sm:text-lg'>{icon}</span>
       )}
       {/* Exibe o label completo em telas sm+ */}
-      <span className='hidden sm:inline whitespace-nowrap overflow-hidden w-full'>
-        {label}
-      </span>
+      <span className='hidden sm:inline whitespace-nowrap'>{label}</span>
       {/* Exibe o shortLabel apenas em telas menores que sm */}
       <span className='inline px-1.5 sm:hidden whitespace-nowrap'>
         {shortLabel}

@@ -1,4 +1,4 @@
-import { endOfMonth, format, startOfMonth } from 'date-fns';
+import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
 import { Calendar, Logs, Plus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,18 @@ import NewButton from './layout/NewButton';
 
 import { useLoading } from '../context/LoadingContext';
 
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
+
+const formatVendaDate = (value) => {
+  if (!value) return 'Sem Data';
+  const parsed = parseISO(value);
+  if (!isValid(parsed)) return 'Sem Data';
+  return format(parsed, 'dd/MM/yyyy');
+};
+
 const VendaList = () => {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
@@ -15,23 +27,23 @@ const VendaList = () => {
   const { vendas, loading } = useSelector((state) => state.venda);
   const { user } = useSelector((state) => state.user);
 
-  const getMonthRange = () => {
-    const now = new Date();
-    const start = startOfMonth(now);
-    const end = endOfMonth(now);
-    const toISO = (d) => format(d, 'yyyy-MM-dd');
-    return { start: toISO(start), end: toISO(end) };
-  };
-
   const { setLoading } = useLoading();
 
   useEffect(() => {
     setLoading(loading);
-  }, [loading]);
+  }, [loading, setLoading]);
 
-  const { start, end } = getMonthRange();
-  const [dateStart, setDateStart] = useState(start);
-  const [dateEnd, setDateEnd] = useState(end);
+  const [dateStart, setDateStart] = useState(() => {
+    const now = new Date();
+    const start = startOfMonth(now);
+    return format(start, 'yyyy-MM-dd');
+  });
+
+  const [dateEnd, setDateEnd] = useState(() => {
+    const now = new Date();
+    const end = endOfMonth(now);
+    return format(end, 'yyyy-MM-dd');
+  });
 
   const dateStartRef = useRef(null);
   const dateEndRef = useRef(null);
@@ -60,7 +72,7 @@ const VendaList = () => {
                 />
                 <input
                   type='text'
-                  className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
+                  className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
                   placeholder='Buscar venda...'
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -79,13 +91,32 @@ const VendaList = () => {
                 {/* Data início */}
                 <div
                   className='flex items-center gap-2 relative cursor-pointer group flex-1'
-                  onClick={() =>
-                    dateStartRef.current &&
-                    dateStartRef.current.showPicker &&
-                    dateStartRef.current.showPicker()
-                  }
+                  onClick={() => {
+                    const input = dateStartRef.current;
+                    if (!input) return;
+                    if (input.showPicker) {
+                      input.showPicker();
+                    } else {
+                      input.focus();
+                      input.click();
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      const input = dateStartRef.current;
+                      if (!input) return;
+                      if (input.showPicker) {
+                        input.showPicker();
+                      } else {
+                        input.focus();
+                        input.click();
+                      }
+                    }
+                  }}
                   tabIndex={0}
                   role='button'
+                  aria-label='Selecionar data inicial'
                 >
                   <label className='text-xs text-gray-500' htmlFor='dateStart'>
                     Início:
@@ -117,13 +148,32 @@ const VendaList = () => {
                 {/* Data fim */}
                 <div
                   className='flex items-center gap-2 relative cursor-pointer group flex-1'
-                  onClick={() =>
-                    dateEndRef.current &&
-                    dateEndRef.current.showPicker &&
-                    dateEndRef.current.showPicker()
-                  }
+                  onClick={() => {
+                    const input = dateEndRef.current;
+                    if (!input) return;
+                    if (input.showPicker) {
+                      input.showPicker();
+                    } else {
+                      input.focus();
+                      input.click();
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      const input = dateEndRef.current;
+                      if (!input) return;
+                      if (input.showPicker) {
+                        input.showPicker();
+                      } else {
+                        input.focus();
+                        input.click();
+                      }
+                    }
+                  }}
                   tabIndex={0}
                   role='button'
+                  aria-label='Selecionar data final'
                 >
                   <label className='text-xs text-gray-500' htmlFor='dateEnd'>
                     Fim:
@@ -170,32 +220,36 @@ const VendaList = () => {
                       className='flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 hover:border-primary transition-colors duration-150 p-5 h-full min-h-30'
                     >
                       <div className='flex flex-col gap-2 flex-1'>
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-2 min-w-0'>
                           <span className='text-base font-semibold text-gray-800 truncate max-w-[60%]'>
-                            {venda.titulo}
+                            {venda?.titulo ?? 'Sem título'}
                           </span>
                           <span className='text-gray-400 text-xs shrink-0 ml-auto'>
-                            {venda.data ? (
-                              <span className='block truncate max-w-22.5 text-ellipsis overflow-hidden'>
-                                {venda.data}
-                              </span>
-                            ) : (
-                              'Sem Data'
-                            )}
+                            <span className='block truncate max-w-22.5 text-ellipsis overflow-hidden'>
+                              {formatVendaDate(venda?.data)}
+                            </span>
                           </span>
                         </div>
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-2 flex-wrap'>
                           <span className='text-base text-gray-700 truncate font-medium max-w-[60%]'>
-                            {venda.cliente.nome}
+                            {venda?.cliente?.nome ?? 'Sem cliente'}
                           </span>
-                          {venda.valor_pago < venda.valor_total ? (
-                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 truncate max-w-27.5 ml-auto'>
-                              R$ {Number(venda.valor_pago).toFixed(2)} / R${' '}
-                              {Number(venda.valor_total).toFixed(2)}
+                          {(Number(venda?.valor_pago) || 0) <
+                          (Number(venda?.valor_total) || 0) ? (
+                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 ml-auto max-w-full whitespace-normal break-all'>
+                              {currencyFormatter.format(
+                                Number(venda?.valor_pago) || 0,
+                              )}{' '}
+                              /{' '}
+                              {currencyFormatter.format(
+                                Number(venda?.valor_total) || 0,
+                              )}
                             </span>
                           ) : (
-                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 truncate max-w-27.5 ml-auto'>
-                              R$ {Number(venda.valor_total).toFixed(2)}
+                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 ml-auto max-w-full whitespace-normal break-all'>
+                              {currencyFormatter.format(
+                                Number(venda?.valor_total) || 0,
+                              )}
                             </span>
                           )}
                         </div>

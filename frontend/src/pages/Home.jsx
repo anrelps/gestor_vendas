@@ -1,5 +1,6 @@
 // src/pages/Home.jsx
-import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Link, Navigate } from 'react-router-dom';
 
 const bubbles = [
   {
@@ -57,51 +58,61 @@ const bubbles = [
   },
 ];
 
-const Home = () => (
-  <div className='relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-gray-100 via-white to-gray-200'>
-    {/* New animated gradient background */}
-    <div className='absolute inset-0 z-0 pointer-events-none'>
-      <div
-        style={{
-          position: 'absolute',
-          top: '-20%',
-          left: '-10%',
-          width: '60vw',
-          height: '60vw',
-          background:
-            'radial-gradient(ellipse at center, #a78bfa33 0%, transparent 70%)',
-          animation: 'move1 12s ease-in-out infinite alternate',
-          filter: 'blur(40px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-15%',
-          right: '-10%',
-          width: '50vw',
-          height: '50vw',
-          background:
-            'radial-gradient(ellipse at center, #818cf833 0%, transparent 70%)',
-          animation: 'move2 14s ease-in-out infinite alternate',
-          filter: 'blur(60px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '30%',
-          left: '60%',
-          width: '30vw',
-          height: '30vw',
-          background:
-            'radial-gradient(ellipse at center, #c4b5fd33 0%, transparent 70%)',
-          animation: 'move3 16s ease-in-out infinite alternate',
-          filter: 'blur(40px)',
-        }}
-      />
-      <style>
-        {`
+const Home = () => {
+  const { isAuthenticated, token, authChecked } = useSelector(
+    (state) => state.user,
+  );
+
+  // Se usuário já está autenticado, redirecionar para dashboard
+  if (token && authChecked && isAuthenticated) {
+    return <Navigate to='/dashboard' replace />;
+  }
+
+  return (
+    <div className='relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-br from-gray-100 via-white to-gray-200'>
+      {/* New animated gradient background */}
+      <div className='absolute inset-0 z-0 pointer-events-none'>
+        <div
+          style={{
+            position: 'absolute',
+            top: '-20%',
+            left: '-10%',
+            width: '60vw',
+            height: '60vw',
+            background:
+              'radial-gradient(ellipse at center, #a78bfa33 0%, transparent 70%)',
+            animation: 'move1 12s ease-in-out infinite alternate',
+            filter: 'blur(40px)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-15%',
+            right: '-10%',
+            width: '50vw',
+            height: '50vw',
+            background:
+              'radial-gradient(ellipse at center, #818cf833 0%, transparent 70%)',
+            animation: 'move2 14s ease-in-out infinite alternate',
+            filter: 'blur(60px)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: '30%',
+            left: '60%',
+            width: '30vw',
+            height: '30vw',
+            background:
+              'radial-gradient(ellipse at center, #c4b5fd33 0%, transparent 70%)',
+            animation: 'move3 16s ease-in-out infinite alternate',
+            filter: 'blur(40px)',
+          }}
+        />
+        <style>
+          {`
           @keyframes move1 {
             0% { transform: translateY(0) scale(1);}
             100% { transform: translateY(40px) scale(1.08);}
@@ -115,20 +126,21 @@ const Home = () => (
             100% { transform: translateX(-40px) scale(1.1);}
           }
         `}
-      </style>
+        </style>
+      </div>
+      <div className='relative z-10 border border-gray-200 rounded-xl max-w-md w-full mx-auto shadow-md overflow-hidden bg-white bg-opacity-90 transform transition-all duration-300 flex flex-col items-center py-16 px-8'>
+        <h1 className='text-2xl font-semibold text-center text-primary mb-6 drop-shadow'>
+          Você não está logado.
+        </h1>
+        <Link
+          to='/login'
+          className='mt-4 px-8 py-3 bg-primary text-white border-2 border-primary rounded-md text-xl font-semibold shadow hover:bg-white hover:text-primary transition-all duration-200'
+        >
+          Login
+        </Link>
+      </div>
     </div>
-    <div className='relative z-10 border border-gray-200 rounded-xl max-w-md w-full mx-auto shadow-md overflow-hidden bg-white bg-opacity-90 transform transition-all duration-300 flex flex-col items-center py-16 px-8'>
-      <h1 className='text-2xl font-semibold text-center text-primary mb-6 drop-shadow'>
-        Você não está logado.
-      </h1>
-      <Link
-        to='/login'
-        className='mt-4 px-8 py-3 bg-primary text-white border-2 border-primary rounded-md text-xl font-semibold shadow hover:bg-white hover:text-primary transition-all duration-200'
-      >
-        Login
-      </Link>
-    </div>
-  </div>
-);
+  );
+};
 
 export default Home;

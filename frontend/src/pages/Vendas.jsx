@@ -1,12 +1,7 @@
 import VendaList from '../components/VendaList';
-import Layout from '../Layout';
 
 const Vendas = () => {
-  return (
-    <Layout>
-      <VendaList />
-    </Layout>
-  );
+  return <VendaList />;
 };
 
 export default Vendas;

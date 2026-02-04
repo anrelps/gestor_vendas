@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import {
   Combobox,
@@ -7,33 +8,39 @@ import {
   ComboboxOptions,
 } from '@headlessui/react';
 import { ChevronRight, Pencil, Plus, User } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import Layout from '../Layout';
+import { useEffect, useState } from 'react';
 import EditClientPopup from '../components/EditClientPopup';
 
 import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index as indexProdutos } from '../redux/slices/produtoSlice';
-import { create, show } from '../redux/slices/vendaSlice';
+import { create, show, update } from '../redux/slices/vendaSlice';
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
 
 const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);
-  const { clientes, loading } = useSelector((state) => state.cliente);
+  const { clientes } = useSelector((state) => state.cliente);
   const { produtos } = useSelector((state) => state.produto);
-  const { venda } = useSelector((state) => state.venda);
+  const { venda, loadingSaving } = useSelector((state) => state.venda);
 
   // Edit venda
   useEffect(() => {
-    if(isEditing && user?.empresa?.id) {
-      console.log('editing');
-      dispatch(show({
-        empresa_id: user.empresa.id,
-        venda_id: vendaId,
-      }));
+    if (isEditing && user?.empresa?.id) {
+      dispatch(
+        show({
+          empresa_id: user.empresa.id,
+          venda_id: vendaId,
+        }),
+      );
     }
-  }, [isEditing, vendaId, user?.empresa?.id])
-  
+  }, [dispatch, isEditing, vendaId, user?.empresa?.id]);
+
   // End edit venda
 
   useEffect(() => {
@@ -62,7 +69,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
     }
   }, [dispatch, user?.empresa?.id]);
 
-  const [busca, setBusca] = useState('');
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [showNewClient, setShowNewClient] = useState(false);
   const [tituloVenda, setTituloVenda] = useState(`Venda ${Date.now()}`);
@@ -70,10 +76,9 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const [produtosSelecionados, setProdutosSelecionados] = useState({});
   const [valorTotal, setValorTotal] = useState(0);
   const [valorPago, setValorPago] = useState(0);
-  const inputRef = useRef();
 
   useEffect(() => {
-    if(isEditing && venda?.id) {
+    if (isEditing && venda?.id) {
       setTituloVenda(venda.titulo);
       setClienteSelecionado(venda.cliente.id);
       setDescricaoVenda(venda.descricao);
@@ -83,18 +88,16 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
       let detalhesVenda = venda.detalhesVenda;
       const produtosMap = {};
 
-      detalhesVenda.forEach(detalhe => {
+      detalhesVenda.forEach((detalhe) => {
         produtosMap[detalhe.produto_id] = detalhe;
       });
 
       setProdutosSelecionados(produtosMap);
     }
-
-  }, [isEditing, venda])
+  }, [isEditing, venda]);
 
   // Função para lidar com seleção/deseleção de produtos
   const handleProdutoCheck = (produto) => {
-    console.log(produto);
     let pid = produto.id;
     setProdutosSelecionados((prev) => {
       const newState = { ...prev };
@@ -109,7 +112,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
           porcentagem_desconto: 0,
         };
       }
-      console.log(newState);
       return newState;
     });
   };
@@ -120,24 +122,37 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         cliente: clienteSelecionado,
         titulo: tituloVenda,
         descricao: descricaoVenda,
-        valor_total: valorTotal,
-        valor_pago: valorPago,
+        valor_total: Number(valorTotal),
+        valor_pago: Number(valorPago),
         produtos: produtosSelecionados,
       };
 
-      await dispatch(
-        create({
-          empresa_id: user.empresa.id,
-          data,
-        }),
-      ).unwrap();
+      if (isEditing) {
+        await dispatch(
+          update({
+            empresa_id: user.empresa.id,
+            venda_id: vendaId,
+            data,
+          }),
+        ).unwrap();
+      } else {
+        await dispatch(
+          create({
+            empresa_id: user.empresa.id,
+            data,
+          }),
+        ).unwrap();
+      }
+      // Sucesso - navegar para lista de vendas
+      alert('Venda salva com sucesso!');
+      navigate('/vendas');
     } catch (error) {
-      console.log('error submit venda: ', error);
+      alert('Erro ao salvar venda. Tente novamente.');
     }
   };
 
   return (
-    <Layout>
+    <>
       <div className='mt-4 flex items-center gap-2' style={{ maxWidth: 500 }}>
         <div className='relative w-full'>
           <input
@@ -281,7 +296,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                           return newState;
                         });
                       }}
-                      tabIndex={-1}
                       disabled={!checked}
                       style={{ border: 'none', borderRadius: 0 }}
                     >
@@ -312,7 +326,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                           return newState;
                         });
                       }}
-                      tabIndex={-1}
                       disabled={!checked}
                       style={{ border: 'none', borderRadius: 0 }}
                     >
@@ -320,7 +333,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                     </button>
                   </div>
                   <span className='text-gray-500 text-sm'>
-                    R$ {Number(produto.valor).toFixed(2)}
+                    {currencyFormatter.format(Number(produto.valor))}
                   </span>
                 </div>
               );
@@ -346,7 +359,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 value={valorPago}
-                onChange={(e) => setValorPago(e.target.value)}
+                onChange={(e) => setValorPago(Number(e.target.value) || 0)}
               />
             </div>
             <div className='flex-1'>
@@ -358,25 +371,28 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 value={valorTotal}
-                onChange={(e) => setValorTotal(e.target.value)}
+                onChange={(e) => setValorTotal(Number(e.target.value) || 0)}
               />
             </div>
           </div>
           <div className='flex gap-2 mt-2'>
-            <button className='flex-1 px-3 py-2 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition'>
+            <button
+              onClick={() => navigate('/vendas')}
+              className='flex-1 px-3 py-2 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition'
+            >
               Cancelar
             </button>
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loadingSaving}
               className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition'
             >
-              {loading ? 'Carregando...' : 'Salvar'}
+              {loadingSaving ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -1,10 +1,15 @@
+import { Navigate, useParams } from 'react-router-dom';
 import DadosVenda from './DadosVenda';
-import { useParams } from 'react-router-dom';
 
 const EditarVenda = () => {
   const { id } = useParams();
-  const isEditing = !!id;
-  return <DadosVenda title='Editar Venda' isEditing={isEditing} vendaId={id} />;
+
+  // Validar ID numérico
+  if (!id || !Number.isFinite(Number(id))) {
+    return <Navigate to='/vendas' replace />;
+  }
+
+  return <DadosVenda title='Editar Venda' isEditing={true} vendaId={id} />;
 };
 
 export default EditarVenda;

@@ -25,7 +25,7 @@ const ClientList = () => {
 
   useEffect(() => {
     setLoading(loading);
-  }, [loading]);
+  }, [loading, setLoading]);
 
   const itemsPerPage = 15;
 
@@ -56,7 +56,7 @@ const ClientList = () => {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [dispatch, user?.empresa?.id, itemsPerPage, search]);
 
   const handlePageChange = (page) => {
     dispatch(
