@@ -30,7 +30,6 @@ const ProductsList = () => {
     setLoading(loading);
   }, [loading]);
 
-
   useEffect(() => {
     if (user?.empresa?.id) {
       dispatch(
@@ -98,7 +97,7 @@ const ProductsList = () => {
   };
 
   return (
-    <div className='w-full flex flex-col items-center mt-10 px-2 bg-gray-50'>
+    <div className=''>
       <div className='w-full max-w-5xl'>
         <h2 className='text-2xl font-bold text-black mb-4 px-2 sm:px-0'>
           Produtos

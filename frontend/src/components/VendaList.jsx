@@ -24,7 +24,7 @@ const VendaList = () => {
   };
 
   const { setLoading } = useLoading();
-  
+
   useEffect(() => {
     setLoading(loading);
   }, [loading]);
@@ -43,7 +43,7 @@ const VendaList = () => {
   }, [dispatch, user?.empresa?.id]);
 
   return (
-    <div className='w-full flex flex-col items-center mt-4 px-2 bg-gray-50'>
+    <div className=''>
       <div className='w-full max-w-5xl'>
         <h2 className='text-2xl font-bold text-black mb-2 px-2 sm:px-0'>
           Vendas

@@ -104,6 +104,13 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             alt='Logo'
             className={collapsed ? 'w-10' : 'size-48'}
           />
+          {!collapsed && (
+            <div className='mb-10 text-center'>
+              <span className='text-4xl font-bold text-white/90 tracking-tight uppercase font-(family-name:--font-lumenzia)'>
+                Lumenz
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Menu */}
