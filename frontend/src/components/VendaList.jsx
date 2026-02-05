@@ -271,7 +271,7 @@ const VendaList = () => {
                           </span>
                           <span className='text-gray-400 text-xs shrink-0 ml-auto'>
                             <span className='block truncate max-w-22.5 text-ellipsis overflow-hidden'>
-                              {formatVendaDate(venda?.data)}
+                              {formatVendaDate(venda?.created_at)}
                             </span>
                           </span>
                         </div>
