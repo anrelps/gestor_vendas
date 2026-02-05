@@ -20,17 +20,19 @@ const ClientList = () => {
   const [showNewClient, setShowNewClient] = useState(false);
   const [editClient, setEditClient] = useState(null);
   const [removeClientId, setRemoveClientId] = useState(null);
-
+  const [shouldFetch, setShouldFetch] = useState(false);
   const { setLoading } = useLoading();
-
-  useEffect(() => {
-    setLoading(loading);
-  }, [loading]);
-
   const itemsPerPage = 15;
 
   useEffect(() => {
-    if (user?.empresa?.id) {
+    if(shouldFetch) {
+      setLoading(loading);
+    }
+  }, [loading, shouldFetch]);
+
+  useEffect(() => {
+    if (user?.empresa?.id && clientes.length === 0) {
+      setShouldFetch(true);
       dispatch(
         index({
           empresa_id: user.empresa.id,
@@ -43,6 +45,7 @@ const ClientList = () => {
   }, [dispatch, user?.empresa?.id]);
 
   useEffect(() => {
+    if(!search) return;
     const timer = setTimeout(() => {
       if (user?.empresa?.id) {
         dispatch(

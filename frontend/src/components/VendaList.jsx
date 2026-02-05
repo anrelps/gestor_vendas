@@ -15,6 +15,15 @@ const VendaList = () => {
   const { vendas, loading } = useSelector((state) => state.venda);
   const { user } = useSelector((state) => state.user);
 
+  const [filters, setFilters] = useState({
+    valor_min: '', 
+    valor_max: '', 
+    cliente: '',
+    data_min: '', 
+    data_max: '', 
+    pendencias: 0,
+  })
+
   const getMonthRange = () => {
     const now = new Date();
     const start = startOfMonth(now);
@@ -23,11 +32,16 @@ const VendaList = () => {
     return { start: toISO(start), end: toISO(end) };
   };
 
+  const itemsPerPage = 15;
+
+  const [shouldFetch, setShouldFetch] = useState(false);
   const { setLoading } = useLoading();
   
   useEffect(() => {
-    setLoading(loading);
-  }, [loading]);
+    if(shouldFetch) {
+      setLoading(loading);
+    }
+  }, [loading, shouldFetch]);
 
   const { start, end } = getMonthRange();
   const [dateStart, setDateStart] = useState(start);
@@ -37,10 +51,25 @@ const VendaList = () => {
   const dateEndRef = useRef(null);
 
   useEffect(() => {
-    if (user?.empresa?.id) {
-      dispatch(index({ empresa_id: user?.empresa?.id }));
+    if (user?.empresa?.id && vendas.length === 0) {
+      setShouldFetch(true);
+      dispatch(index({ empresa_id: user?.empresa?.id,  page: 1, maxItems: itemsPerPage}));
     }
   }, [dispatch, user?.empresa?.id]);
+
+  useEffect(() => {
+    setShouldFetch(true);
+    dispatch(index({ 
+      empresa_id: user?.empresa?.id, 
+      data_max: filters['data_max'], 
+      data_min: filters['data_min'],
+      pendencias: filters['pendencias'],
+    }));
+  }, [filters]);
+
+  const handleChange = (key) => (e) => {
+    setFilters((prev) => ({...prev, [key]: e.target.value}));
+  }
 
   return (
     <div className='w-full flex flex-col items-center mt-4 px-2 bg-gray-50'>
@@ -58,6 +87,7 @@ const VendaList = () => {
                   icon={<Plus size={18} />}
                   onClick={() => navigate('/nova-venda')}
                 />
+                {/*  REMOVIDO TEMPORARIAMENTE
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
@@ -65,12 +95,14 @@ const VendaList = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
+                */}
               </div>
             </div>
             <div className='flex flex-wrap gap-4 mt-1 items-center'>
               <button
-                className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 hover:text-black transition text-sm font-medium shadow-none cursor-pointer'
-                title='Mostrar apenas vendas não pagas'
+                value={filters.pendencias == 1  ? 0 : 1}
+                onClick={handleChange('pendencias')}
+                className={`${filters.pendencias == 1 ? 'bg-primary/20 hover:bg-primary/40 hover:text-black ' : 'bg-gray-100 hover:bg-gray-200 hover:text-black '} rounded-full px-3 py-1 text-gray-700 border border-gray-300 transition text-sm font-medium shadow-none cursor-pointer`}               title='Mostrar apenas vendas não pagas'
               >
                 Não pagas
               </button>
@@ -108,7 +140,10 @@ const VendaList = () => {
                       ref={dateStartRef}
                       type='date'
                       value={dateStart}
-                      onChange={(e) => setDateStart(e.target.value)}
+                      onChange={(e) => {
+                        setDateStart(e.target.value);
+                        handleChange('data_min')(e);
+                      }}
                       className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
                       tabIndex={-1}
                     />
@@ -142,11 +177,13 @@ const VendaList = () => {
                     <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
                       <Calendar size={18} className='text-gray-400' />
                     </span>
-                    <input
-                      ref={dateEndRef}
+                    <input                      ref={dateEndRef}
                       type='date'
                       value={dateEnd}
-                      onChange={(e) => setDateEnd(e.target.value)}
+                      onChange={(e) => {
+                        setDateEnd(e.target.value);
+                        handleChange('data_max')(e);
+                      }}
                       className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
                       tabIndex={-1}
                     />
@@ -175,9 +212,9 @@ const VendaList = () => {
                             {venda.titulo}
                           </span>
                           <span className='text-gray-400 text-xs shrink-0 ml-auto'>
-                            {venda.data ? (
+                            {venda.created_at ? (
                               <span className='block truncate max-w-22.5 text-ellipsis overflow-hidden'>
-                                {venda.data}
+                                {venda.created_at}
                               </span>
                             ) : (
                               'Sem Data'
@@ -189,12 +226,12 @@ const VendaList = () => {
                             {venda.cliente.nome}
                           </span>
                           {venda.valor_pago < venda.valor_total ? (
-                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 truncate max-w-27.5 ml-auto'>
+                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 truncate max-w-full ml-auto'>
                               R$ {Number(venda.valor_pago).toFixed(2)} / R${' '}
                               {Number(venda.valor_total).toFixed(2)}
                             </span>
                           ) : (
-                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 truncate max-w-27.5 ml-auto'>
+                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 truncate max-w-full ml-auto'>
                               R$ {Number(venda.valor_total).toFixed(2)}
                             </span>
                           )}

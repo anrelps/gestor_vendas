@@ -33,7 +33,7 @@ class VendaService {
             ->when(isset($filters['data_max']), function($q) use ($filters) {
                 $q->whereDate('created_at', '<=', $filters['data_max']);
             })
-            ->when(isset($filters['pendencias']), function($q) {
+            ->when(isset($filters['pendencias']) && $filters['pendencias'] == 1, function($q) {
                 $q->whereColumn('valor_pago', '<', 'valor_total');
             })
             ->orderBy('created_at', 'DESC')

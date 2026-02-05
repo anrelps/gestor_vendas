@@ -62,7 +62,7 @@ const EditProductPopup = ({
       <div className='absolute inset-0 bg-black/40' onClick={onClose} />
       <div className='bg-white rounded-lg p-6 relative z-10 w-full max-w-md'>
         <div className='flex items-start justify-between mb-4 pb-2 border-b border-gray-200'>
-          <h3 className='text-lg font-semibold'>Editar Produto</h3>
+          <h3 className='text-lg font-semibold'>{product ? 'Editar Produto' : 'Novo Produto'}</h3>
           <button
             onClick={onClose}
             aria-label='Fechar'

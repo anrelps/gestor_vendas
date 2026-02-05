@@ -21,18 +21,20 @@ const ProductsList = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [removeProductId, setRemoveProductId] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-
+  const [shouldFetch, setShouldFetch] = useState(false);
+  const { setLoading } = useLoading();
   const itemsPerPage = 15;
 
-  const { setLoading } = useLoading();
+  useEffect(() => {
+    if(shouldFetch) {
+      setLoading(loading);
+    }
+  }, [loading, shouldFetch]);
+
 
   useEffect(() => {
-    setLoading(loading);
-  }, [loading]);
-
-
-  useEffect(() => {
-    if (user?.empresa?.id) {
+    if (user?.empresa?.id && produtos.length === 0) {
+      setShouldFetch(true);
       dispatch(
         index({
           empresa_id: user.empresa.id,
@@ -45,6 +47,7 @@ const ProductsList = () => {
   }, [dispatch, user?.empresa?.id]);
 
   useEffect(() => {
+    if(!search) return;
     const timer = setTimeout(() => {
       if (user?.empresa?.id) {
         dispatch(
@@ -52,7 +55,7 @@ const ProductsList = () => {
             empresa_id: user.empresa.id,
             page: 1,
             maxItems: itemsPerPage,
-            pesquisa: search,
+            titulo: search,
           }),
         );
       }
@@ -66,7 +69,7 @@ const ProductsList = () => {
         empresa_id: user.empresa.id,
         page,
         maxItems: itemsPerPage,
-        pesquisa: search,
+        titulo: search,
       }),
     );
   };
@@ -231,6 +234,12 @@ const ProductsList = () => {
         <EditProductPopup
           product={editProduct}
           onClose={() => setEditProduct(null)}
+        />
+      )}
+      {showNewProduct && (
+        <EditProductPopup
+          product=''
+          onClose={() => setShowNewProduct(null)}
         />
       )}
       <ConfirmDialog
