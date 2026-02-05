@@ -20,7 +20,7 @@ const NewButton = ({
   return (
     <button
       type='button'
-      className={`cursor-pointer px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition flex items-center gap-1.5 font-semibold min-w-30 max-w-full ${className}`}
+      className={`cursor-pointer px-4 py-2 rounded bg-primary/5 text-primary border border-primary hover:bg-white transition flex items-center gap-1.5 font-semibold min-w-30 max-w-full ${className}`}
       onClick={onClick}
       {...props}
     >

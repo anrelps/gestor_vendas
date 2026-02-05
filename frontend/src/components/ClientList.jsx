@@ -83,8 +83,8 @@ const ClientList = () => {
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
-        <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-white/60 to-black/2'>
+        <div className='bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-200 bg-linear-to-br from-white via-primary/2 to-primary/3'>
             <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
               Clientes
             </h2>
@@ -92,7 +92,7 @@ const ClientList = () => {
               Gerencie os clientes cadastrados.
             </p>
           </div>
-          <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
+          <div className='flex flex-col gap-3 px-6 py-4 border-b border-gray-200 bg-linear-to-r from-gray-50 to-white'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
                 <NewButton
@@ -106,7 +106,7 @@ const ClientList = () => {
                 />
                 <input
                   type='text'
-                  className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
+                  className='w-full max-w-xs truncate rounded-md border border-gray-300 px-3 sm:px-4 py-2 text-gray-700 bg-white shadow-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 cursor-text'
                   placeholder='Buscar cliente...'
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -121,33 +121,33 @@ const ClientList = () => {
               </div>
             )}
             {!loading && clientes.length > 0 && (
-              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
+              <div className='m-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm'>
                 <ul className='flex flex-col'>
                   {clientes.map((cliente, idx) => (
                     <li
                       key={cliente.id}
-                      className={`flex flex-col px-4 py-3 cursor-pointer transition-colors ${
-                        idx % 2 === 0 ? 'bg-white' : 'bg-white/85'
-                      } hover:bg-primary/5 ${idx !== clientes.length - 1 ? 'border-b-2 border-b-gray-100' : ''}`}
+                      className={`flex flex-col px-4 py-3 cursor-pointer ${
+                        idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                      } ${idx !== clientes.length - 1 ? 'border-b border-b-gray-100' : ''}`}
                       onClick={() => handleDropdown(cliente.id)}
                     >
-                      <div className='flex items-center cursor-pointer'>
-                        <div className='flex-1 min-w-0 text-base text-gray-800 truncate font-medium cursor-pointer'>
+                      <div className='flex items-center'>
+                        <div className='flex-1 min-w-0 text-base text-gray-800 truncate font-medium'>
                           {cliente.nome}
                         </div>
                         <ChevronRight
                           size={20}
-                          className={`text-gray-400 ml-2 transition-transform duration-150 cursor-pointer ${
+                          className={`text-gray-400 ml-2 transition-transform duration-200 ${
                             openDropdownId === cliente.id ? 'rotate-90' : ''
                           }`}
                         />
                       </div>
                       {openDropdownId === cliente.id && (
                         <div
-                          className='mt-3 pl-2 flex flex-row gap-2 text-sm items-start'
+                          className='mt-3 pt-3 border-t border-gray-100 flex flex-row gap-2 text-sm items-start bg-white/50 -mx-4 px-4 pb-1'
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className='flex flex-col gap-1 flex-1'>
+                          <div className='flex flex-col gap-1.5 flex-1'>
                             <div className='flex items-center gap-2'>
                               <span className='text-gray-500 font-semibold min-w-15'>
                                 Email:
@@ -175,7 +175,7 @@ const ClientList = () => {
                           </div>
                           <div className='flex items-end justify-end ml-4 gap-2'>
                             <button
-                              className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center cursor-pointer'
+                              className='px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center cursor-pointer'
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditClient(cliente);
@@ -185,7 +185,7 @@ const ClientList = () => {
                               Editar
                             </button>
                             <button
-                              className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center cursor-pointer'
+                              className='px-3 py-1.5 rounded-md bg-red-50 text-red-500 text-xs font-semibold flex items-center justify-center cursor-pointer'
                               title='Remover cliente'
                               onClick={(e) => {
                                 e.stopPropagation();

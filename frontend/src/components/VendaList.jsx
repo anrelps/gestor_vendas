@@ -104,7 +104,7 @@ const VendaList = () => {
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-white/60 to-black/2'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
               Vendas
             </h2>

@@ -108,7 +108,7 @@ const ProductsList = () => {
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-white/60 to-black/2'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
               Produtos
             </h2>
@@ -172,7 +172,7 @@ const ProductsList = () => {
                       </div>
                       {openDropdownId === produto.id && (
                         <div
-                          className='mt-3 pl-2 flex flex-col gap-2 text-sm items-start'
+                          className='mt-3 flex flex-col gap-2 text-sm items-start'
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className='mb-1 w-full'>
