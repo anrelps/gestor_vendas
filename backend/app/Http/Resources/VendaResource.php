@@ -23,6 +23,7 @@ class VendaResource extends JsonResource
             'descricao' => (String) $this->descricao,
             'valor_total' => (Float) $this->valor_total,
             'valor_pago' => (Float) $this->valor_pago,
+            'created_at' => (String) $this->created_at,
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use App\Traits\Api\ApiResponse;
@@ -54,6 +55,20 @@ class UserController extends Controller
             return $this->successResponse(new UserResource($res), 200);
         } catch(Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function update(User $user, Request $request) {
+        try {
+            $data = $request->validate([
+                'empresa_id' => 'required|numeric',
+                'nome' => 'required|string',
+                'telefone' => 'nullable|string',
+            ]);
+            $res = $this->service->update($user, $data);
+            return $this->successResponse(new UserResource($res), 200);
+        } catch(Exception $e) {
+            return $this->errorResponse($e->getMessage());
         }
     }
 }

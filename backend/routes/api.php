@@ -14,6 +14,9 @@ Route::prefix('v1')->group(function() {
 
     Route::middleware('auth:sanctum')->group(function() {
         Route::get('/me', [UserController::class, 'me']);
+        Route::prefix('/user')->controller(UserController::class)->group(function() {
+            Route::put('/update/{user}', 'update');
+        });
         Route::prefix('/{empresa}')->group(function() {
             Route::apiResource('/clientes', ClienteController::class);
             Route::apiResource('/produtos', ProdutoController::class);

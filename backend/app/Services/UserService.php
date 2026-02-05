@@ -35,4 +35,12 @@ class UserService {
             'telefone' => $input['telefone'],
         ]);
     }
+
+    public function update(User $user, array $input) {
+        return $user->update([
+            'empresa_id' => $input['empresa_id'],
+            'nome' => $input['nome'],
+            'telefone' => $input['telefone'],
+        ]);
+    }
 }
