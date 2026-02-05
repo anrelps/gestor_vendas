@@ -26,11 +26,13 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const drawerRef = useRef(null);
   const authUserName = useSelector(selectAuthUserDisplayName);
   const companyName = useSelector(selectCompanyName);
+  const userState = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const authUser = {
     name: authUserName,
+    email: userState?.email || '',
     role: companyName,
   };
 
@@ -196,11 +198,15 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 title={item.label}
                 className={({ isActive }) =>
                   collapsed
-                    ? `flex items-center justify-center p-2 rounded transition-all duration-150 hover:bg-primary-accent w-12 h-12 cursor-pointer${
-                        isActive ? ' bg-primary-accent/50 text-white' : ''
+                    ? `flex items-center justify-center p-2 rounded transition-colors duration-150 hover:bg-primary-accent w-12 h-12 cursor-pointer border${
+                        isActive
+                          ? ' bg-primary-accent/50 text-white border-white/20'
+                          : ' border-transparent'
                       }`
-                    : `flex text-lg items-center py-2 rounded-md transition-all duration-150 hover:bg-primary-light px-4 cursor-pointer${
-                        isActive ? ' bg-primary-light/50 text-white' : ''
+                    : `flex text-lg items-center py-2 rounded-md transition-colors duration-150 hover:bg-primary-light px-4 cursor-pointer border${
+                        isActive
+                          ? ' bg-primary-light/50 text-white border-white/20'
+                          : ' border-transparent'
                       }`
                 }
               >

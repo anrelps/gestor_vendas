@@ -25,7 +25,7 @@ const ClientList = () => {
   const itemsPerPage = 15;
 
   useEffect(() => {
-    if(shouldFetch) {
+    if (shouldFetch) {
       setLoading(loading);
     }
   }, [loading, shouldFetch]);
@@ -45,7 +45,7 @@ const ClientList = () => {
   }, [dispatch, user?.empresa?.id]);
 
   useEffect(() => {
-    if(!search) return;
+    if (!search) return;
     const timer = setTimeout(() => {
       if (user?.empresa?.id) {
         dispatch(
@@ -83,10 +83,15 @@ const ClientList = () => {
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
-        <h2 className='text-2xl font-bold text-black mb-4 px-2 sm:px-0'>
-          Clientes
-        </h2>
-        <div className='bg-white rounded-md shadow-sm overflow-hidden border border-gray-200'>
+        <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-white/60 to-black/2'>
+            <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
+              Clientes
+            </h2>
+            <p className='text-sm text-gray-500 mt-1'>
+              Gerencie os clientes cadastrados.
+            </p>
+          </div>
           <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>

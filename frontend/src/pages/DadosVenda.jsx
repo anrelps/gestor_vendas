@@ -20,6 +20,16 @@ const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 });
 
+const formatCurrencyInput = (value) => {
+  const digits = String(value).replace(/\D/g, '');
+  if (!digits) return '';
+  const number = Number(digits) / 100;
+  return number.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -74,16 +84,24 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const [tituloVenda, setTituloVenda] = useState(`Venda ${Date.now()}`);
   const [descricaoVenda, setDescricaoVenda] = useState('');
   const [produtosSelecionados, setProdutosSelecionados] = useState({});
-  const [valorTotal, setValorTotal] = useState(0);
-  const [valorPago, setValorPago] = useState(0);
+  const [valorTotal, setValorTotal] = useState('');
+  const [valorPago, setValorPago] = useState('');
 
   useEffect(() => {
     if (isEditing && venda?.id) {
       setTituloVenda(venda.titulo);
       setClienteSelecionado(venda.cliente.id);
       setDescricaoVenda(venda.descricao);
-      setValorPago(venda.valor_pago);
-      setValorTotal(venda.valor_total);
+      setValorPago(
+        venda.valor_pago !== null && venda.valor_pago !== undefined
+          ? String(venda.valor_pago)
+          : '',
+      );
+      setValorTotal(
+        venda.valor_total !== null && venda.valor_total !== undefined
+          ? String(venda.valor_total)
+          : '',
+      );
 
       let detalhesVenda = venda.detalhesVenda;
       const produtosMap = {};
@@ -95,6 +113,17 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
       setProdutosSelecionados(produtosMap);
     }
   }, [isEditing, venda]);
+
+  // Calcular valor total automaticamente baseado nos produtos selecionados
+  useEffect(() => {
+    const total = Object.values(produtosSelecionados).reduce((acc, item) => {
+      const quantidade = Number(item.quantidade) || 0;
+      const valor = Number(item.valor) || 0;
+      return acc + quantidade * valor;
+    }, 0);
+
+    setValorTotal(formatCurrencyInput(String(total * 100)));
+  }, [produtosSelecionados]);
 
   // Função para lidar com seleção/deseleção de produtos
   const handleProdutoCheck = (produto) => {
@@ -122,8 +151,10 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         cliente: clienteSelecionado,
         titulo: tituloVenda,
         descricao: descricaoVenda,
-        valor_total: Number(valorTotal),
-        valor_pago: Number(valorPago),
+        valor_total:
+          Number(String(valorTotal).replace(/\./g, '').replace(',', '.')) || 0,
+        valor_pago:
+          Number(String(valorPago).replace(/\./g, '').replace(',', '.')) || 0,
         produtos: produtosSelecionados,
       };
 
@@ -355,11 +386,14 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 Valor Pago
               </label>
               <input
-                type='number'
+                type='text'
+                inputMode='decimal'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 value={valorPago}
-                onChange={(e) => setValorPago(Number(e.target.value) || 0)}
+                onChange={(e) =>
+                  setValorPago(formatCurrencyInput(e.target.value))
+                }
               />
             </div>
             <div className='flex-1'>
@@ -367,11 +401,14 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 Valor Total
               </label>
               <input
-                type='number'
+                type='text'
+                inputMode='decimal'
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 value={valorTotal}
-                onChange={(e) => setValorTotal(Number(e.target.value) || 0)}
+                onChange={(e) =>
+                  setValorTotal(formatCurrencyInput(e.target.value))
+                }
               />
             </div>
           </div>

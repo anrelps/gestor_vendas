@@ -65,7 +65,9 @@ const Layout = ({ children }) => {
         className='flex-1 transition-all duration-200 pt-16 md:pt-0 p-6'
         style={{ marginLeft: 'var(--sidebar-width, 0)' }}
       >
-        {children}
+        <div className='w-full flex justify-center'>
+          <div className='w-full max-w-5xl'>{children}</div>
+        </div>
       </main>
     </div>
   );

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { index } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
+import Pagination from './Pagination';
 
 import { useLoading } from '../context/LoadingContext';
 
@@ -28,13 +29,13 @@ const VendaList = () => {
   const { user } = useSelector((state) => state.user);
 
   const [filters, setFilters] = useState({
-    valor_min: '', 
-    valor_max: '', 
+    valor_min: '',
+    valor_max: '',
     cliente: '',
-    data_min: '', 
-    data_max: '', 
+    data_min: '',
+    data_max: '',
     pendencias: 0,
-  })
+  });
 
   const getMonthRange = () => {
     const now = new Date();
@@ -50,7 +51,7 @@ const VendaList = () => {
   const { setLoading } = useLoading();
 
   useEffect(() => {
-    if(shouldFetch) {
+    if (shouldFetch) {
       setLoading(loading);
     }
   }, [loading, shouldFetch]);
@@ -73,31 +74,44 @@ const VendaList = () => {
   useEffect(() => {
     if (user?.empresa?.id && vendas.length === 0) {
       setShouldFetch(true);
-      dispatch(index({ empresa_id: user?.empresa?.id,  page: 1, maxItems: itemsPerPage}));
+      dispatch(
+        index({
+          empresa_id: user?.empresa?.id,
+          page: 1,
+          maxItems: itemsPerPage,
+        }),
+      );
     }
   }, [dispatch, user?.empresa?.id]);
 
   useEffect(() => {
     setShouldFetch(true);
-    dispatch(index({ 
-      empresa_id: user?.empresa?.id, 
-      data_max: filters['data_max'], 
-      data_min: filters['data_min'],
-      pendencias: filters['pendencias'],
-    }));
+    dispatch(
+      index({
+        empresa_id: user?.empresa?.id,
+        data_max: filters['data_max'],
+        data_min: filters['data_min'],
+        pendencias: filters['pendencias'],
+      }),
+    );
   }, [filters]);
 
   const handleChange = (key) => (e) => {
-    setFilters((prev) => ({...prev, [key]: e.target.value}));
-  }
+    setFilters((prev) => ({ ...prev, [key]: e.target.value }));
+  };
 
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
-        <h2 className='text-2xl font-bold text-black mb-2 px-2 sm:px-0'>
-          Vendas
-        </h2>
-        <div className='bg-white rounded-md shadow-sm overflow-hidden border border-gray-200'>
+        <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-white/60 to-black/2'>
+            <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
+              Vendas
+            </h2>
+            <p className='text-sm text-gray-500 mt-1'>
+              Acompanhe as vendas e pagamentos.
+            </p>
+          </div>
           <div className='flex flex-col gap-3 px-6 py-3 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
@@ -120,9 +134,10 @@ const VendaList = () => {
             </div>
             <div className='flex flex-wrap gap-4 mt-1 items-center'>
               <button
-                value={filters.pendencias == 1  ? 0 : 1}
+                value={filters.pendencias == 1 ? 0 : 1}
                 onClick={handleChange('pendencias')}
-                className={`${filters.pendencias == 1 ? 'bg-primary/20 hover:bg-primary/40 hover:text-black ' : 'bg-gray-100 hover:bg-gray-200 hover:text-black '} rounded-full px-3 py-1 text-gray-700 border border-gray-300 transition text-sm font-medium shadow-none cursor-pointer`}               title='Mostrar apenas vendas não pagas'
+                className={`${filters.pendencias == 1 ? 'bg-primary/20 hover:bg-primary/40 hover:text-black ' : 'bg-gray-100 hover:bg-gray-200 hover:text-black '} rounded-full px-3 py-1 text-gray-700 border border-gray-300 transition text-sm font-medium shadow-none cursor-pointer`}
+                title='Mostrar apenas vendas não pagas'
               >
                 Não pagas
               </button>
@@ -235,7 +250,8 @@ const VendaList = () => {
                     <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
                       <Calendar size={18} className='text-gray-400' />
                     </span>
-                    <input                      ref={dateEndRef}
+                    <input
+                      ref={dateEndRef}
                       type='date'
                       value={dateEnd}
                       onChange={(e) => {
@@ -321,6 +337,9 @@ const VendaList = () => {
                 </ul>
               </div>
             )}
+          </div>
+          <div>
+            <Pagination current_page={1} lastPage={1} onPageChange={() => {}} />
           </div>
         </div>
       </div>
