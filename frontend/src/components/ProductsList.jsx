@@ -9,6 +9,11 @@ import Pagination from './Pagination';
 
 import { useLoading } from '../context/LoadingContext';
 
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+});
+
 const ProductsList = () => {
   const dispatch = useDispatch();
   const { produtos, loading, pagination } = useSelector(
@@ -30,7 +35,6 @@ const ProductsList = () => {
       setLoading(loading);
     }
   }, [loading, shouldFetch]);
-
 
   useEffect(() => {
     if (user?.empresa?.id && produtos.length === 0) {
@@ -61,7 +65,7 @@ const ProductsList = () => {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [dispatch, user?.empresa?.id, itemsPerPage, search]);
 
   const handlePageChange = (page) => {
     dispatch(
@@ -101,7 +105,7 @@ const ProductsList = () => {
   };
 
   return (
-    <div className='w-full flex flex-col items-center mt-10 px-2 bg-gray-50'>
+    <div className=''>
       <div className='w-full max-w-5xl'>
         <h2 className='text-2xl font-bold text-black mb-4 px-2 sm:px-0'>
           Produtos
@@ -151,7 +155,7 @@ const ProductsList = () => {
                               : produto.titulo}
                           </span>
                           <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100'>
-                            R$ {Number(produto.valor).toFixed(2)}
+                            {currencyFormatter.format(Number(produto.valor))}
                           </span>
                         </div>
                         <ChevronRight

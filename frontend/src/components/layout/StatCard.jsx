@@ -1,5 +1,6 @@
 const StatCard = ({ label, value, warning = false }) => (
-  <div
+  <section
+    aria-label={label}
     className={`w-72 min-w-72 max-w-72 h-36 min-h-36 max-h-36 group relative rounded-xl
       ${
         warning
@@ -18,7 +19,7 @@ const StatCard = ({ label, value, warning = false }) => (
         {label}
       </div>
       <div
-        className={`text-4xl font-bold leading-none ${warning ? 'text-white drop-shadow-[0_1px_2px_rgba(136,19,55,0.5)]' : 'text-white'}`}
+        className={`text-4xl font-bold leading-none ${warning ? 'drop-shadow-[0_1px_2px_rgba(136,19,55,0.5)]' : ''}`}
       >
         {value}
       </div>
@@ -26,7 +27,7 @@ const StatCard = ({ label, value, warning = false }) => (
         className={`h-1 w-16 rounded-full bg-linear-to-r from-white via-white/80 to-white/70`}
       ></div>
     </div>
-  </div>
+  </section>
 );
 
 export default StatCard;

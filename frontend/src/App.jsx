@@ -16,6 +16,7 @@ import Products from './pages/Products';
 import Vendas from './pages/Vendas';
 
 // Components
+import Layout from './Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
@@ -36,17 +37,19 @@ const App = () => {
         <Route
           element={
             <ProtectedRoute>
-              <Outlet />
+              <Layout>
+                <Outlet />
+              </Layout>
             </ProtectedRoute>
           }
         >
           <Route path='/clientes' element={<Clients />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/produtos' element={<Products />} />
+          <Route path='/vendas' element={<Vendas />} />
+          <Route path='/nova-venda' element={<NovaVenda />} />
+          <Route path='/vendas/:id/editar' element={<EditarVenda />} />
         </Route>
-        <Route path='/vendas' element={<Vendas />} />
-        <Route path='/nova-venda' element={<NovaVenda />} />
-        <Route path='/vendas/:id/editar' element={<EditarVenda />} />
       </Routes>
     </BrowserRouter>
   );

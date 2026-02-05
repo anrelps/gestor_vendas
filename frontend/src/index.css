@@ -13,6 +13,8 @@
 
 :root {
   --font-family: 'Lexend Deca', sans-serif;
+  --font-lumenzia: 'Audiowide', sans-serif;
+  --sidebar-width: 24rem;
 }
 
 body {

@@ -1,18 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { create, update } from '../redux/slices/produtoSlice';
 
-import { useEffect, useState } from 'react';
 import { DollarSign, Tag, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 const EditProductPopup = ({
   product = {},
   onClose = () => {},
   onSave = () => {},
 }) => {
-
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { loading } = useSelector((state) => state.produto);
+
+  const firstInputRef = useRef(null);
 
   const [form, setForm] = useState({
     productId: '',
@@ -28,41 +29,71 @@ const EditProductPopup = ({
     });
   }, [product]);
 
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   const handleChange = (key) => (e) =>
     setForm((s) => ({ ...s, [key]: e.target.value }));
 
   const handleSubmit = async () => {
     try {
       const productData = {
-        titulo: form.titulo,
-        valor: form.valor,
+        titulo: form.titulo.trim(),
+        valor: Number(form.valor),
         descricao: null,
-      }
+      };
 
-      if(product.id) {
-        await dispatch(update({
-          empresa_id: user.empresa.id,
-          produto_id: product.id,
-          data: productData,
-        })).unwrap();
+      if (product.id) {
+        await dispatch(
+          update({
+            empresa_id: user.empresa.id,
+            produto_id: product.id,
+            data: productData,
+          }),
+        ).unwrap();
       } else {
-        await dispatch(create({
-          empresa_id: user.empresa.id,
-          data: productData,
-        })).unwrap();
+        await dispatch(
+          create({
+            empresa_id: user.empresa.id,
+            data: productData,
+          }),
+        ).unwrap();
       }
 
+      onSave();
       onClose();
-    } catch(error) {
+    } catch (error) {
       console.log('Product submit error: ', error);
     }
   };
   return (
     <div className='fixed inset-0 flex items-center justify-center z-50'>
       <div className='absolute inset-0 bg-black/40' onClick={onClose} />
-      <div className='bg-white rounded-lg p-6 relative z-10 w-full max-w-md'>
+      <div
+        className='bg-white rounded-lg p-6 relative z-10 w-full max-w-md'
+        role='dialog'
+        aria-modal='true'
+        aria-label={product.id ? 'Editar produto' : 'Novo produto'}
+      >
         <div className='flex items-start justify-between mb-4 pb-2 border-b border-gray-200'>
-          <h3 className='text-lg font-semibold'>{product ? 'Editar Produto' : 'Novo Produto'}</h3>
+          <h3 className='text-lg font-semibold'>
+            {product.id ? 'Editar Produto' : 'Novo Produto'}
+          </h3>
           <button
             onClick={onClose}
             aria-label='Fechar'
@@ -83,6 +114,7 @@ const EditProductPopup = ({
                   <Tag size={16} />
                 </span>
                 <input
+                  ref={firstInputRef}
                   type='text'
                   value={form.titulo}
                   onChange={handleChange('titulo')}
