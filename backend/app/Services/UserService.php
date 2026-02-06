@@ -43,4 +43,8 @@ class UserService {
             'telefone' => $input['telefone'],
         ]);
     }
+
+    public function logout(User $user) {
+        return $user->currentAccessToken()->delete();
+    }
 }

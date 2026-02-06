@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 use App\Traits\Api\ApiResponse;
+use Illuminate\Http\Request;
 use Exception;
 
 class UserController extends Controller
@@ -67,6 +67,15 @@ class UserController extends Controller
             ]);
             $res = $this->service->update($user, $data);
             return $this->successResponse(new UserResource($res), 200);
+        } catch(Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
+    public function logout() {
+        try {
+            $this->service->logout(auth()->user());
+            return $this->successResponse('Logout realizado com sucesso.', 200);
         } catch(Exception $e) {
             return $this->errorResponse($e->getMessage());
         }

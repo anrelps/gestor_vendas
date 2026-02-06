@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Z_INDEX } from '../../constants/layout';
 import {
-  logout,
+  logoutUser,
   selectAuthUserDisplayName,
   selectCompanyName,
 } from '../../redux/slices/userSlice';
@@ -37,7 +37,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   };
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutUser());
     navigate('/login');
   };
 

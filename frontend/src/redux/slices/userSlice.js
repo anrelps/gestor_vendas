@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getUserData, userLogin } from '../services/userService';
+import { getUserData, userLogin, userLogout } from '../services/userService';
 
 // AsyncThunks
 export const login = createAsyncThunk(
@@ -14,6 +14,14 @@ export const checkAuth = createAsyncThunk('user/checkAuth', async () => {
   const res = await getUserData();
   return res;
 });
+
+export const logoutUser = createAsyncThunk(
+  'user/logout',
+  async() => {
+    const res = await userLogout();
+    return res;
+  }
+)
 // End AssyncThunks
 
 const userSlice = createSlice({
@@ -27,7 +35,7 @@ const userSlice = createSlice({
     authChecked: false,
   },
   reducers: {
-    logout: (state) => {
+    logout: (state) => { // Deprecated (removido por questões de segurança)
       state.token = null;
       state.isAuthenticated = false;
       state.authChecked = true;
@@ -61,6 +69,25 @@ const userSlice = createSlice({
         state.token = null;
         state.error = action.error.message;
         localStorage.removeItem('token');
+      })
+
+      // Logout
+      .addCase(logoutUser.pending, (state) => {
+        state.error = null;
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.error = null;
+        state.loading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.authChecked = true;
+        state.token = null;
+        localStorage.removeItem('token');
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       })
 
       // CheckAuth

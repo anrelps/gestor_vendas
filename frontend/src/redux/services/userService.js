@@ -9,3 +9,8 @@ export const getUserData = async () => {
   const res = await api.get("/me");
   return res.data;
 };
+
+export const userLogout = async() => {
+  const res = await api.get("/user/logout");
+  return res.data;
+}
