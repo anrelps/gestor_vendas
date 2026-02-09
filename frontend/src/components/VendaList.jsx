@@ -1,8 +1,15 @@
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxOption,
+  ComboboxOptions,
+} from '@headlessui/react';
 import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
-import { Calendar, Logs, Plus } from 'lucide-react';
+import { Calendar, ChevronRight, Logs, Plus, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
@@ -26,6 +33,7 @@ const VendaList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { vendas, loading } = useSelector((state) => state.venda);
+  const { clientes } = useSelector((state) => state.cliente);
   const { user } = useSelector((state) => state.user);
 
   const [filters, setFilters] = useState({
@@ -71,6 +79,20 @@ const VendaList = () => {
   const dateStartRef = useRef(null);
   const dateEndRef = useRef(null);
 
+  // Carregar clientes
+  useEffect(() => {
+    if (user?.empresa?.id) {
+      dispatch(
+        indexClientes({
+          empresa_id: user.empresa.id,
+          page: 1,
+          maxItems: 999,
+          pesquisa: '',
+        }),
+      );
+    }
+  }, [dispatch, user?.empresa?.id]);
+
   useEffect(() => {
     if (user?.empresa?.id && vendas.length === 0) {
       setShouldFetch(true);
@@ -92,6 +114,7 @@ const VendaList = () => {
         data_max: filters['data_max'],
         data_min: filters['data_min'],
         pendencias: filters['pendencias'],
+        cliente: filters['cliente'],
       }),
     );
   }, [filters]);
@@ -104,168 +127,161 @@ const VendaList = () => {
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
-            <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
-              Vendas
-            </h2>
-            <p className='text-sm text-gray-500 mt-1'>
-              Acompanhe as vendas e pagamentos.
-            </p>
-          </div>
-          <div className='flex flex-col gap-3 px-6 py-3 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
-            <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
-              <div className='flex flex-1 gap-2'>
-                <NewButton
-                  label='Nova Venda'
-                  shortLabel='Nova'
-                  icon={<Plus size={18} />}
-                  onClick={() => navigate('/nova-venda')}
-                />
-                {/*  REMOVIDO TEMPORARIAMENTE
-                <input
-                  type='text'
-                  className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
-                  placeholder='Buscar venda...'
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                */}
+          {/* Header */}
+          <div className='px-4 sm:px-6 pt-5 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+              <div>
+                <h2 className='text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900'>
+                  Vendas
+                </h2>
+                <p className='text-sm text-gray-500 mt-0.5'>
+                  Acompanhe as vendas e pagamentos.
+                </p>
               </div>
+              <NewButton
+                label='Nova Venda'
+                shortLabel='Nova'
+                icon={<Plus size={18} />}
+                onClick={() => navigate('/nova-venda')}
+              />
             </div>
-            <div className='flex flex-wrap gap-4 mt-1 items-center'>
+          </div>
+
+          {/* Filtros */}
+          <div className='px-4 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50'>
+            {/* Layout flexível: wrap em mobile, linha em desktop */}
+            <div className='flex flex-wrap items-center gap-2'>
+              {/* Filtro: Não pagas - tamanho fixo */}
               <button
                 value={filters.pendencias == 1 ? 0 : 1}
                 onClick={handleChange('pendencias')}
-                className={`${filters.pendencias == 1 ? 'bg-primary/20 hover:bg-primary/40 hover:text-black ' : 'bg-gray-100 hover:bg-gray-200 hover:text-black '} rounded-full px-3 py-1 text-gray-700 border border-gray-300 transition text-sm font-medium shadow-none cursor-pointer`}
+                className={`${
+                  filters.pendencias == 1
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap`}
                 title='Mostrar apenas vendas não pagas'
               >
+                <span
+                  className={`w-2 h-2 rounded-full ${filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'}`}
+                />
                 Não pagas
               </button>
-              {/* Datas: mobile em coluna, desktop em linha */}
-              <div className='flex flex-col w-full gap-2 sm:flex-row sm:w-auto sm:gap-2'>
-                {/* Data início */}
-                <div
-                  className='flex items-center gap-2 relative cursor-pointer group flex-1'
-                  onClick={() => {
-                    const input = dateStartRef.current;
-                    if (!input) return;
-                    if (input.showPicker) {
-                      input.showPicker();
-                    } else {
-                      input.focus();
-                      input.click();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      const input = dateStartRef.current;
-                      if (!input) return;
-                      if (input.showPicker) {
-                        input.showPicker();
-                      } else {
-                        input.focus();
-                        input.click();
+
+              {/* Filtro: Cliente - cresce mas nunca trunca "Todos os clientes" */}
+              <Combobox
+                value={filters.cliente}
+                onChange={(value) => {
+                  setFilters((prev) => ({ ...prev, cliente: value }));
+                }}
+              >
+                <div className='relative'>
+                  <ComboboxButton>
+                    <div className='h-9 inline-flex items-center px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition cursor-pointer text-sm font-medium whitespace-nowrap'>
+                      <User size={16} className='text-gray-400 mr-2 shrink-0' />
+                      <span className='text-gray-700'>
+                        {(() => {
+                          if (!filters.cliente) return 'Todos os clientes';
+                          const c = clientes.find((c) => c.id === filters.cliente);
+                          return c ? c.nome : 'Todos os clientes';
+                        })()}
+                      </span>
+                      <ChevronRight size={16} className='text-gray-400 ml-2 shrink-0' />
+                    </div>
+                  </ComboboxButton>
+                  <ComboboxOptions className='absolute z-20 min-w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>
+                    <ComboboxOption
+                      value=''
+                      className={({ active, selected }) =>
+                        `flex items-center px-3 py-2.5 cursor-pointer text-sm whitespace-nowrap ${
+                          selected
+                            ? 'bg-primary/10 text-primary font-medium'
+                            : active
+                              ? 'bg-gray-50'
+                              : ''
+                        }`
                       }
-                    }
-                  }}
-                  tabIndex={0}
-                  role='button'
-                  aria-label='Selecionar data inicial'
-                >
-                  <label className='text-xs text-gray-500' htmlFor='dateStart'>
-                    Início:
-                  </label>
-                  <div className='relative flex items-center w-full max-w-31.25 sm:max-w-none sm:w-31.25'>
-                    <input
-                      id='dateStart'
-                      type='text'
-                      inputMode='none'
-                      value={dateStart}
-                      readOnly
-                      className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 pr-9 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-full cursor-pointer text-center'
-                      title='Filtrar por data inicial'
-                      tabIndex={-1}
-                    />
-                    <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
-                      <Calendar size={18} className='text-gray-400' />
-                    </span>
-                    <input
-                      ref={dateStartRef}
-                      type='date'
-                      value={dateStart}
-                      onChange={(e) => {
-                        setDateStart(e.target.value);
-                        handleChange('data_min')(e);
-                      }}
-                      className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
-                      tabIndex={-1}
-                    />
-                  </div>
+                    >
+                      Todos os clientes
+                    </ComboboxOption>
+                    {clientes.map((cliente) => (
+                      <ComboboxOption
+                        key={cliente.id}
+                        value={cliente.id}
+                        className={({ active, selected }) =>
+                          `flex items-center px-3 py-2.5 cursor-pointer text-sm ${
+                            selected
+                              ? 'bg-primary/10 text-primary font-medium'
+                              : active
+                                ? 'bg-gray-50'
+                                : ''
+                          }`
+                        }
+                      >
+                        <span className='truncate'>{cliente.nome}</span>
+                      </ComboboxOption>
+                    ))}
+                  </ComboboxOptions>
                 </div>
-                {/* Data fim */}
-                <div
-                  className='flex items-center gap-2 relative cursor-pointer group flex-1'
-                  onClick={() => {
-                    const input = dateEndRef.current;
-                    if (!input) return;
-                    if (input.showPicker) {
-                      input.showPicker();
-                    } else {
-                      input.focus();
-                      input.click();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      const input = dateEndRef.current;
-                      if (!input) return;
-                      if (input.showPicker) {
-                        input.showPicker();
-                      } else {
-                        input.focus();
-                        input.click();
-                      }
-                    }
-                  }}
-                  tabIndex={0}
-                  role='button'
-                  aria-label='Selecionar data final'
-                >
-                  <label className='text-xs text-gray-500' htmlFor='dateEnd'>
-                    Fim:
-                  </label>
-                  <div className='relative flex items-center w-full max-w-31.25 sm:max-w-none sm:w-31.25'>
-                    <input
-                      id='dateEnd'
-                      type='text'
-                      inputMode='none'
-                      value={dateEnd}
-                      readOnly
-                      className='rounded-full px-3 py-1 bg-gray-100 text-gray-700 border border-gray-300 pr-9 hover:bg-gray-200 focus:bg-white focus:outline-none transition text-sm font-medium shadow-none w-full cursor-pointer text-center'
-                      title='Filtrar por data final'
-                      tabIndex={-1}
-                    />
-                    <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none flex items-center'>
-                      <Calendar size={18} className='text-gray-400' />
-                    </span>
-                    <input
-                      ref={dateEndRef}
-                      type='date'
-                      value={dateEnd}
-                      onChange={(e) => {
-                        setDateEnd(e.target.value);
-                        handleChange('data_max')(e);
-                      }}
-                      className='absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer'
-                      tabIndex={-1}
-                    />
-                  </div>
+              </Combobox>
+
+              {/* Filtro: Data Início */}
+              <div
+                className='relative cursor-pointer'
+                onClick={() => {
+                  const input = dateStartRef.current;
+                  if (input?.showPicker) input.showPicker();
+                  else input?.focus();
+                }}
+              >
+                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                  <Calendar size={16} className='text-gray-400' />
+                  <span className='text-gray-500 text-xs'>De</span>
+                  <span className='text-gray-700'>{dateStart}</span>
                 </div>
+                <input
+                  ref={dateStartRef}
+                  type='date'
+                  value={dateStart}
+                  onChange={(e) => {
+                    setDateStart(e.target.value);
+                    handleChange('data_min')(e);
+                  }}
+                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                  tabIndex={-1}
+                />
+              </div>
+
+              {/* Filtro: Data Fim */}
+              <div
+                className='relative cursor-pointer'
+                onClick={() => {
+                  const input = dateEndRef.current;
+                  if (input?.showPicker) input.showPicker();
+                  else input?.focus();
+                }}
+              >
+                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                  <Calendar size={16} className='text-gray-400' />
+                  <span className='text-gray-500 text-xs'>Até</span>
+                  <span className='text-gray-700'>{dateEnd}</span>
+                </div>
+                <input
+                  ref={dateEndRef}
+                  type='date'
+                  value={dateEnd}
+                  onChange={(e) => {
+                    setDateEnd(e.target.value);
+                    handleChange('data_max')(e);
+                  }}
+                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                  tabIndex={-1}
+                />
               </div>
             </div>
           </div>
+
+          {/* Lista de Vendas */}
           <div className='divide-y divide-gray-100'>
             {vendas.length === 0 && (
               <div className='py-6 px-3 sm:px-6 text-center text-gray-400'>
