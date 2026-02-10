@@ -5,6 +5,7 @@ import {
   indexVendas,
   showVenda,
   updateVenda,
+  relatorioVendasPdf,
 } from '../services/vendaService';
 
 export const index = createAsyncThunk(
@@ -75,6 +76,17 @@ export const destroy = createAsyncThunk(
   },
 );
 
+export const gerarRelatorioVendas = createAsyncThunk(
+  'venda/relatorio',
+  async({empresa_id, filters = {}}) => {
+    const res = await relatorioVendasPdf({
+      empresa_id,
+      ...filters
+    });
+    return res.data;
+  }
+)
+
 const vendaSlice = createSlice({
   name: 'venda',
   initialState: {
@@ -83,6 +95,7 @@ const vendaSlice = createSlice({
     error: null,
     loading: false,
     loadingSaving: false,
+    isSuccess: false, // Para permitir a geração do PDF
     pagination: {
       current_page: 1,
       last_page: 1,
@@ -126,10 +139,12 @@ const vendaSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(create.pending, function (state) {
+        state.loading = true;
         state.loadingSaving = true;
         state.error = null;
       })
       .addCase(create.fulfilled, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
         state.error = null;
         state.venda = action.payload.data;
@@ -137,14 +152,17 @@ const vendaSlice = createSlice({
         state.pagination.total += 1;
       })
       .addCase(create.rejected, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
         state.error = action.error.message;
       })
       .addCase(update.pending, function (state) {
+        state.loading = true;
         state.loadingSaving = true;
         state.error = null;
       })
       .addCase(update.fulfilled, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
         state.error = null;
         state.venda = action.payload.data;
@@ -156,14 +174,17 @@ const vendaSlice = createSlice({
         }
       })
       .addCase(update.rejected, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
         state.error = action.error.message;
       })
       .addCase(destroy.pending, function (state) {
+        state.loading = true;
         state.loadingSaving = true;
         state.error = null;
       })
       .addCase(destroy.fulfilled, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
         state.error = null;
         state.vendas = state.vendas.filter(
@@ -171,7 +192,22 @@ const vendaSlice = createSlice({
         );
       })
       .addCase(destroy.rejected, function (state, action) {
+        state.loading = false;
         state.loadingSaving = false;
+        state.error = action.error.message;
+      })
+      .addCase(gerarRelatorioVendas.pending, function (state) {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(gerarRelatorioVendas.fulfilled, function (state) {
+        state.loading = false;
+        state.error = null;
+        state.isSuccess = true;
+      })
+      .addCase(gerarRelatorioVendas.rejected, function (state, action) {
+        state.loading = false;
+        state.isSuccess = false;
         state.error = action.error.message;
       });
   },
