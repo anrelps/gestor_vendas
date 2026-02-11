@@ -5,12 +5,12 @@ import {
   ComboboxOptions,
 } from '@headlessui/react';
 import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
-import { Calendar, ChevronRight, Logs, Plus, User } from 'lucide-react';
+import { Calendar, ChevronRight, Logs, Plus, User, FileText } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { index as indexClientes } from '../redux/slices/clienteSlice';
-import { index } from '../redux/slices/vendaSlice';
+import { index, gerarRelatorioVendas } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
 
@@ -122,6 +122,28 @@ const VendaList = () => {
   const handleChange = (key) => (e) => {
     setFilters((prev) => ({ ...prev, [key]: e.target.value }));
   };
+
+  const handleGerarRelatorio = async () => {
+    setLoading(true);
+    const empresa_id = user?.empresa?.id;
+    if(empresa_id) {
+      const response = await dispatch(gerarRelatorioVendas({
+        empresa_id,
+        filters,
+      }));
+
+      if(gerarRelatorioVendas.fulfilled.match(response)) {
+        const blob = response.payload;
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      }
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    }
+    setLoading(false);
+  }
 
   return (
     <div className=''>
@@ -282,6 +304,12 @@ const VendaList = () => {
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                   tabIndex={-1}
                 />
+              </div>
+              <div>
+                <button onClick={handleGerarRelatorio} className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-primary hover:bg-primary/80 text-white transition text-sm font-medium whitespace-nowrap cursor-pointer'>
+                  <FileText size={16} />
+                  Gerar PDF
+                </button>
               </div>
             </div>
           </div>

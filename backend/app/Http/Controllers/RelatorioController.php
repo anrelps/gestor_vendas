@@ -7,6 +7,7 @@ use App\Models\Empresa;
 use App\Models\Venda;
 use App\Services\RelatorioService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -29,12 +30,12 @@ class RelatorioController extends Controller
         ]);
         $vendas = $this->service->vendas($empresa, $filters);
         $pdf = PDF::loadView('relatorios.vendas.vendasPdf', ['vendas' => $vendas, 'empresa' => $empresa, 'filters' => $filters]);
-        return $pdf->stream('relatorio.pdf');
+        return $pdf->stream('relatorio_vendas_'.Carbon::now()->format('d_m_Y').'.pdf');
     }
 
     public function detalhesVenda(Empresa $empresa, Venda $venda) {
         $detalhesVenda = $this->service->detalhesVenda($empresa, $venda);
         $pdf = PDF::loadView('relatorios.vendas.detalhesVendaPdf', ['venda' => $detalhesVenda]);
-        return $pdf->stream('relatiorio.pdf');
+        return $pdf->stream("detalhes_".$venda->titulo.".pdf");
     }
 }
