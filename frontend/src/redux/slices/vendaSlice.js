@@ -6,6 +6,7 @@ import {
   showVenda,
   updateVenda,
   relatorioVendasPdf,
+  detalhesVendaPdf,
 } from '../services/vendaService';
 
 export const index = createAsyncThunk(
@@ -86,6 +87,17 @@ export const gerarRelatorioVendas = createAsyncThunk(
     return res.data;
   }
 )
+
+export const gerarRelatorioDetalhesVenda = createAsyncThunk(
+  'venda/detalhe',
+  async({empresa_id, venda_id}) => {
+    const res = await detalhesVendaPdf({
+      empresa_id,
+      venda_id,
+    })
+    return res.data;
+  }
+);
 
 const vendaSlice = createSlice({
   name: 'venda',
@@ -206,6 +218,20 @@ const vendaSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(gerarRelatorioVendas.rejected, function (state, action) {
+        state.loading = false;
+        state.isSuccess = false;
+        state.error = action.error.message;
+      })
+      .addCase(gerarRelatorioDetalhesVenda.pending, function(state) {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(gerarRelatorioDetalhesVenda.fulfilled, function(state) {
+        state.loading = false;
+        state.error = null;
+        state.isSuccess = true;
+      })
+      .addCase(gerarRelatorioDetalhesVenda.rejected, function(state, action) {
         state.loading = false;
         state.isSuccess = false;
         state.error = action.error.message;

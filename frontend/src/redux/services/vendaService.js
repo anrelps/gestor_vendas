@@ -74,3 +74,10 @@ export const relatorioVendasPdf = async({
     });
     return res;
 }
+
+export const detalhesVendaPdf = async({empresa_id, venda_id}) => {
+    const res = await api.get(`/${empresa_id}/relatorios/pdf/vendas/${venda_id}`, {
+        responseType: 'blob'
+    });
+    return res;
+}
