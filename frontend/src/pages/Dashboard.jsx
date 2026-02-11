@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import StatCard from '../components/layout/StatCard';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -24,7 +23,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <section className='flex justify-center items-center'>
+        {/* <section className='flex justify-center items-center'>
           <div
             className='relative w-full rounded-3xl p-10 overflow-hidden
             bg-linear-to-br from-violet-100 via-purple-50 to-violet-200 border border-violet-100
@@ -219,7 +218,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
