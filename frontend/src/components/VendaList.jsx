@@ -5,12 +5,19 @@ import {
   ComboboxOptions,
 } from '@headlessui/react';
 import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
-import { Calendar, ChevronRight, Logs, Plus, User, FileText } from 'lucide-react';
+import {
+  Calendar,
+  ChevronRight,
+  FileText,
+  Logs,
+  Plus,
+  User,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { index as indexClientes } from '../redux/slices/clienteSlice';
-import { index, gerarRelatorioVendas } from '../redux/slices/vendaSlice';
+import { gerarRelatorioVendas, index } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
 
@@ -126,13 +133,15 @@ const VendaList = () => {
   const handleGerarRelatorio = async () => {
     setLoading(true);
     const empresa_id = user?.empresa?.id;
-    if(empresa_id) {
-      const response = await dispatch(gerarRelatorioVendas({
-        empresa_id,
-        filters,
-      }));
+    if (empresa_id) {
+      const response = await dispatch(
+        gerarRelatorioVendas({
+          empresa_id,
+          filters,
+        }),
+      );
 
-      if(gerarRelatorioVendas.fulfilled.match(response)) {
+      if (gerarRelatorioVendas.fulfilled.match(response)) {
         const blob = response.payload;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -143,7 +152,7 @@ const VendaList = () => {
       }, 100);
     }
     setLoading(false);
-  }
+  };
 
   return (
     <div className=''>
@@ -305,12 +314,6 @@ const VendaList = () => {
                   tabIndex={-1}
                 />
               </div>
-              <div>
-                <button onClick={handleGerarRelatorio} className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-primary hover:bg-primary/80 text-white transition text-sm font-medium whitespace-nowrap cursor-pointer'>
-                  <FileText size={16} />
-                  Gerar PDF
-                </button>
-              </div>
             </div>
           </div>
 
@@ -372,7 +375,7 @@ const VendaList = () => {
                       <div className='flex items-center justify-end mt-4 gap-2'>
                         <Link
                           to={`/vendas/${venda.id}/editar`}
-                          className='flex items-center gap-5 text-primary hover:text-primary/70 transition'
+                          className='flex items-center gap-5 text-primary hover:text-primary/70 transition cursor-pointer'
                           title='Ir até a venda'
                         >
                           <span className='text-xs font-semibold'>
@@ -392,6 +395,19 @@ const VendaList = () => {
           </div>
         </div>
       </div>
+
+      {/* Botão Flutuante Gerar PDF */}
+      <button
+        onClick={handleGerarRelatorio}
+        className='fixed bottom-6 right-6 z-50 flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-semibold text-base group cursor-pointer'
+        title='Gerar relatório em PDF'
+      >
+        <FileText
+          size={22}
+          className='group-hover:scale-110 transition-transform'
+        />
+        <span>Gerar PDF</span>
+      </button>
     </div>
   );
 };

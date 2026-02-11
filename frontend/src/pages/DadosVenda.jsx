@@ -7,13 +7,18 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from '@headlessui/react';
-import { ChevronRight, Pencil, Plus, User, FileText } from 'lucide-react';
+import { ChevronRight, FileText, Pencil, Plus, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import EditClientPopup from '../components/EditClientPopup';
 
 import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index as indexProdutos } from '../redux/slices/produtoSlice';
-import { create, show, update, gerarRelatorioDetalhesVenda } from '../redux/slices/vendaSlice';
+import {
+  create,
+  gerarRelatorioDetalhesVenda,
+  show,
+  update,
+} from '../redux/slices/vendaSlice';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -214,12 +219,14 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   };
 
   const handleGerarRelatorioDetalhesVenda = async () => {
-    if(isEditing) {
+    if (isEditing) {
       const empresa_id = user.empresa.id;
       const venda_id = vendaId;
 
-      const res = await dispatch(gerarRelatorioDetalhesVenda({empresa_id, venda_id}));
-      if(gerarRelatorioDetalhesVenda.fulfilled.match(res)) {
+      const res = await dispatch(
+        gerarRelatorioDetalhesVenda({ empresa_id, venda_id }),
+      );
+      if (gerarRelatorioDetalhesVenda.fulfilled.match(res)) {
         const blob = res.payload;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -229,7 +236,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         }, 100);
       }
     }
-  }
+  };
 
   return (
     <>
@@ -253,16 +260,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
           <div className='md:flex w-full items-center md:justify-between'>
             <h1 className='text-black text-lg font-bold'>Cliente</h1>
             <div className='md:flex items-center'>
-              {isEditing && (
-                <button 
-                className='w-full cursor-pointer mt-6 md:mt-0 md:w-auto md:shrink-0 px-4 py-2 rounded bg-primary text-white border border-primary hover:bg-primary/70 transition md:ml-2 flex items-center gap-2'
-                style={{ minWidth: 120 }}
-                onClick={handleGerarRelatorioDetalhesVenda}
-                >
-                  <FileText size={18} className='inline-block'/>
-                  Gerar PDF
-                </button>
-              )}
               <button
                 className='w-full cursor-pointer mt-6 md:mt-0 md:w-auto md:shrink-0 px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition md:ml-2 flex items-center gap-2'
                 style={{ minWidth: 120 }}
@@ -495,6 +492,21 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
           </div>
         </div>
       </div>
+
+      {/* Botão Flutuante Gerar PDF */}
+      {isEditing && (
+        <button
+          onClick={handleGerarRelatorioDetalhesVenda}
+          className='fixed bottom-6 right-6 z-50 flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-semibold text-base group cursor-pointer'
+          title='Gerar relatório em PDF'
+        >
+          <FileText
+            size={22}
+            className='group-hover:scale-110 transition-transform'
+          />
+          <span>Gerar PDF</span>
+        </button>
+      )}
     </>
   );
 };
