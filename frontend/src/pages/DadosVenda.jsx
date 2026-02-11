@@ -87,6 +87,11 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const [valorTotal, setValorTotal] = useState('');
   const [valorPago, setValorPago] = useState('');
 
+  // Flags para controle do cálculo automático do valor total
+  const [valorTotalEditadoManualmente, setValorTotalEditadoManualmente] =
+    useState(false);
+  const [dadosCarregados, setDadosCarregados] = useState(false);
+
   useEffect(() => {
     if (isEditing && venda?.id) {
       setTituloVenda(venda.titulo);
@@ -94,12 +99,16 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
       setDescricaoVenda(venda.descricao);
       setValorPago(
         venda.valor_pago !== null && venda.valor_pago !== undefined
-          ? String(venda.valor_pago)
+          ? formatCurrencyInput(
+              String(Math.round(Number(venda.valor_pago) * 100)),
+            )
           : '',
       );
       setValorTotal(
         venda.valor_total !== null && venda.valor_total !== undefined
-          ? String(venda.valor_total)
+          ? formatCurrencyInput(
+              String(Math.round(Number(venda.valor_total) * 100)),
+            )
           : '',
       );
 
@@ -107,27 +116,49 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
       const produtosMap = {};
 
       detalhesVenda.forEach((detalhe) => {
-        produtosMap[detalhe.produto_id] = detalhe;
+        // O backend salva valor como (unitário × quantidade), então dividimos
+        // pela quantidade para obter o valor unitário e manter consistência no cálculo
+        const valorUnitario =
+          detalhe.quantidade > 0
+            ? detalhe.valor / detalhe.quantidade
+            : detalhe.valor;
+
+        produtosMap[detalhe.produto_id] = {
+          ...detalhe,
+          valor: valorUnitario,
+        };
       });
 
       setProdutosSelecionados(produtosMap);
+
+      // Marcar que os dados foram carregados para evitar recálculo automático
+      setDadosCarregados(true);
+      // Considera que o valor salvo foi editado manualmente (preserva o valor original)
+      setValorTotalEditadoManualmente(true);
     }
   }, [isEditing, venda]);
 
   // Calcular valor total automaticamente baseado nos produtos selecionados
+  // Não recalcula se o usuário editou manualmente o valor (diretamente no input)
   useEffect(() => {
+    // Se o usuário editou manualmente o valor, não recalcular
+    if (valorTotalEditadoManualmente) return;
+
     const total = Object.values(produtosSelecionados).reduce((acc, item) => {
       const quantidade = Number(item.quantidade) || 0;
       const valor = Number(item.valor) || 0;
       return acc + quantidade * valor;
     }, 0);
 
-    setValorTotal(formatCurrencyInput(String(total * 100)));
-  }, [produtosSelecionados]);
+    // O total já está em reais, multiplicar por 100 para converter em centavos para formatCurrencyInput
+    setValorTotal(formatCurrencyInput(String(Math.round(total * 100))));
+  }, [produtosSelecionados, valorTotalEditadoManualmente]);
 
   // Função para lidar com seleção/deseleção de produtos
   const handleProdutoCheck = (produto) => {
     let pid = produto.id;
+    // Resetar flag para permitir recálculo automático ao alterar produtos
+    setValorTotalEditadoManualmente(false);
     setProdutosSelecionados((prev) => {
       const newState = { ...prev };
 
@@ -316,6 +347,8 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                       type='button'
                       onClick={() => {
                         if (!checked) return;
+                        // Resetar flag para permitir recálculo automático
+                        setValorTotalEditadoManualmente(false);
                         setProdutosSelecionados((prev) => {
                           const newState = { ...prev };
                           if (newState[produto.id]?.quantidade > 1) {
@@ -346,6 +379,8 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                       type='button'
                       onClick={() => {
                         if (!checked) return;
+                        // Resetar flag para permitir recálculo automático
+                        setValorTotalEditadoManualmente(false);
                         setProdutosSelecionados((prev) => {
                           const newState = { ...prev };
                           if (checked) {
@@ -406,9 +441,10 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 className='w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring text-base'
                 placeholder='R$ 0,00'
                 value={valorTotal}
-                onChange={(e) =>
-                  setValorTotal(formatCurrencyInput(e.target.value))
-                }
+                onChange={(e) => {
+                  setValorTotalEditadoManualmente(true);
+                  setValorTotal(formatCurrencyInput(e.target.value));
+                }}
               />
             </div>
           </div>

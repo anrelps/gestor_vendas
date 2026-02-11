@@ -85,25 +85,29 @@ const ClientList = () => {
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200'>
           <div className='px-6 pt-6 pb-4 border-b border-gray-200 bg-linear-to-br from-white via-primary/2 to-primary/3'>
-            <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
-              Clientes
-            </h2>
-            <p className='text-sm text-gray-500 mt-1'>
-              Gerencie os clientes cadastrados.
-            </p>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+              <div>
+                <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
+                  Clientes
+                </h2>
+                <p className='text-sm text-gray-500 mt-1'>
+                  Gerencie os clientes cadastrados.
+                </p>
+              </div>
+              <NewButton
+                label='Novo Cliente'
+                shortLabel='Novo'
+                icon={<Plus size={18} />}
+                onClick={() => {
+                  setEditClient({});
+                  setShowNewClient(true);
+                }}
+              />
+            </div>
           </div>
           <div className='flex flex-col gap-3 px-6 py-4 border-b border-gray-200 bg-linear-to-r from-gray-50 to-white'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
-                <NewButton
-                  label='Novo Cliente'
-                  shortLabel='Novo'
-                  icon={<Plus size={18} />}
-                  onClick={() => {
-                    setEditClient({});
-                    setShowNewClient(true);
-                  }}
-                />
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-md border border-gray-300 px-3 sm:px-4 py-2 text-gray-700 bg-white shadow-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 cursor-text'

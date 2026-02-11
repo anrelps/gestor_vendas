@@ -128,13 +128,13 @@ const VendaList = () => {
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
           {/* Header */}
-          <div className='px-4 sm:px-6 pt-5 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
               <div>
-                <h2 className='text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900'>
+                <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
                   Vendas
                 </h2>
-                <p className='text-sm text-gray-500 mt-0.5'>
+                <p className='text-sm text-gray-500 mt-1'>
                   Acompanhe as vendas e pagamentos.
                 </p>
               </div>
@@ -182,11 +182,16 @@ const VendaList = () => {
                       <span className='text-gray-700'>
                         {(() => {
                           if (!filters.cliente) return 'Todos os clientes';
-                          const c = clientes.find((c) => c.id === filters.cliente);
+                          const c = clientes.find(
+                            (c) => c.id === filters.cliente,
+                          );
                           return c ? c.nome : 'Todos os clientes';
                         })()}
                       </span>
-                      <ChevronRight size={16} className='text-gray-400 ml-2 shrink-0' />
+                      <ChevronRight
+                        size={16}
+                        className='text-gray-400 ml-2 shrink-0'
+                      />
                     </div>
                   </ComboboxButton>
                   <ComboboxOptions className='absolute z-20 min-w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>

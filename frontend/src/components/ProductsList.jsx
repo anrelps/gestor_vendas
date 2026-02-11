@@ -109,22 +109,26 @@ const ProductsList = () => {
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
-            <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
-              Produtos
-            </h2>
-            <p className='text-sm text-gray-500 mt-1'>
-              Gerencie os produtos cadastrados.
-            </p>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+              <div>
+                <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
+                  Produtos
+                </h2>
+                <p className='text-sm text-gray-500 mt-1'>
+                  Gerencie os produtos cadastrados.
+                </p>
+              </div>
+              <NewButton
+                label='Novo Produto'
+                shortLabel='Novo'
+                icon={<Plus size={18} />}
+                onClick={() => setShowNewProduct(true)}
+              />
+            </div>
           </div>
           <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
             <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
               <div className='flex flex-1 gap-2'>
-                <NewButton
-                  label='Novo Produto'
-                  shortLabel='Novo'
-                  icon={<Plus size={18} />}
-                  onClick={() => setShowNewProduct(true)}
-                />
                 <input
                   type='text'
                   className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
