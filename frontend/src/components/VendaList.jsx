@@ -12,6 +12,7 @@ import {
   Logs,
   Plus,
   User,
+  Share2,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -153,6 +154,33 @@ const VendaList = () => {
     }
     setLoading(false);
   };
+
+  const handleCopiarLinkRelatorio = async () => {
+    const empresa_id = user?.empresa?.id;
+    //const baseURL = ''; // URL PROD
+    const baseURL = 'http://localhost:8000/api/v1'; // URL DEV
+    const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
+
+    const filtrosLimpos = Object.fromEntries(
+      Object.entries(filters).filter(([key, value]) => {
+        if (typeof value === 'string') return value.length > 0;
+        if (typeof value === 'number') return value > 0;
+        return true;
+      })
+    );
+
+    console.log(filtrosLimpos);
+
+    const params = new URLSearchParams({
+      ...filtrosLimpos,
+    });
+    const url = `${baseURL}/${endpoint}?${params.toString()}`;
+        const mensagem = `Olá! Segue seu relatório de venda/serviços:
+${url}`;
+    navigator.clipboard.writeText(mensagem);
+    alert('Mensagem Copiada com sucesso!');
+    return url;
+  }
 
   return (
     <div className=''>
@@ -312,7 +340,16 @@ const VendaList = () => {
                   }}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                   tabIndex={-1}
-                />
+                />  
+              </div>
+              <div>
+                <button 
+                  className="h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg bg-white hover:bg-gray-50 border border-gray-300 text-sm font-medium"
+                  onClick={handleCopiarLinkRelatorio}
+                >
+                    <Share2 size={16} className='text-gray-400' />
+                    <span className='text-gray-700'>Compartilhar (PDF)</span>
+                </button>
               </div>
             </div>
           </div>

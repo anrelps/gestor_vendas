@@ -10,10 +10,12 @@ import {
 import { ChevronRight, FileText, Pencil, Plus, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import EditClientPopup from '../components/EditClientPopup';
+import { useLoading } from '../context/LoadingContext';
 
 import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index as indexProdutos } from '../redux/slices/produtoSlice';
 import {
+  index,
   create,
   gerarRelatorioDetalhesVenda,
   show,
@@ -42,7 +44,16 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const { user } = useSelector((state) => state.user);
   const { clientes } = useSelector((state) => state.cliente);
   const { produtos } = useSelector((state) => state.produto);
-  const { venda, loadingSaving } = useSelector((state) => state.venda);
+  const { vendas, venda, loading, loadingSaving } = useSelector((state) => state.venda);
+  const { setLoading } = useLoading();
+
+  const [shouldFetch, setShouldFetch] = useState(false);
+
+  useEffect(() => {
+    if (shouldFetch) {
+      setLoading(loading);
+    }
+  }, [loading, shouldFetch]);
 
   // Edit venda
   useEffect(() => {
@@ -55,7 +66,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
       );
     }
   }, [dispatch, isEditing, vendaId, user?.empresa?.id]);
-
   // End edit venda
 
   useEffect(() => {
@@ -86,11 +96,31 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
 
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [showNewClient, setShowNewClient] = useState(false);
-  const [tituloVenda, setTituloVenda] = useState(`Venda ${Date.now()}`);
   const [descricaoVenda, setDescricaoVenda] = useState('');
   const [produtosSelecionados, setProdutosSelecionados] = useState({});
   const [valorTotal, setValorTotal] = useState('');
   const [valorPago, setValorPago] = useState('');
+
+  const [totalVendas, setTotalVendas] = useState(0);
+  const [tituloVenda, setTituloVenda] = useState('');
+
+  if(!isEditing) {
+    useEffect(() => {
+      setShouldFetch(true);
+      if(user?.empresa?.id) {
+        dispatch(index({
+          empresa_id: user.empresa.id,
+          page: 1,
+          maxItems: 999, // alterar depois para 'null'
+        }));   
+      }
+    }, [dispatch, user?.empresa?.id]);
+
+    useEffect(() => {
+      setTotalVendas(vendas.length);
+      setTituloVenda(`OS ${totalVendas + 1}`);
+    }, [vendas]);
+  }
 
   // Flags para controle do cálculo automático do valor total
   const [valorTotalEditadoManualmente, setValorTotalEditadoManualmente] =
@@ -98,6 +128,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const [dadosCarregados, setDadosCarregados] = useState(false);
 
   useEffect(() => {
+    setShouldFetch(true);
     if (isEditing && venda?.id) {
       setTituloVenda(venda.titulo);
       setClienteSelecionado(venda.cliente.id);

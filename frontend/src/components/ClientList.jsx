@@ -1,8 +1,9 @@
 import { ChevronRight, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { index } from '../redux/slices/clienteSlice';
+import { index, destroy } from '../redux/slices/clienteSlice';
 import NewButton from './layout/NewButton';
+import ConfirmDialog from './ConfirmDialog';
 
 import EditClientPopup from './EditClientPopup';
 import Pagination from './Pagination';
@@ -20,6 +21,7 @@ const ClientList = () => {
   const [showNewClient, setShowNewClient] = useState(false);
   const [editClient, setEditClient] = useState(null);
   const [removeClientId, setRemoveClientId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [shouldFetch, setShouldFetch] = useState(false);
   const { setLoading } = useLoading();
   const itemsPerPage = 15;
@@ -78,6 +80,24 @@ const ClientList = () => {
 
   const handleRemoveClient = (id) => {
     setRemoveClientId(id);
+    setShowDeletePopup(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await dispatch(
+        destroy({ empresa_id: user.empresa.id, cliente_id: removeClientId }),
+      ).unwrap();
+      setShowDeletePopup(false);
+      setRemoveClientId(null);
+    } catch (error) {
+          console.log('Client destroy error: ', error);
+    }
+  };
+  
+  const cancelDelete = () => {
+    setShowDeletePopup(false);
+    setRemoveClientId(null);
   };
 
   return (
@@ -217,7 +237,7 @@ const ClientList = () => {
           </div>
         </div>
       </div>
-      {editClient && showNewClient && (
+      {editClient && (
         <EditClientPopup
           client={editClient}
           onClose={() => {
@@ -226,6 +246,13 @@ const ClientList = () => {
           }}
         />
       )}
+      <ConfirmDialog
+        open={showDeletePopup}
+        title='Remover Cliente?'
+        message='Tem certeza que deseja remover este cliente? Esta ação não pode ser desfeita.'
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };

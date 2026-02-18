@@ -13,6 +13,13 @@ Route::prefix('v1')->group(function() {
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/register', [UserController::class, 'register']);
 
+    Route::prefix('/public')->group(function() {
+        Route::prefix('/relatorios')->controller(RelatorioController::class)->group(function() {
+            Route::get('/{empresa}/pdf/vendas', [RelatorioController::class, 'vendas']);
+            Route::get('/{empresa}/pdf/vendas/{venda}', [RelatorioController::class, 'detalhesVenda']);
+        });
+    });
+
     Route::middleware('auth:sanctum')->group(function() {
         Route::get('/me', [UserController::class, 'me']);
         Route::prefix('/user')->controller(UserController::class)->group(function() {

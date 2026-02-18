@@ -28,7 +28,7 @@ export const update = createAsyncThunk(
 export const destroy = createAsyncThunk(
   "cliente/delete",
   async({ empresa_id, cliente_id }) => {
-    const res = await destroyCliente({ empresa_id, cliente_id });
+    await destroyCliente({ empresa_id, cliente_id });
     return { cliente_id };
   }
 );
