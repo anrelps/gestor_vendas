@@ -175,7 +175,7 @@ const VendaList = () => {
     const params = new URLSearchParams({
       ...filtrosLimpos,
     });
-    const url = `${baseURL}/${endpoint}?${params.toString()}`;
+    const url = `${baseURL}${endpoint}?${params.toString()}`;
         const mensagem = `Olá! Segue seu relatório de venda/serviços:
 ${url}`;
     navigator.clipboard.writeText(mensagem);
