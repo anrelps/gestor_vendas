@@ -158,7 +158,8 @@ const VendaList = () => {
   const handleCopiarLinkRelatorio = async () => {
     const empresa_id = user?.empresa?.id;
     //const baseURL = ''; // URL PROD
-    const baseURL = 'http://localhost:8000/api/v1'; // URL DEV
+    //const baseURL = 'http://localhost:9000/api/v1'; // URL DEV
+    const baseURL = 'http://localhost/api/v1'; // URL DEV
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
     const filtrosLimpos = Object.fromEntries(

@@ -1,0 +1,79 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+
+services:
+
+  # =========== DATABASE (POSTGRESQL) ========== #
+  db:
+    image: postgres:15-alpine
+    container_name: app_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lumenz_db
+      POSTGRES_USER: lmz_root
+      POSTGRES_PASSWORD: lmz_root
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"
+  
+  # =========== API (LARAVEL) ========== #
+  api:
+    env_file:
+      - .env.docker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: app_api
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_DEBUG: false
+      ##APP_URL: http://localhost
+      APP_URL: https://localhost
+      APP_KEY: base64:LZ0AkndKRl5sqkvKtQj+aQzgK06KwQu6qyYr+YyiLpk=
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: lumenz_db
+      DB_USERNAME: lmz_root
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - ./backend/storage:/var/www/storage
+
+  # =========== FRONTEND (REACT) ========== #
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: app_frontend
+    restart: unless-stopped
+    networks:
+      - app-network
+    
+  # ========== NGINX (PORTEIRO) ========== #
+  nginx:
+    image: nginx:alpine
+    container_name: app_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - app-network    
