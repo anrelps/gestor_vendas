@@ -159,7 +159,7 @@ const VendaList = () => {
     const empresa_id = user?.empresa?.id;
     //const baseURL = ''; // URL PROD
     //const baseURL = 'http://localhost:9000/api/v1'; // URL DEV
-    const baseURL = 'http://localhost/api/v1'; // URL DEV
+    const baseURL = 'https://uselumenz.com/api/v1/'; // URL PROD
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
     const filtrosLimpos = Object.fromEntries(
