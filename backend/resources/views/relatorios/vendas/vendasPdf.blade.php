@@ -297,14 +297,6 @@
         @endforeach
 
         <!-- Totalizador Geral -->
-        {{/**
-        <div class="totalizador">
-            <div class="label-geral">TOTAL GERAL</div>
-            <div class="valor-geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
-            <div class="qtd">{{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda' : 'vendas' }}</div>
-        </div>
-        *//}}
-        <!-- Totalizador Geral -->
         <div class="totalizador">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
