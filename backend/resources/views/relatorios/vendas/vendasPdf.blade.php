@@ -297,10 +297,31 @@
         @endforeach
 
         <!-- Totalizador Geral -->
+        {{/**
         <div class="totalizador">
             <div class="label-geral">TOTAL GERAL</div>
             <div class="valor-geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
             <div class="qtd">{{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda' : 'vendas' }}</div>
+        </div>
+        *//}}
+        <div class="totalizador">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <div style="text-align: left;">
+                    <div class="label-geral">TOTAL GERAL</div>
+                    <div class="valor-geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="label-geral" style="color: #a8d8a8;">TOTAL RECEBIDO</div>
+                    <div class="valor-geral" style="color: #4ade80;">R$ {{ number_format($vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="label-geral" style="color: #fcd34d;">A RECEBER</div>
+                    <div class="valor-geral" style="color: #fbbf24;">R$ {{ number_format($vendas->sum('valor_total') - $vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                </div>
+            </div>
+            <div class="qtd" style="text-align: center; margin-top: 10px;">
+                {{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda' : 'vendas' }}
+            </div>
         </div>
     @else
         <div class="sem-vendas">
