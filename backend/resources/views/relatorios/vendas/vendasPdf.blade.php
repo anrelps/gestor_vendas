@@ -305,11 +305,11 @@
                         <div class="valor-geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
                     </td>
                     <td style="text-align: center; width: 33%;">
-                        <div class="label-geral">TOTAL RECEBIDO</div>
+                        <div class="label-geral">TOTAL PAGO</div>
                         <div class="valor-geral" style="color: #4ade80;">R$ {{ number_format($vendas->sum('valor_pago'), 2, ',', '.') }}</div>
                     </td>
                     <td style="text-align: right; width: 33%;">
-                        <div class="label-geral">A RECEBER</div>
+                        <div class="label-geral">TOTAL PENDENTE</div>
                         <div class="valor-geral" style="color: #fbbf24;">R$ {{ number_format($vendas->sum('valor_total') - $vendas->sum('valor_pago'), 2, ',', '.') }}</div>
                     </td>
                 </tr>
