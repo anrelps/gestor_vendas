@@ -51,6 +51,7 @@ services:
       - app-network
     volumes:
       - ./backend/storage:/var/www/storage
+      - ./backend/public:/var/www/public
 
   # =========== FRONTEND (REACT) ========== #
   frontend:
