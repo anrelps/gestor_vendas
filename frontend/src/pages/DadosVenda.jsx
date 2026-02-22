@@ -15,9 +15,9 @@ import { useLoading } from '../context/LoadingContext';
 import { index as indexClientes } from '../redux/slices/clienteSlice';
 import { index as indexProdutos } from '../redux/slices/produtoSlice';
 import {
-  index,
   create,
   gerarRelatorioDetalhesVenda,
+  index,
   show,
   update,
 } from '../redux/slices/vendaSlice';
@@ -44,7 +44,9 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const { user } = useSelector((state) => state.user);
   const { clientes } = useSelector((state) => state.cliente);
   const { produtos } = useSelector((state) => state.produto);
-  const { vendas, venda, loading, loadingSaving } = useSelector((state) => state.venda);
+  const { vendas, venda, loading, loadingSaving } = useSelector(
+    (state) => state.venda,
+  );
   const { setLoading } = useLoading();
 
   const [shouldFetch, setShouldFetch] = useState(false);
@@ -104,15 +106,17 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   const [totalVendas, setTotalVendas] = useState(0);
   const [tituloVenda, setTituloVenda] = useState('');
 
-  if(!isEditing) {
+  if (!isEditing) {
     useEffect(() => {
       setShouldFetch(true);
-      if(user?.empresa?.id) {
-        dispatch(index({
-          empresa_id: user.empresa.id,
-          page: 1,
-          maxItems: 999, // alterar depois para 'null'
-        }));   
+      if (user?.empresa?.id) {
+        dispatch(
+          index({
+            empresa_id: user.empresa.id,
+            page: 1,
+            maxItems: 999, // alterar depois para 'null'
+          }),
+        );
       }
     }, [dispatch, user?.empresa?.id]);
 
@@ -521,23 +525,19 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
               {loadingSaving ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
+          {isEditing && (
+            <div className='flex gap-2 mt-2'>
+              <button
+                onClick={handleGerarRelatorioDetalhesVenda}
+                className='flex-1 px-3 py-2 rounded bg-primary text-white font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2'
+              >
+                <FileText size={18} />
+                Gerar PDF
+              </button>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Botão Flutuante Gerar PDF */}
-      {isEditing && (
-        <button
-          onClick={handleGerarRelatorioDetalhesVenda}
-          className='fixed bottom-6 right-6 z-50 flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-semibold text-base group cursor-pointer'
-          title='Gerar relatório em PDF'
-        >
-          <FileText
-            size={22}
-            className='group-hover:scale-110 transition-transform'
-          />
-          <span>Gerar PDF</span>
-        </button>
-      )}
     </>
   );
 };

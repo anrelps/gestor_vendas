@@ -11,20 +11,23 @@ import {
   FileText,
   Logs,
   Plus,
-  User,
   Share2,
   Trash,
+  User,
 } from 'lucide-react';
-import ConfirmDialog from './ConfirmDialog';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLoading } from '../context/LoadingContext';
 import { index as indexClientes } from '../redux/slices/clienteSlice';
-import { gerarRelatorioVendas, index, destroy } from '../redux/slices/vendaSlice';
+import {
+  destroy,
+  gerarRelatorioVendas,
+  index,
+} from '../redux/slices/vendaSlice';
+import ConfirmDialog from './ConfirmDialog';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
-
-import { useLoading } from '../context/LoadingContext';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -45,9 +48,6 @@ const VendaList = () => {
   const { vendas, loading } = useSelector((state) => state.venda);
   const { clientes } = useSelector((state) => state.cliente);
   const { user } = useSelector((state) => state.user);
-
-  const [removeVendaId, setRemoveVendaId] = useState(null);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   const [filters, setFilters] = useState({
     valor_min: '',
@@ -92,6 +92,31 @@ const VendaList = () => {
   const dateStartRef = useRef(null);
   const dateEndRef = useRef(null);
 
+  const [removeVendaId, setRemoveVendaId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+  const handleRemoveVenda = (id) => {
+    setRemoveVendaId(id);
+    setShowDeletePopup(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await dispatch(
+        destroy({ empresa_id: user.empresa.id, venda_id: removeVendaId }),
+      ).unwrap();
+      setShowDeletePopup(false);
+      setRemoveVendaId(null);
+    } catch (error) {
+      console.log('Venda destroy error: ', error);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeletePopup(false);
+    setRemoveVendaId(null);
+  };
+
   // Carregar clientes
   useEffect(() => {
     if (user?.empresa?.id) {
@@ -132,28 +157,6 @@ const VendaList = () => {
     );
   }, [filters]);
 
-  const handleRemoveVenda = (id) => {
-    setRemoveVendaId(id);
-    setShowDeletePopup(true);
-  };
-  
-  const confirmDelete = async () => {
-    try {
-      await dispatch(
-        destroy({empresa_id: user.empresa.id, venda_id: removeVendaId})
-      ).unwrap();
-      setShowDeletePopup(false);
-      setRemoveVendaId(null);
-    } catch (error) {
-        console.log('Venda destroy error: ', error);
-    }
-  };
-    
-  const cancelDelete = () => {
-    setShowDeletePopup(false);
-    setRemoveVendaId(null);
-  };
-
   const handleChange = (key) => (e) => {
     setFilters((prev) => ({ ...prev, [key]: e.target.value }));
   };
@@ -184,7 +187,8 @@ const VendaList = () => {
 
   const handleCopiarLinkRelatorio = async () => {
     const empresa_id = user?.empresa?.id;
-    //const baseURL = 'http://localhost:8000/api/v1/'; // URL DEV
+    //const baseURL = ''; // URL PROD
+    //const baseURL = 'http://localhost:9000/api/v1'; // URL DEV
     const baseURL = 'https://uselumenz.com/api/v1/'; // URL PROD
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
@@ -193,7 +197,7 @@ const VendaList = () => {
         if (typeof value === 'string') return value.length > 0;
         if (typeof value === 'number') return value > 0;
         return true;
-      })
+      }),
     );
 
     console.log(filtrosLimpos);
@@ -202,12 +206,12 @@ const VendaList = () => {
       ...filtrosLimpos,
     });
     const url = `${baseURL}${endpoint}?${params.toString()}`;
-        const mensagem = `Olá! Segue seu relatório de venda/serviços:
+    const mensagem = `Olá! Segue seu relatório de venda/serviços:
 ${url}`;
     navigator.clipboard.writeText(mensagem);
     alert('Mensagem Copiada com sucesso!');
     return url;
-  }
+  };
 
   return (
     <div className=''>
@@ -226,7 +230,6 @@ ${url}`;
               </div>
               <NewButton
                 label='Nova Venda'
-                shortLabel='Nova'
                 icon={<Plus size={18} />}
                 onClick={() => navigate('/nova-venda')}
               />
@@ -367,16 +370,7 @@ ${url}`;
                   }}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                   tabIndex={-1}
-                />  
-              </div>
-              <div>
-                <button 
-                  className="h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg bg-white hover:bg-gray-50 border border-gray-300 text-sm font-medium"
-                  onClick={handleCopiarLinkRelatorio}
-                >
-                    <Share2 size={16} className='text-gray-400' />
-                    <span className='text-gray-700'>Compartilhar (PDF)</span>
-                </button>
+                />
               </div>
             </div>
           </div>
@@ -436,13 +430,13 @@ ${url}`;
                           </span>
                         )}
                       </div>
-                      <div className='flex items-center justify-between mt-4 gap-2'>
+                      <div className='flex items-center justify-between flex-row-reverse mt-4 gap-2'>
                         <button
-                         className='px-3 py-1.5 rounded-md bg-red-50 text-red-500 text-xs font-semibold flex items-center justify-center cursor-pointer'
-                         onClick={(e) => {
+                          className='px-3 py-1.5 rounded-md bg-red-50 text-red-500 text-xs font-semibold flex items-center justify-center cursor-pointer'
+                          onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveVenda(venda.id);
-                         }}
+                          }}
                         >
                           <Trash size={16} />
                         </button>
@@ -466,21 +460,26 @@ ${url}`;
           <div>
             <Pagination current_page={1} lastPage={1} onPageChange={() => {}} />
           </div>
+          <div className='px-6 mt-4 mb-6 flex flex-col md:flex-row gap-2'>
+            <button
+              onClick={handleGerarRelatorio}
+              className='flex-1 px-3 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              title='Gerar relatório em PDF'
+            >
+              <FileText size={17} />
+              <span>Gerar PDF</span>
+            </button>
+            <button
+              onClick={handleCopiarLinkRelatorio}
+              className='flex-1 px-3 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              title='Compartilhar PDF'
+            >
+              <Share2 size={17} />
+              <span>Compartilhar (PDF)</span>
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Botão Flutuante Gerar PDF */}
-      <button
-        onClick={handleGerarRelatorio}
-        className='fixed bottom-6 right-6 z-50 flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-semibold text-base group cursor-pointer'
-        title='Gerar relatório em PDF'
-      >
-        <FileText
-          size={22}
-          className='group-hover:scale-110 transition-transform'
-        />
-        <span>Gerar PDF</span>
-      </button>
       <ConfirmDialog
         open={showDeletePopup}
         title='Remover Venda/OS?'
