@@ -13,12 +13,14 @@ import {
   Plus,
   User,
   Share2,
+  Trash,
 } from 'lucide-react';
+import ConfirmDialog from './ConfirmDialog';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { index as indexClientes } from '../redux/slices/clienteSlice';
-import { gerarRelatorioVendas, index } from '../redux/slices/vendaSlice';
+import { gerarRelatorioVendas, index, destroy } from '../redux/slices/vendaSlice';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
 
@@ -43,6 +45,9 @@ const VendaList = () => {
   const { vendas, loading } = useSelector((state) => state.venda);
   const { clientes } = useSelector((state) => state.cliente);
   const { user } = useSelector((state) => state.user);
+
+  const [removeVendaId, setRemoveVendaId] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   const [filters, setFilters] = useState({
     valor_min: '',
@@ -127,6 +132,28 @@ const VendaList = () => {
     );
   }, [filters]);
 
+  const handleRemoveVenda = (id) => {
+    setRemoveVendaId(id);
+    setShowDeletePopup(true);
+  };
+  
+  const confirmDelete = async () => {
+    try {
+      await dispatch(
+        destroy({empresa_id: user.empresa.id, venda_id: removeVendaId})
+      ).unwrap();
+      setShowDeletePopup(false);
+      setRemoveVendaId(null);
+    } catch (error) {
+        console.log('Venda destroy error: ', error);
+    }
+  };
+    
+  const cancelDelete = () => {
+    setShowDeletePopup(false);
+    setRemoveVendaId(null);
+  };
+
   const handleChange = (key) => (e) => {
     setFilters((prev) => ({ ...prev, [key]: e.target.value }));
   };
@@ -157,8 +184,7 @@ const VendaList = () => {
 
   const handleCopiarLinkRelatorio = async () => {
     const empresa_id = user?.empresa?.id;
-    //const baseURL = ''; // URL PROD
-    //const baseURL = 'http://localhost:9000/api/v1'; // URL DEV
+    //const baseURL = 'http://localhost:8000/api/v1/'; // URL DEV
     const baseURL = 'https://uselumenz.com/api/v1/'; // URL PROD
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
@@ -410,7 +436,16 @@ ${url}`;
                           </span>
                         )}
                       </div>
-                      <div className='flex items-center justify-end mt-4 gap-2'>
+                      <div className='flex items-center justify-between mt-4 gap-2'>
+                        <button
+                         className='px-3 py-1.5 rounded-md bg-red-50 text-red-500 text-xs font-semibold flex items-center justify-center cursor-pointer'
+                         onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveVenda(venda.id);
+                         }}
+                        >
+                          <Trash size={16} />
+                        </button>
                         <Link
                           to={`/vendas/${venda.id}/editar`}
                           className='flex items-center gap-5 text-primary hover:text-primary/70 transition cursor-pointer'
@@ -446,6 +481,13 @@ ${url}`;
         />
         <span>Gerar PDF</span>
       </button>
+      <ConfirmDialog
+        open={showDeletePopup}
+        title='Remover Venda/OS?'
+        message='Tem certeza que deseja remover esta Venda/OS? Esta ação não pode ser desfeita.'
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };

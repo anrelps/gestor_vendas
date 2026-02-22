@@ -40,7 +40,7 @@ const ConfirmDialog = ({ open, title, message, onConfirm, onCancel }) => {
         aria-label={title}
       >
         <h2 className='text-lg font-bold mb-2 text-center'>{title}</h2>
-        <p className='mb-4'>{message}</p>
+        <p className='mb-4 text-center'>{message}</p>
         <div className='flex gap-2 justify-center'>
           <button
             ref={cancelButtonRef}
