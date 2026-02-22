@@ -25,6 +25,8 @@ class EmpresaController extends Controller
             $input = $request->validate([
                 'nome' => 'required|string',
                 'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'email' => 'nullable|string',
+                'telefone' => 'nullable|string',
             ]);
             $empresaAtt = $this->service->update($empresa, $input);
             return new EmpresaResource($empresaAtt);
