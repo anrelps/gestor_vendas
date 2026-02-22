@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zlib1g-dev \
     libpng-dev \
+    libwebp-dev \
     zip \
     unzip
 
-RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-configure gd --with-webp && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
