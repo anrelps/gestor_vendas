@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserController;
@@ -26,6 +27,7 @@ Route::prefix('v1')->group(function() {
             Route::get('/logout', 'logout');
             Route::put('/update/{user}', 'update');
         });
+        Route::apiResource('/empresas', EmpresaController::class);
         Route::prefix('/{empresa}')->group(function() {
             Route::apiResource('/clientes', ClienteController::class);
             Route::apiResource('/produtos', ProdutoController::class);

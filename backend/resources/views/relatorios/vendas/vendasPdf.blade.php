@@ -4,328 +4,592 @@
     <meta charset="UTF-8">
     <title>Relatório de Vendas</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            color: #1a1a1a;
+        * {
+            font-family: 'DejaVu Sans', sans-serif;
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
+        body {
+            font-size: 11px;
+            color: #1a1a2e;
+            background: #ffffff;
+        }
+
+        /* ── TOPO DA EMPRESA ─────────────────────────────── */
+        .empresa-bar {
+            padding: 20px 40px;
+            border-bottom: 1px solid #e5e7eb;
+            display: table;
+            width: 100%;
+        }
+
+        .empresa-bar-left {
+            display: table-cell;
+            vertical-align: middle;
+            width: 60%;
+        }
+
+        .empresa-bar-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            width: 40%;
+        }
+
+        .empresa-logo-area {
+            display: table;
+        }
+
+        .empresa-logo-wrap {
+            display: table-cell;
+            vertical-align: middle;
+            padding-right: 12px;
+        }
+
+        .empresa-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            object-fit: contain;
+        }
+
+        .empresa-logo-placeholder {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            border: 2px solid #5b1a8a;
+            text-align: center;
+            line-height: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #5b1a8a;
+        }
+
+        .empresa-info-wrap {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .empresa-nome {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        .empresa-slogan {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 1px;
+        }
+
+        .empresa-contato {
+            font-size: 10px;
+            color: #6b7280;
+            line-height: 2;
+        }
+
+        .empresa-contato strong {
+            color: #374151;
+            font-weight: bold;
+        }
+
+        /* ── HEADER DO RELATÓRIO ─────────────────────────── */
         .header {
-            background-color: #4a0d66;
-            color: white;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 22px 40px 18px;
+            border-bottom: 2px solid #5b1a8a;
+            display: table;
+            width: 100%;
+        }
+
+        .header-left {
+            display: table-cell;
+            vertical-align: bottom;
+        }
+
+        .header-right {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: right;
         }
 
         .header h1 {
-            font-size: 20px;
-            margin: 0 0 5px 0;
+            font-size: 22px;
+            font-weight: bold;
+            color: #3b0764;
         }
 
-        .header .info {
-            font-size: 11px;
-            opacity: 0.9;
+        .data-geracao {
+            font-size: 10px;
+            color: #9ca3af;
         }
 
+        /* ── FILTROS ─────────────────────────────────────── */
         .filters {
-            background-color: #f2f2f2;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-left: 3px solid #6922a1;
+            margin: 20px 40px;
+            padding: 10px 14px;
+            border-left: 3px solid #7c3aed;
+            background: #f9f5ff;
         }
 
-        .filters strong {
-            color: #4a0d66;
-            font-size: 12px;
+        .filters-title {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #5b1a8a;
+            margin-bottom: 5px;
         }
 
         .filter-item {
             font-size: 10px;
-            color: #6b7280;
-            margin-top: 5px;
+            color: #4b5563;
+            line-height: 1.9;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
+        /* ── CORPO ───────────────────────────────────────── */
+        .content {
+            padding: 20px 40px 0;
         }
 
+        /* ── VENDA ───────────────────────────────────────── */
         .venda-section {
             margin-bottom: 20px;
-            border: 1px solid #bfbfbf;
+            border: 1px solid #d1d5db;
             page-break-inside: avoid;
         }
 
-        .venda-titulo {
-            background-color: #1e3a5f;
-            color: white;
-            padding: 10px;
+        /* Cabeçalho da venda: sem fundo escuro, usa borda lateral roxa */
+        .venda-header {
+            padding: 10px 14px;
+            border-left: 4px solid #5b1a8a;
+            background: #f9f5ff;
+            display: table;
+            width: 100%;
         }
 
-        .venda-titulo table {
-            margin: 0;
+        .venda-header-left {
+            display: table-cell;
+            vertical-align: middle;
         }
 
-        .venda-titulo td {
-            color: white;
+        .venda-titulo-text {
             font-size: 12px;
             font-weight: bold;
+            color: #3b0764;
         }
 
-        .status-pago {
-            background-color: #22c55e;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: bold;
+        .venda-data {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 2px;
         }
 
-        .status-pendente {
-            background-color: #f59e0b;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 9px;
-            font-weight: bold;
+        /* ── META DA VENDA ───────────────────────────────── */
+        .venda-meta {
+            padding: 12px 16px;
+            background: #ffffff;
+            border-bottom: 1px solid #f3f4f6;
+            display: table;
+            width: 100%;
         }
 
-        .venda-info {
-            padding: 10px;
-            background-color: white;
-        }
-
-        .venda-info table td {
-            padding: 5px;
+        .meta-cell {
+            display: table-cell;
+            width: 50%;
             vertical-align: top;
         }
 
-        .label {
-            color: #6b7280;
-            font-size: 10px;
-        }
-
-        .value {
-            color: #1a1a1a;
+        .meta-label {
+            font-size: 9px;
             font-weight: bold;
-            font-size: 11px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 2px;
         }
 
+        .meta-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        .venda-descricao {
+            padding: 8px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .venda-descricao .meta-value {
+            font-size: 11px;
+            font-weight: normal;
+            color: #374151;
+        }
+
+        /* ── PRODUTOS ────────────────────────────────────── */
         .produtos-table {
             width: 100%;
-            background-color: #fafafa;
-            margin: 0;
+            border-collapse: collapse;
+        }
+
+        .produtos-table thead tr {
+            background: #f5f0ff;
         }
 
         .produtos-table th {
-            background-color: #6922a1;
-            color: white;
-            padding: 8px;
+            padding: 7px 16px;
             text-align: left;
-            font-size: 11px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #5b1a8a;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .produtos-table td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #e5e5e5;
+            padding: 8px 16px;
             font-size: 10px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
         }
 
-        .venda-total {
-            background-color: #7c3aae;
-            color: white;
-            padding: 10px;
-            text-align: right;
+        .produtos-table tr:last-child td {
+            border-bottom: none;
         }
 
-        .venda-total .label-total {
-            font-size: 10px;
-            opacity: 0.9;
-        }
-
-        .venda-total .valor-total {
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 3px;
-        }
-
-        .totalizador {
-            background-color: #4a0d66;
-            color: white;
-            padding: 15px;
-            text-align: right;
-            margin-top: 20px;
-        }
-
-        .totalizador .label-geral {
-            font-size: 12px;
-        }
-
-        .totalizador .valor-geral {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 5px 0;
-        }
-
-        .totalizador .qtd {
-            font-size: 11px;
-            opacity: 0.9;
-        }
-
-        .footer-page {
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #bfbfbf;
+        .td-qty {
             text-align: center;
             color: #6b7280;
+            font-weight: bold;
+        }
+
+        /* ── RODAPÉ DA VENDA ─────────────────────────────── */
+        .venda-footer {
+            display: table;
+            width: 100%;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .venda-footer-left {
+            display: table-cell;
+            padding: 9px 16px;
+            vertical-align: middle;
+        }
+
+        .venda-footer-right {
+            display: table-cell;
+            padding: 9px 16px;
+            text-align: right;
+            vertical-align: middle;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .footer-label {
             font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #9ca3af;
         }
 
-        .sem-vendas {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
+        .footer-pago-label { color: #7c3aed; }
+
+        .footer-valor {
             font-size: 14px;
+            font-weight: bold;
+            color: #3b0764;
+            margin-top: 1px;
+        }
+
+        .footer-pago-valor {
+            font-size: 12px;
+            color: #7c3aed;
+        }
+
+        /* ── TOTALIZADOR ─────────────────────────────────── */
+        .totalizador {
+            margin: 24px 0 0;
+            border: 1px solid #d1d5db;
+            border-top: 3px solid #5b1a8a;
+        }
+
+        .totalizador-header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .totalizador-header-label {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #5b1a8a;
+        }
+
+        .totalizador-body {
+            display: table;
+            width: 100%;
+        }
+
+        .tot-cell {
+            display: table-cell;
+            width: 33.33%;
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .tot-cell:last-child { border-right: none; }
+
+        .tot-label {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .tot-valor {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .tot-valor.geral    { color: #3b0764; }
+        .tot-valor.pago     { color: #5b1a8a; }
+        .tot-valor.pendente { color: #7c3aed; }
+
+        .tot-qtd {
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 10px;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* ── FOOTER ──────────────────────────────────────── */
+        .footer-page {
+            margin: 28px 40px 28px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            display: table;
+            width: calc(100% - 80px);
+        }
+
+        .footer-left {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .footer-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+        }
+
+        .footer-brand {
+            font-size: 9px;
+            color: #9ca3af;
+        }
+
+        .footer-brand span {
+            color: #7c3aed;
+            font-weight: bold;
+        }
+
+        .footer-confidential {
+            font-size: 9px;
+            color: #d1d5db;
+        }
+
+        /* ── EMPTY STATE ─────────────────────────────────── */
+        .sem-vendas {
+            padding: 60px 40px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        /* ── PRINT ───────────────────────────────────────── */
+        @media print {
+            .venda-section  { page-break-inside: avoid; }
+            .totalizador    { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Relatório de Vendas</h1>
-        <div class="info">{{ $empresa->nome ?? 'Empresa' }}</div>
-        <div class="info">Gerado em {{ now()->format('d/m/Y H:i') }}</div>
+
+    {{--
+    ╔══════════════════════════════════════════════════════════╗
+    ║  DADOS DA EMPRESA                                        ║
+    ║  Preencha via $empresa ou edite os fallbacks abaixo      ║
+    ╚══════════════════════════════════════════════════════════╝
+    --}}
+    @php
+        $nomeEmpresa  = $empresa->nome      ?? 'Nome da Empresa';
+        $telefone     = $empresa->telefone  ?? '(00) 90000-0000';
+        $emailEmpresa = $empresa->email     ?? 'contato@empresa.com.br';
+        $logoUrl      = $empresa->logo_url  ?? null;
+        $inicialLogo  = strtoupper(substr($nomeEmpresa, 0, 1));
+    @endphp
+
+    <!-- TOPO DA EMPRESA -->
+    <div class="empresa-bar">
+        <div class="empresa-bar-left">
+            <div class="empresa-logo-area">
+                <div class="empresa-logo-wrap">
+                    @if($logoUrl)
+                        <img src="{{ public_path('storage/'.$empresa->logo_path) }}" alt="Logo" class="empresa-logo">
+                    @else
+                        <div class="empresa-logo-placeholder">{{ $inicialLogo }}</div>
+                    @endif
+                </div>
+                <div class="empresa-info-wrap">
+                    <div class="empresa-nome">{{ $nomeEmpresa }}</div>
+                    <div class="empresa-slogan">Sistema de Gestão Lumenz</div>
+                </div>
+            </div>
+        </div>
+        <div class="empresa-bar-right">
+            <div class="empresa-contato">
+                <strong>Tel:</strong> {{ $telefone }}<br>
+                <strong>Email:</strong> {{ $emailEmpresa }}
+            </div>
+        </div>
     </div>
 
+    <!-- HEADER DO RELATÓRIO -->
+    <div class="header">
+        <div class="header-left">
+            <h1>Relatório de Vendas</h1>
+        </div>
+        <div class="header-right">
+            <div class="data-geracao">Gerado em {{ now()->format('d/m/Y H:i') }}</div>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
     @if(count($filters) > 0)
     <div class="filters">
-        <strong>Filtros Aplicados:</strong>
+        <div class="filters-title">Filtros Aplicados</div>
         @isset($filters['valor_min'])
-            <div class="filter-item">• Valor mínimo: R$ {{ number_format($filters['valor_min'], 2, ',', '.') }}</div>
+            <div class="filter-item">Valor mínimo: <strong>R$ {{ number_format($filters['valor_min'], 2, ',', '.') }}</strong></div>
         @endisset
         @isset($filters['valor_max'])
-            <div class="filter-item">• Valor máximo: R$ {{ number_format($filters['valor_max'], 2, ',', '.') }}</div>
+            <div class="filter-item">Valor máximo: <strong>R$ {{ number_format($filters['valor_max'], 2, ',', '.') }}</strong></div>
         @endisset
         @isset($filters['data_min'])
-            <div class="filter-item">• Data inicial: {{ \Carbon\Carbon::parse($filters['data_min'])->format('d/m/Y') }}</div>
+            <div class="filter-item">Data inicial: <strong>{{ \Carbon\Carbon::parse($filters['data_min'])->format('d/m/Y') }}</strong></div>
         @endisset
         @isset($filters['data_max'])
-            <div class="filter-item">• Data final: {{ \Carbon\Carbon::parse($filters['data_max'])->format('d/m/Y') }}</div>
+            <div class="filter-item">Data final: <strong>{{ \Carbon\Carbon::parse($filters['data_max'])->format('d/m/Y') }}</strong></div>
         @endisset
         @if(isset($filters['pendencias']) && $filters['pendencias'] == 1)
-            <div class="filter-item">• Apenas vendas com pendências</div>
+            <div class="filter-item">Exibindo apenas vendas com pendências financeiras</div>
         @endif
     </div>
     @endif
 
-    @if($vendas->count() > 0)
-        @foreach($vendas as $venda)
-        <div class="venda-section">
-            <!-- Cabeçalho da Venda -->
-            <div class="venda-titulo">
-                <table>
-                    <tr>
-                        <td style="width: 70%;">
-                            {{ $venda->titulo }}<br>
-                            <span style="font-size: 10px; font-weight: normal; opacity: 0.9;">
-                                {{ $venda->created_at->format('d/m/Y H:i') }}
-                            </span>
-                        </td>
-                        <td style="width: 30%; text-align: right;">
-                            @if($venda->valor_pago >= $venda->valor_total)
-                                <span class="status-pago">PAGO</span>
-                            @else
-                                <span class="status-pendente">PENDENTE</span>
-                            @endif
-                        </td>
-                    </tr>
+    <!-- VENDAS -->
+    <div class="content">
+        @if($vendas->count() > 0)
+            @foreach($vendas as $venda)
+            <div class="venda-section">
+
+                <div class="venda-header">
+                    <div class="venda-header-left">
+                        <div class="venda-titulo-text">{{ $venda->titulo }}</div>
+                        <div class="venda-data">{{ $venda->created_at->format('d/m/Y H:i') }}</div>
+                    </div>
+                </div>
+
+                <div class="venda-meta">
+                    <div class="meta-cell">
+                        <div class="meta-label">Cliente</div>
+                        <div class="meta-value">{{ $venda->cliente->nome ?? 'Não informado' }}</div>
+                    </div>
+                    <div class="meta-cell" style="text-align: right;">
+                        <div class="meta-label">Valor Pago</div>
+                        <div class="meta-value">R$ {{ number_format($venda->valor_pago, 2, ',', '.') }}</div>
+                    </div>
+                </div>
+
+                @if($venda->descricao)
+                <div class="venda-descricao">
+                    <div class="meta-label">Descrição</div>
+                    <div class="meta-value">{{ $venda->descricao }}</div>
+                </div>
+                @endif
+
+                @if($venda->detalhesVendas->count() > 0)
+                <table class="produtos-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 75%;">Produto / Serviço</th>
+                            <th style="width: 25%; text-align: center;">Qtd.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($venda->detalhesVendas as $detalhe)
+                        <tr>
+                            <td>{{ $detalhe->produto->titulo ?? 'Produto' }}</td>
+                            <td class="td-qty">{{ $detalhe->quantidade }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
                 </table>
+                @endif
+
+                <div class="venda-footer">
+                    <div class="venda-footer-left">
+                        <div class="footer-label footer-pago-label">Valor Pago</div>
+                        <div class="footer-valor footer-pago-valor">R$ {{ number_format($venda->valor_pago, 2, ',', '.') }}</div>
+                    </div>
+                    <div class="venda-footer-right">
+                        <div class="footer-label">Valor Total</div>
+                        <div class="footer-valor">R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</div>
+                    </div>
+                </div>
+
+            </div>
+            @endforeach
+
+            <div class="totalizador">
+                <div class="totalizador-header">
+                    <div class="totalizador-header-label">Resumo Financeiro</div>
+                </div>
+                <div class="totalizador-body">
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Geral</div>
+                        <div class="tot-valor geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
+                    </div>
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Recebido</div>
+                        <div class="tot-valor pago">R$ {{ number_format($vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                    </div>
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Pendente</div>
+                        <div class="tot-valor pendente">R$ {{ number_format($vendas->sum('valor_total') - $vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                    </div>
+                </div>
+                <div class="tot-qtd">
+                    {{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda registrada' : 'vendas registradas' }} neste período
+                </div>
             </div>
 
-            <!-- Informações da Venda -->
-            <div class="venda-info">
-                <table>
-                    <tr>
-                        <td style="width: 50%;">
-                            <div class="label">Cliente:</div>
-                            <div class="value">{{ $venda->cliente->nome ?? 'Não informado' }}</div>
-                        </td>
-                        <td style="width: 50%;">
-                            <div class="label">Valor Pago:</div>
-                            <div class="value">R$ {{ number_format($venda->valor_pago, 2, ',', '.') }}</div>
-                        </td>
-                    </tr>
-                    @if($venda->descricao)
-                    <tr>
-                        <td colspan="2" style="padding-top: 8px;">
-                            <div class="label">Descrição:</div>
-                            <div class="value">{{ $venda->descricao }}</div>
-                        </td>
-                    </tr>
-                    @endif
-                </table>
+        @else
+            <div class="sem-vendas">
+                Nenhuma venda encontrada com os filtros aplicados.
             </div>
-
-            <!-- Lista de Produtos -->
-            @if($venda->detalhesVendas->count() > 0)
-            <table class="produtos-table">
-                <thead>
-                    <tr>
-                        <th style="width: 70%;">Produto/Serviço</th>
-                        <th style="width: 30%; text-align: center;">Quantidade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($venda->detalhesVendas as $detalhe)
-                    <tr>
-                        <td>{{ $detalhe->produto->titulo ?? 'Produto' }}</td>
-                        <td style="text-align: center;">{{ $detalhe->quantidade }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            @endif
-
-            <!-- Total da Venda -->
-            <div class="venda-total">
-                <div class="label-total">Valor Total da Venda</div>
-                <div class="valor-total">R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</div>
-            </div>
-        </div>
-        @endforeach
-
-        <!-- Totalizador Geral -->
-        <div class="totalizador">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td style="text-align: left; width: 33%;">
-                        <div class="label-geral">TOTAL GERAL</div>
-                        <div class="valor-geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
-                    </td>
-                    <td style="text-align: center; width: 33%;">
-                        <div class="label-geral">TOTAL PAGO</div>
-                        <div class="valor-geral" style="color: #4ade80;">R$ {{ number_format($vendas->sum('valor_pago'), 2, ',', '.') }}</div>
-                    </td>
-                    <td style="text-align: right; width: 33%;">
-                        <div class="label-geral">TOTAL PENDENTE</div>
-                        <div class="valor-geral" style="color: #fbbf24;">R$ {{ number_format($vendas->sum('valor_total') - $vendas->sum('valor_pago'), 2, ',', '.') }}</div>
-                    </td>
-                </tr>
-            </table>
-            <div class="qtd" style="text-align: center; margin-top: 10px;">
-                {{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda' : 'vendas' }}
-            </div>
-        </div>
-    @else
-        <div class="sem-vendas">
-            Nenhuma venda encontrada com os filtros aplicados.
-        </div>
-    @endif
-
-    <div class="footer-page">
-        Documento gerado pelo sistema Lumenz.com
+        @endif
     </div>
+
+    <!-- FOOTER -->
+    <div class="footer-page">
+        <div class="footer-left">
+            <div class="footer-brand">Gerado por <span>uselumenz.com</span></div>
+        </div>
+        <div class="footer-right">
+            <div class="footer-confidential">{{ $empresa->nome }}</div>
+        </div>
+    </div>
+
 </body>
 </html>

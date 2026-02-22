@@ -10,10 +10,22 @@ class Empresa extends Model
 
     protected $fillable = [
         'nome',
+        'email',
+        'telefone',
+        'logo_path',
         'assinatura_ativa',
         'data_inicio_assinatura',
         'data_fim_assinatura',
     ];
+
+    protected $appends = ['logo_url'];
+
+    public function getLogoUrlAttribute() {
+        if(!$this->logo_path) {
+            return null;
+        }
+        return asset('storage/'.$this->logo_path);
+    }
 
     public function users() {
         return $this->hasMany(User::class);

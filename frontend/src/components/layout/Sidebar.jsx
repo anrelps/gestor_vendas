@@ -320,7 +320,8 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               className='pointer-events-none absolute inset-0 -z-10
               bg-[radial-gradient(120%_80%_at_30%_0%,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_70%)]'
             />
-            <User size={30} className='text-white/90' />
+            {/*<User size={30} className='text-white/90' />*/}
+            <img src={userState?.empresa?.logo_url} alt="" />
           </div>
 
           <div className='flex flex-col'>
