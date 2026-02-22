@@ -1,14 +1,35 @@
 import { ChevronRight, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { index, destroy } from '../redux/slices/clienteSlice';
-import NewButton from './layout/NewButton';
+import { destroy, index } from '../redux/slices/clienteSlice';
 import ConfirmDialog from './ConfirmDialog';
+import NewButton from './layout/NewButton';
 
 import EditClientPopup from './EditClientPopup';
 import Pagination from './Pagination';
 
 import { useLoading } from '../context/LoadingContext';
+
+const formatTelefone = (telefone) => {
+  if (!telefone) return '';
+
+  let cleaned = telefone.replace(/\D/g, '');
+
+  // Remove DDI 55 se existir
+  if (cleaned.length === 13 && cleaned.startsWith('55')) {
+    cleaned = cleaned.slice(2);
+  }
+
+  if (cleaned.length === 11) {
+    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+  }
+
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 6)}-${cleaned.slice(6)}`;
+  }
+
+  return cleaned;
+};
 
 const ClientList = () => {
   const dispatch = useDispatch();
@@ -91,10 +112,10 @@ const ClientList = () => {
       setShowDeletePopup(false);
       setRemoveClientId(null);
     } catch (error) {
-          console.log('Client destroy error: ', error);
+      console.log('Client destroy error: ', error);
     }
   };
-  
+
   const cancelDelete = () => {
     setShowDeletePopup(false);
     setRemoveClientId(null);
@@ -116,7 +137,6 @@ const ClientList = () => {
               </div>
               <NewButton
                 label='Novo Cliente'
-                shortLabel='Novo'
                 icon={<Plus size={18} />}
                 onClick={() => {
                   setEditClient({});
@@ -189,7 +209,9 @@ const ClientList = () => {
                                 Telefone:
                               </span>
                               <span className='text-gray-700'>
-                                {cliente.telefone || (
+                                {cliente.telefone ? (
+                                  formatTelefone(cliente.telefone)
+                                ) : (
                                   <span className='italic text-gray-300'>
                                     Não informado
                                   </span>

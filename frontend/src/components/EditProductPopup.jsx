@@ -19,6 +19,7 @@ const EditProductPopup = ({
     productId: '',
     titulo: '',
     valor: '',
+    descricao: '',
   });
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const EditProductPopup = ({
       productId: product.id || '',
       titulo: product.titulo || '',
       valor: product.valor || '',
+      descricao: product.descricao || '',
     });
   }, [product]);
 
@@ -55,7 +57,7 @@ const EditProductPopup = ({
       const productData = {
         titulo: form.titulo.trim(),
         valor: Number(form.valor),
-        descricao: null,
+        descricao: form.descricao.trim(),
       };
 
       if (product.id) {
@@ -142,6 +144,19 @@ const EditProductPopup = ({
               </div>
             </label>
           </div>
+        </form>
+
+        <form className='mb-4'>
+          <label className='block'>
+            <span className='text-xs text-gray-500 mb-1 block'>Descrição</span>
+            <textarea
+              value={form.descricao}
+              onChange={handleChange('descricao')}
+              placeholder='Ex: Descrição do produto'
+              rows='4'
+              className='w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/40 transition resize-none'
+            />
+          </label>
         </form>
 
         <div className='grid grid-cols-2 gap-2'>

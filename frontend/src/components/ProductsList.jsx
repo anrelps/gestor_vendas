@@ -51,7 +51,6 @@ const ProductsList = () => {
   }, [dispatch, user?.empresa?.id]);
 
   useEffect(() => {
-    if (!search) return;
     const timer = setTimeout(() => {
       if (user?.empresa?.id) {
         dispatch(
@@ -120,7 +119,6 @@ const ProductsList = () => {
               </div>
               <NewButton
                 label='Novo Produto'
-                shortLabel='Novo'
                 icon={<Plus size={18} />}
                 onClick={() => setShowNewProduct(true)}
               />
@@ -204,7 +202,7 @@ const ProductsList = () => {
                             </div>
                             <div className='flex items-end justify-end ml-4 gap-2'>
                               <button
-                                className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center'
+                                className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center cursor-pointer'
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setEditProduct(produto);
@@ -214,7 +212,7 @@ const ProductsList = () => {
                                 Editar
                               </button>
                               <button
-                                className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center'
+                                className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center cursor-pointer'
                                 title='Remover produto'
                                 onClick={(e) => {
                                   e.stopPropagation();
