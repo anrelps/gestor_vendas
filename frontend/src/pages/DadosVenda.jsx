@@ -322,6 +322,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                 setClienteSelecionado(value);
                 setQueryCliente('');
               }}
+              immediate
             >
               <div className='relative'>
                 <div className='flex items-center w-full px-4 py-3 rounded-sm border border-gray-300 bg-gray-50 shadow-sm'>
