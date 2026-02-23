@@ -19,7 +19,8 @@
 
         /* ── TOPO DA EMPRESA ─────────────────────────────── */
         .empresa-bar {
-            padding: 10px 40px;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e5e7eb;
             display: table;
             width: 100%;
         }
@@ -96,8 +97,8 @@
 
         /* ── HEADER DO RELATÓRIO ─────────────────────────── */
         .header {
-            padding: 10px 40px 18px;
-            border-bottom: 2px solid #e5e7eb;
+            padding: 22px 40px 18px;
+            border-bottom: 2px solid #5b1a8a;
             display: table;
             width: 100%;
         }
@@ -273,14 +274,6 @@
             display: table-cell;
             padding: 9px 16px;
             vertical-align: middle;
-            text-align: left;
-        }
-
-        .venda-footer-center {
-            display: table-cell;
-            padding: 9px 16px;
-            vertical-align: middle;
-            text-align: left;
         }
 
         .venda-footer-right {
@@ -450,7 +443,7 @@
                 </div>
                 <div class="empresa-info-wrap">
                     <div class="empresa-nome">{{ $nomeEmpresa }}</div>
-                    <div class="footer-brand">Gerado por <span>uselumenz.com</span></div>
+                    <div class="empresa-slogan">Sistema de Gestão Lumenz</div>
                 </div>
             </div>
         </div>
@@ -512,6 +505,10 @@
                         <div class="meta-label">Cliente</div>
                         <div class="meta-value">{{ $venda->cliente->nome ?? 'Não informado' }}</div>
                     </div>
+                    <div class="meta-cell" style="text-align: right;">
+                        <div class="meta-label">Valor Pago</div>
+                        <div class="meta-value">R$ {{ number_format($venda->valor_pago, 2, ',', '.') }}</div>
+                    </div>
                 </div>
 
                 @if($venda->descricao)
@@ -542,26 +539,57 @@
 
                 <div class="venda-footer">
                     <div class="venda-footer-left">
-                        <div class="footer-label">Valor Total</div>
-                        <div class="footer-valor">R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</div>
-                    </div>
-                    <div class="venda-footer-center">
                         <div class="footer-label footer-pago-label">Valor Pago</div>
                         <div class="footer-valor footer-pago-valor">R$ {{ number_format($venda->valor_pago, 2, ',', '.') }}</div>
                     </div>
                     <div class="venda-footer-right">
-                        <div class="footer-label">Total Restante</div>
-                        <div class="footer-valor">R$ {{ number_format(($venda->valor_total - $venda->valor_pago), 2, ',', '.') }}</div>
+                        <div class="footer-label">Valor Total</div>
+                        <div class="footer-valor">R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</div>
                     </div>
                 </div>
 
             </div>
             @endforeach
+
+            <div class="totalizador">
+                <div class="totalizador-header">
+                    <div class="totalizador-header-label">Resumo Financeiro</div>
+                </div>
+                <div class="totalizador-body">
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Geral</div>
+                        <div class="tot-valor geral">R$ {{ number_format($vendas->sum('valor_total'), 2, ',', '.') }}</div>
+                    </div>
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Recebido</div>
+                        <div class="tot-valor pago">R$ {{ number_format($vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                    </div>
+                    <div class="tot-cell">
+                        <div class="tot-label">Total Pendente</div>
+                        <div class="tot-valor pendente">R$ {{ number_format($vendas->sum('valor_total') - $vendas->sum('valor_pago'), 2, ',', '.') }}</div>
+                    </div>
+                </div>
+                <div class="tot-qtd">
+                    {{ $vendas->count() }} {{ $vendas->count() == 1 ? 'venda registrada' : 'vendas registradas' }} neste período
+                </div>
+            </div>
+
         @else
             <div class="sem-vendas">
                 Nenhuma venda encontrada com os filtros aplicados.
             </div>
         @endif
     </div>
+
+    <!-- FOOTER -->
+    <div class="footer-page">
+        <div class="footer-left">
+            <div class="footer-brand">Gerado por <span>uselumenz.com</span></div>
+        </div>
+        <div class="footer-right">
+            <div class="footer-confidential">{{ $empresa->nome }}</div>
+        </div>
+    </div>
+
 </body>
 </html>
