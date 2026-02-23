@@ -16,11 +16,9 @@ import {
   selectAuthUserDisplayName,
   selectCompanyName,
 } from '../../redux/slices/userSlice';
-import EditProfilePopup from '../EditProfilePopup';
 
 const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false);
   const closeButtonRef = useRef(null);
   const previousFocusRef = useRef(null);
   const drawerRef = useRef(null);
@@ -234,7 +232,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       <div className='mb-4 flex justify-center'>
         <button
           title={`${authUser.name} • ${authUser.role}`}
-          onClick={() => setShowEditProfile(true)}
+          onClick={() => navigate('/editar-perfil')}
           className='group relative isolate overflow-hidden p-3 rounded-full cursor-pointer
           bg-transparent
           shadow-none
@@ -321,7 +319,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               bg-[radial-gradient(120%_80%_at_30%_0%,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_70%)]'
             />
             {/*<User size={30} className='text-white/90' />*/}
-            <img src={userState?.empresa?.logo_url} alt="" />
+            <img src={userState?.empresa?.logo_url} alt='' />
           </div>
 
           <div className='flex flex-col'>
@@ -335,7 +333,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         </div>
 
         <button
-          onClick={() => setShowEditProfile(true)}
+          onClick={() => navigate('/editar-perfil')}
           className='mt-5 group/btn relative isolate overflow-hidden w-full
           text-sm flex items-center justify-center gap-2 cursor-pointer
           py-3 px-5 font-medium rounded-xl
@@ -507,7 +505,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
           <button
             onClick={() => {
               closeMobile();
-              setShowEditProfile(true);
+              navigate('/editar-perfil');
             }}
             className='group/edit relative isolate overflow-hidden mt-2 text-sm flex items-center gap-2 px-4 py-2 rounded-md
               bg-white/10 backdrop-blur-xl border border-white/18 text-white font-medium
@@ -558,15 +556,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       </div>
 
       {renderMobileMenu()}
-
-      {showEditProfile && (
-        <EditProfilePopup
-          profile={authUser}
-          onClose={() => setShowEditProfile(false)}
-          onSave={() => setShowEditProfile(false)}
-          loading={false}
-        />
-      )}
     </>
   );
 };

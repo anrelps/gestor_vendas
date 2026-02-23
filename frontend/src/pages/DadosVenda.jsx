@@ -4,10 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import {
   Combobox,
   ComboboxButton,
+  ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
 } from '@headlessui/react';
-import { ChevronRight, FileText, Pencil, Plus, User } from 'lucide-react';
+import {
+  ChevronRight,
+  FileText,
+  Pencil,
+  Plus,
+  Search,
+  User,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import EditClientPopup from '../components/EditClientPopup';
 import { useLoading } from '../context/LoadingContext';
@@ -97,8 +105,10 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
   }, [dispatch, user?.empresa?.id]);
 
   const [clienteSelecionado, setClienteSelecionado] = useState('');
+  const [queryCliente, setQueryCliente] = useState('');
   const [showNewClient, setShowNewClient] = useState(false);
   const [descricaoVenda, setDescricaoVenda] = useState('');
+  const [queryProduto, setQueryProduto] = useState('');
   const [produtosSelecionados, setProdutosSelecionados] = useState({});
   const [valorTotal, setValorTotal] = useState('');
   const [valorPago, setValorPago] = useState('');
@@ -308,54 +318,64 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
           <div className='mt-4'>
             <Combobox
               value={clienteSelecionado}
-              onChange={setClienteSelecionado}
+              onChange={(value) => {
+                setClienteSelecionado(value);
+                setQueryCliente('');
+              }}
             >
               <div className='relative'>
-                <ComboboxButton className='w-full'>
-                  <div
-                    className='flex items-center w-full px-4 py-3 rounded-sm border border-gray-300 bg-gray-50 hover:bg-gray-100 transition cursor-pointer shadow-sm'
-                    style={{ minHeight: 56 }}
-                  >
-                    <span className='flex items-center justify-center w-9 h-9 rounded-full bg-primary mr-3'>
-                      <User size={22} className='text-white' />
-                    </span>
-                    <span className='text-base text-gray-700 truncate'>
-                      {(() => {
-                        const c = clientes.find(
-                          (c) => c.id === clienteSelecionado,
-                        );
-                        return c ? c.nome : 'Selecione um cliente';
-                      })()}
-                    </span>
-                    <ChevronRight size={22} className='text-gray-400 ml-auto' />
-                  </div>
-                </ComboboxButton>
-                <ComboboxOptions className='absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-2 max-h-56 overflow-y-auto shadow'>
-                  {clientes.length === 0 && (
-                    <div className='px-4 py-3 text-gray-400'>
-                      Nenhum cliente encontrado
-                    </div>
-                  )}
-                  {clientes.map((cliente) => (
-                    <ComboboxOption
-                      key={cliente.id}
-                      value={cliente.id}
-                      className={({ active, selected }) =>
-                        [
-                          'flex items-center px-4 py-3 cursor-pointer',
-                          selected
-                            ? 'bg-primary/10'
-                            : active
-                              ? 'bg-gray-100'
-                              : 'bg-white',
-                        ].join(' ')
-                      }
-                    >
-                      <span className='text-base text-gray-700 truncate'>
-                        {cliente.nome}
-                      </span>
-                    </ComboboxOption>
-                  ))}
+                <div className='flex items-center w-full px-4 py-3 rounded-sm border border-gray-300 bg-gray-50 shadow-sm'>
+                  <span className='flex items-center justify-center w-9 h-9 rounded-full bg-primary mr-3 shrink-0'>
+                    <User size={22} className='text-white' />
+                  </span>
+                  <ComboboxInput
+                    className='flex-1 bg-transparent border-none outline-none text-base text-gray-700 placeholder-gray-400'
+                    placeholder='Selecione um cliente'
+                    displayValue={(clienteId) => {
+                      const c = clientes.find((c) => c.id === clienteId);
+                      return c ? c.nome : '';
+                    }}
+                    onChange={(e) => setQueryCliente(e.target.value)}
+                  />
+                  <ComboboxButton className='ml-2 shrink-0'>
+                    <ChevronRight size={22} className='text-gray-400' />
+                  </ComboboxButton>
+                </div>
+                <ComboboxOptions className='absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-2 max-h-60 overflow-y-auto shadow-lg'>
+                  {(() => {
+                    const clientesFiltrados = clientes.filter((cliente) =>
+                      cliente.nome
+                        .toLowerCase()
+                        .includes(queryCliente.toLowerCase()),
+                    );
+                    if (clientesFiltrados.length === 0) {
+                      return (
+                        <div className='px-4 py-3 text-gray-400'>
+                          Nenhum cliente encontrado
+                        </div>
+                      );
+                    }
+                    return clientesFiltrados.map((cliente) => (
+                      <ComboboxOption
+                        key={cliente.id}
+                        value={cliente.id}
+                        className={({ active, selected }) =>
+                          [
+                            'flex items-center px-4 py-3 cursor-pointer',
+                            selected
+                              ? 'bg-primary/10'
+                              : active
+                                ? 'bg-gray-100'
+                                : 'bg-white',
+                          ].join(' ')
+                        }
+                      >
+                        <span className='text-base text-gray-700 truncate'>
+                          {cliente.nome}
+                        </span>
+                      </ComboboxOption>
+                    ));
+                  })()}
                 </ComboboxOptions>
               </div>
             </Combobox>
@@ -371,101 +391,132 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         />
         <div className='mt-6'>
           <div className='font-semibold text-black mb-2 text-lg'>Produtos</div>
-          <div className='flex flex-col gap-0 rounded-md border border-gray-200 shadow-sm bg-white'>
-            {produtos.map((produto, idx) => {
-              const checked = produto.id in produtosSelecionados;
-              const quantidade = checked
-                ? produtosSelecionados[produto.id].quantidade
-                : 1;
-              const zebraBg = idx % 2 === 1 ? 'bg-gray-50' : 'bg-white';
-              return (
-                <div
-                  key={produto.id}
-                  className={`flex items-center w-full px-4 py-3 ${checked ? 'bg-primary/30' : zebraBg} ${
-                    idx !== produtos.length - 1
-                      ? 'border-b border-gray-100'
-                      : ''
-                  }`}
-                >
-                  <input
-                    type='checkbox'
-                    className='accent-primary mr-3'
-                    checked={checked}
-                    onChange={() => handleProdutoCheck(produto)}
-                  />
-                  <span className='flex-1 text-gray-800 font-light'>
-                    {produto.titulo}
-                  </span>
-                  <div
-                    className='flex items-center mr-4 border border-gray-200 rounded-md overflow-hidden bg-white'
-                    style={{ minWidth: 66, height: 28 }}
-                  >
-                    <button
-                      className={`w-6 h-6 flex items-center justify-center transition text-base ${
-                        checked
-                          ? 'bg-gray-100 text-gray-600'
-                          : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+          <div className='border border-gray-200 rounded-md shadow-sm overflow-hidden'>
+            <div className='relative bg-white border-b border-gray-200'>
+              <Search
+                size={20}
+                className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+              />
+              <input
+                type='text'
+                className='w-full pl-10 pr-4 py-2.5 border-0 focus:outline-none focus:ring-0 text-base bg-transparent'
+                placeholder='Buscar produto...'
+                value={queryProduto}
+                onChange={(e) => setQueryProduto(e.target.value)}
+              />
+            </div>
+            <div className='flex flex-col gap-0 bg-white max-h-96 overflow-y-auto'>
+              {(() => {
+                const produtosFiltrados = produtos.filter((produto) =>
+                  produto.titulo
+                    .toLowerCase()
+                    .includes(queryProduto.toLowerCase()),
+                );
+                if (produtosFiltrados.length === 0) {
+                  return (
+                    <div className='px-4 py-8 text-center text-gray-400'>
+                      Nenhum produto encontrado
+                    </div>
+                  );
+                }
+                return produtosFiltrados.map((produto, idx) => {
+                  const checked = produto.id in produtosSelecionados;
+                  const quantidade = checked
+                    ? produtosSelecionados[produto.id].quantidade
+                    : 1;
+                  const zebraBg = idx % 2 === 1 ? 'bg-gray-50' : 'bg-white';
+                  return (
+                    <div
+                      key={produto.id}
+                      className={`flex items-center w-full px-4 py-3 ${checked ? 'bg-primary/30' : zebraBg} ${
+                        idx !== produtos.length - 1
+                          ? 'border-b border-gray-100'
+                          : ''
                       }`}
-                      type='button'
-                      onClick={() => {
-                        if (!checked) return;
-                        // Resetar flag para permitir recálculo automático
-                        setValorTotalEditadoManualmente(false);
-                        setProdutosSelecionados((prev) => {
-                          const newState = { ...prev };
-                          if (newState[produto.id]?.quantidade > 1) {
-                            newState[produto.id] = {
-                              ...newState[produto.id],
-                              quantidade: newState[produto.id].quantidade - 1,
-                            };
-                          }
-                          return newState;
-                        });
-                      }}
-                      disabled={!checked}
-                      style={{ border: 'none', borderRadius: 0 }}
                     >
-                      -
-                    </button>
-                    <span
-                      className={`w-6 text-center select-none text-sm ${checked ? '' : 'text-gray-300'}`}
-                    >
-                      {quantidade}
-                    </span>
-                    <button
-                      className={`w-6 h-6 flex items-center justify-center transition text-base ${
-                        checked
-                          ? 'bg-gray-100 text-gray-600'
-                          : 'bg-gray-50 text-gray-300 cursor-not-allowed'
-                      }`}
-                      type='button'
-                      onClick={() => {
-                        if (!checked) return;
-                        // Resetar flag para permitir recálculo automático
-                        setValorTotalEditadoManualmente(false);
-                        setProdutosSelecionados((prev) => {
-                          const newState = { ...prev };
-                          if (checked) {
-                            newState[produto.id] = {
-                              ...newState[produto.id],
-                              quantidade: newState[produto.id].quantidade + 1,
-                            };
-                          }
-                          return newState;
-                        });
-                      }}
-                      disabled={!checked}
-                      style={{ border: 'none', borderRadius: 0 }}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <span className='text-gray-500 text-sm'>
-                    {currencyFormatter.format(Number(produto.valor))}
-                  </span>
-                </div>
-              );
-            })}
+                      <input
+                        type='checkbox'
+                        className='accent-primary mr-3'
+                        checked={checked}
+                        onChange={() => handleProdutoCheck(produto)}
+                      />
+                      <span className='flex-1 text-gray-800 font-light'>
+                        {produto.titulo}
+                      </span>
+                      <div
+                        className='flex items-center mr-4 border border-gray-200 rounded-md overflow-hidden bg-white shrink-0'
+                        style={{ minWidth: 66, height: 28 }}
+                      >
+                        <button
+                          className={`w-6 h-6 flex items-center justify-center transition text-base ${
+                            checked
+                              ? 'bg-gray-100 text-gray-600'
+                              : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                          }`}
+                          type='button'
+                          onClick={() => {
+                            if (!checked) return;
+                            // Resetar flag para permitir recálculo automático
+                            setValorTotalEditadoManualmente(false);
+                            setProdutosSelecionados((prev) => {
+                              const newState = { ...prev };
+                              if (newState[produto.id]?.quantidade > 1) {
+                                newState[produto.id] = {
+                                  ...newState[produto.id],
+                                  quantidade:
+                                    newState[produto.id].quantidade - 1,
+                                };
+                              }
+                              return newState;
+                            });
+                          }}
+                          disabled={!checked}
+                          style={{ border: 'none', borderRadius: 0 }}
+                        >
+                          -
+                        </button>
+                        <span
+                          className={`w-6 text-center select-none text-sm ${checked ? '' : 'text-gray-300'}`}
+                        >
+                          {quantidade}
+                        </span>
+                        <button
+                          className={`w-6 h-6 flex items-center justify-center transition text-base ${
+                            checked
+                              ? 'bg-gray-100 text-gray-600'
+                              : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                          }`}
+                          type='button'
+                          onClick={() => {
+                            if (!checked) return;
+                            // Resetar flag para permitir recálculo automático
+                            setValorTotalEditadoManualmente(false);
+                            setProdutosSelecionados((prev) => {
+                              const newState = { ...prev };
+                              if (checked) {
+                                newState[produto.id] = {
+                                  ...newState[produto.id],
+                                  quantidade:
+                                    newState[produto.id].quantidade + 1,
+                                };
+                              }
+                              return newState;
+                            });
+                          }}
+                          disabled={!checked}
+                          style={{ border: 'none', borderRadius: 0 }}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <span className='text-gray-500 text-sm text-right shrink-0' style={{ minWidth: 90 }}>
+                        {currencyFormatter.format(Number(produto.valor))}
+                      </span>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
           </div>
         </div>
         {showNewClient && (
