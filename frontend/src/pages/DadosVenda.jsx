@@ -509,7 +509,10 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
                           +
                         </button>
                       </div>
-                      <span className='text-gray-500 text-sm text-right shrink-0' style={{ minWidth: 90 }}>
+                      <span
+                        className='text-gray-500 text-sm text-right shrink-0'
+                        style={{ minWidth: 90 }}
+                      >
                         {currencyFormatter.format(Number(produto.valor))}
                       </span>
                     </div>
