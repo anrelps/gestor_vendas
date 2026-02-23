@@ -306,7 +306,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
             <h1 className='text-black text-lg font-bold'>Cliente</h1>
             <div className='md:flex items-center'>
               <button
-                className='w-full cursor-pointer mt-6 md:mt-0 md:w-auto md:shrink-0 px-4 py-2 rounded bg-white text-primary border border-primary hover:bg-primary/10 transition md:ml-2 flex items-center gap-2'
+                className='w-full cursor-pointer mt-6 md:mt-0 md:w-auto md:shrink-0 px-4 py-2 rounded-sm bg-primary/5 text-primary border border-primary hover:bg-white active:scale-[0.97] transition-all duration-150 md:ml-2 flex items-center gap-2 font-semibold'
                 style={{ minWidth: 120 }}
                 onClick={() => setShowNewClient(true)}
               >
