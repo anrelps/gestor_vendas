@@ -8,6 +8,7 @@ import { checkAuth } from './redux/slices/userSlice';
 // Pages
 import Clients from './pages/Clients';
 import Dashboard from './pages/Dashboard';
+import EditarPerfil from './pages/EditarPerfil';
 import EditarVenda from './pages/EditarVenda';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -49,6 +50,7 @@ const App = () => {
           <Route path='/vendas' element={<Vendas />} />
           <Route path='/nova-venda' element={<NovaVenda />} />
           <Route path='/vendas/:id/editar' element={<EditarVenda />} />
+          <Route path='/editar-perfil' element={<EditarPerfil />} />
         </Route>
       </Routes>
     </BrowserRouter>
