@@ -1,6 +1,7 @@
 import {
   Combobox,
   ComboboxButton,
+  ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
 } from '@headlessui/react';
@@ -43,6 +44,8 @@ const formatVendaDate = (value) => {
 
 const VendaList = () => {
   const [search, setSearch] = useState('');
+  const [queryCliente, setQueryCliente] = useState('');
+  const clienteInputRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { vendas, loading } = useSelector((state) => state.venda);
@@ -238,6 +241,92 @@ ${url}`;
 
           {/* Filtros */}
           <div className='px-4 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50'>
+            {/* Filtro de Cliente - Destacado */}
+            <div className='mb-3'>
+              <Combobox
+                value={filters.cliente}
+                onChange={(value) => {
+                  setFilters((prev) => ({ ...prev, cliente: value }));
+                  setQueryCliente('');
+                }}
+                immediate
+              >
+                <div className='relative'>
+                  <div
+                    className='h-11 flex items-center px-4 rounded-lg border border-primary-light bg-white hover:bg-primary/5 hover:border-primary/50 transition cursor-text'
+                    onClick={() => clienteInputRef.current?.focus()}
+                  >
+                    <User size={18} className='text-primary mr-3 shrink-0' />
+                    <ComboboxInput
+                      ref={clienteInputRef}
+                      className='flex-1 bg-transparent border-none outline-none text-gray-800 font-medium placeholder-gray-400'
+                      placeholder='Todos os clientes'
+                      displayValue={(clienteId) => {
+                        if (!clienteId) return '';
+                        const c = clientes.find((c) => c.id === clienteId);
+                        return c ? c.nome : '';
+                      }}
+                      onChange={(e) => setQueryCliente(e.target.value)}
+                    />
+                    <ComboboxButton className='ml-2 shrink-0'>
+                      <ChevronRight size={18} className='text-gray-400' />
+                    </ComboboxButton>
+                  </div>
+                  <ComboboxOptions className='absolute z-20 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>
+                    {(() => {
+                      const clientesFiltrados = clientes.filter((cliente) =>
+                        cliente.nome
+                          .toLowerCase()
+                          .includes(queryCliente.toLowerCase()),
+                      );
+                      return (
+                        <>
+                          <ComboboxOption
+                            value=''
+                            className={({ active, selected }) =>
+                              `flex items-center px-3 py-2.5 cursor-pointer text-sm whitespace-nowrap ${
+                                selected
+                                  ? 'bg-primary/10 text-primary font-medium'
+                                  : active
+                                    ? 'bg-gray-50'
+                                    : ''
+                              }`
+                            }
+                          >
+                            Todos os clientes
+                          </ComboboxOption>
+                          {clientesFiltrados.length === 0 && queryCliente ? (
+                            <div className='px-3 py-2.5 text-sm text-gray-400'>
+                              Nenhum cliente encontrado
+                            </div>
+                          ) : (
+                            clientesFiltrados.map((cliente) => (
+                              <ComboboxOption
+                                key={cliente.id}
+                                value={cliente.id}
+                                className={({ active, selected }) =>
+                                  `flex items-center px-3 py-2.5 cursor-pointer text-sm ${
+                                    selected
+                                      ? 'bg-primary/10 text-primary font-medium'
+                                      : active
+                                        ? 'bg-gray-50'
+                                        : ''
+                                  }`
+                                }
+                              >
+                                <span className='truncate'>{cliente.nome}</span>
+                              </ComboboxOption>
+                            ))
+                          )}
+                        </>
+                      );
+                    })()}
+                  </ComboboxOptions>
+                </div>
+              </Combobox>
+            </div>
+
+            {/* Outros Filtros */}
             {/* Layout flexível: wrap em mobile, linha em desktop */}
             <div className='flex flex-wrap items-center gap-2'>
               {/* Filtro: Não pagas - tamanho fixo */}
@@ -256,68 +345,6 @@ ${url}`;
                 />
                 Não pagas
               </button>
-
-              {/* Filtro: Cliente - cresce mas nunca trunca "Todos os clientes" */}
-              <Combobox
-                value={filters.cliente}
-                onChange={(value) => {
-                  setFilters((prev) => ({ ...prev, cliente: value }));
-                }}
-              >
-                <div className='relative'>
-                  <ComboboxButton>
-                    <div className='h-9 inline-flex items-center px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition cursor-pointer text-sm font-medium whitespace-nowrap'>
-                      <User size={16} className='text-gray-400 mr-2 shrink-0' />
-                      <span className='text-gray-700'>
-                        {(() => {
-                          if (!filters.cliente) return 'Todos os clientes';
-                          const c = clientes.find(
-                            (c) => c.id === filters.cliente,
-                          );
-                          return c ? c.nome : 'Todos os clientes';
-                        })()}
-                      </span>
-                      <ChevronRight
-                        size={16}
-                        className='text-gray-400 ml-2 shrink-0'
-                      />
-                    </div>
-                  </ComboboxButton>
-                  <ComboboxOptions className='absolute z-20 min-w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>
-                    <ComboboxOption
-                      value=''
-                      className={({ active, selected }) =>
-                        `flex items-center px-3 py-2.5 cursor-pointer text-sm whitespace-nowrap ${
-                          selected
-                            ? 'bg-primary/10 text-primary font-medium'
-                            : active
-                              ? 'bg-gray-50'
-                              : ''
-                        }`
-                      }
-                    >
-                      Todos os clientes
-                    </ComboboxOption>
-                    {clientes.map((cliente) => (
-                      <ComboboxOption
-                        key={cliente.id}
-                        value={cliente.id}
-                        className={({ active, selected }) =>
-                          `flex items-center px-3 py-2.5 cursor-pointer text-sm ${
-                            selected
-                              ? 'bg-primary/10 text-primary font-medium'
-                              : active
-                                ? 'bg-gray-50'
-                                : ''
-                          }`
-                        }
-                      >
-                        <span className='truncate'>{cliente.nome}</span>
-                      </ComboboxOption>
-                    ))}
-                  </ComboboxOptions>
-                </div>
-              </Combobox>
 
               {/* Filtro: Data Início */}
               <div
