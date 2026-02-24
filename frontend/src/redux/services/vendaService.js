@@ -57,7 +57,8 @@ export const relatorioVendasPdf = async({
     cliente = '', 
     data_min = '', 
     data_max = '', 
-    pendencias = ''
+    pendencias = '',
+    vendas_ids = [],
 }) => {
     const params = {};
 
@@ -67,6 +68,7 @@ export const relatorioVendasPdf = async({
     if(data_min) params.data_min = data_min;
     if(data_max) params.data_max = data_max;
     if(pendencias) params.pendencias = pendencias;
+    if(vendas_ids.length > 0) params.vendas_ids = vendas_ids;
 
     const res = await api.get(`/${empresa_id}/relatorios/pdf/vendas`, {
         params,

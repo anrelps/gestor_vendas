@@ -59,6 +59,7 @@ const VendaList = () => {
     data_min: '',
     data_max: '',
     pendencias: 0,
+    vendas_ids: [],
   });
 
   const getMonthRange = () => {
@@ -191,7 +192,7 @@ const VendaList = () => {
   const handleCopiarLinkRelatorio = async () => {
     const empresa_id = user?.empresa?.id;
     //const baseURL = ''; // URL PROD
-    //const baseURL = 'http://localhost:9000/api/v1'; // URL DEV
+    //const baseURL = 'http://127.0.0.1:8000/api/v1/'; // URL DEV
     const baseURL = 'https://uselumenz.com/api/v1/'; // URL PROD
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
@@ -203,10 +204,13 @@ const VendaList = () => {
       }),
     );
 
-    console.log(filtrosLimpos);
-
-    const params = new URLSearchParams({
-      ...filtrosLimpos,
+    const params = new URLSearchParams();
+    Object.entries(filtrosLimpos).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => params.append(`${key}[]`, v));
+      } else {
+        params.append(key, value);
+      }
     });
     const url = `${baseURL}${endpoint}?${params.toString()}`;
     const mensagem = `Olá! Segue seu relatório de venda/serviços:
@@ -214,6 +218,19 @@ ${url}`;
     navigator.clipboard.writeText(mensagem);
     alert('Mensagem Copiada com sucesso!');
     return url;
+  };
+
+  const [selectedVendasIds, setSelectedVendasIds] = useState([]);
+
+  const handleSelectVenda = (id) => {
+    setSelectedVendasIds((prev) => {
+      const newIds = prev.includes(id)
+        ? prev.filter(vendaId => vendaId !== id)
+        : [...prev, id];
+
+      setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
+      return newIds;
+    });
   };
 
   return (
@@ -417,6 +434,13 @@ ${url}`;
                       key={venda.id}
                       className='flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 hover:border-primary transition-colors duration-150 p-5 h-full min-h-30'
                     >
+                      <div className='flex w-full items-center justify-start'>
+                        <input 
+                          type="checkbox"
+                          checked={selectedVendasIds.includes(venda.id)}
+                          onChange={() => handleSelectVenda(venda.id)}
+                        />
+                      </div>
                       <div className='flex flex-col gap-2 flex-1'>
                         <div className='flex items-center gap-2 min-w-0'>
                           <span className='text-base font-semibold text-gray-800 truncate max-w-[60%]'>

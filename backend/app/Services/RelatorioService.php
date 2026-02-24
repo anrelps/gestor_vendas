@@ -16,7 +16,7 @@ class RelatorioService {
             ->when(isset($filters['valor_max']), function($q) use ($filters) {
                 $q->where('valor_total', '<=', $filters['valor_max']);
             })
-            ->when(isset($filters['cliente']), function($q) use ($filters) {
+            ->when(isset($filters['cliente']) && (!isset($filters['vendas_ids'])), function($q) use ($filters) {
                 $q->where('cliente_id', $filters['cliente']);
             })
             ->when(isset($filters['data_min']), function($q) use ($filters) {
@@ -27,6 +27,9 @@ class RelatorioService {
             })
             ->when(isset($filters['pendencias']) && $filters['pendencias'] == 1, function($q) {
                 $q->whereColumn('valor_pago', '<', 'valor_total');
+            })
+            ->when(isset($filters['vendas_ids']) && count($filters['vendas_ids']) > 0, function($q) use ($filters) {
+                $q->whereIn('id', $filters['vendas_ids']);
             })
             ->orderBy('created_at', 'DESC')
             ->get();
