@@ -491,6 +491,9 @@
         @if(isset($filters['pendencias']) && $filters['pendencias'] == 1)
             <div class="filter-item">Exibindo apenas vendas com pendências financeiras</div>
         @endif
+        @if(isset($filters['vendas_ids']) && count($filters['vendas_ids']) > 0)
+            <div class="filter-item">{{$vendas->implode('titulo', ', ')}}</div>
+        @endif
     </div>
     @endif
 

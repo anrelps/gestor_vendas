@@ -27,6 +27,7 @@ class RelatorioController extends Controller
             'data_min' => 'nullable|date',
             'data_max' => 'nullable|date',
             'pendencias' => 'nullable|numeric',
+            'vendas_ids' => 'nullable|array',
         ]);
         $vendas = $this->service->vendas($empresa, $filters);
         $pdf = PDF::loadView('relatorios.vendas.vendasPdf', ['vendas' => $vendas, 'empresa' => $empresa, 'filters' => $filters]);
