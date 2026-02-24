@@ -13,7 +13,7 @@ import {
   Logs,
   Plus,
   Share2,
-  Trash,
+  Trash2,
   User,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -165,14 +165,31 @@ const VendaList = () => {
     setFilters((prev) => ({ ...prev, [key]: e.target.value }));
   };
 
+  const [selectedVendasIds, setSelectedVendasIds] = useState([]);
+
   const handleGerarRelatorio = async () => {
     setLoading(true);
     const empresa_id = user?.empresa?.id;
-    if (empresa_id) {
+
+    if (!empresa_id) {
+      setLoading(false);
+      return;
+    }
+
+    // Fonte de verdade: seleção atual (evita filters "atrasado")
+    const finalFilters = {
+      ...filters,
+      vendas_ids: selectedVendasIds,
+    };
+
+    // Se você quiser impedir "imprimir tudo" quando nada estiver selecionado:
+    // if (!finalFilters.vendas_ids?.length) { setLoading(false); return; }
+
+    try {
       const response = await dispatch(
         gerarRelatorioVendas({
           empresa_id,
-          filters,
+          filters: finalFilters,
         }),
       );
 
@@ -180,13 +197,14 @@ const VendaList = () => {
         const blob = response.payload;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
-      }
 
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 100);
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleCopiarLinkRelatorio = async () => {
@@ -207,11 +225,12 @@ const VendaList = () => {
     const params = new URLSearchParams();
     Object.entries(filtrosLimpos).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach(v => params.append(`${key}[]`, v));
+        value.forEach((v) => params.append(`${key}[]`, v));
       } else {
         params.append(key, value);
       }
     });
+
     const url = `${baseURL}${endpoint}?${params.toString()}`;
     const mensagem = `Olá! Segue seu relatório de venda/serviços:
 ${url}`;
@@ -220,17 +239,45 @@ ${url}`;
     return url;
   };
 
-  const [selectedVendasIds, setSelectedVendasIds] = useState([]);
-
   const handleSelectVenda = (id) => {
     setSelectedVendasIds((prev) => {
       const newIds = prev.includes(id)
-        ? prev.filter(vendaId => vendaId !== id)
+        ? prev.filter((vendaId) => vendaId !== id)
         : [...prev, id];
 
       setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
       return newIds;
     });
+  };
+
+  const allSelected =
+    vendas.length > 0 &&
+    vendas.every((venda) => selectedVendasIds.includes(venda.id));
+
+  const handleToggleSelectAll = () => {
+    const visibleIds = vendas.map((v) => v.id);
+
+    if (allSelected) {
+      // remove os visíveis baseado no estado anterior (sem stale)
+      setSelectedVendasIds((prev) => {
+        const newIds = prev.filter((id) => !visibleIds.includes(id));
+        setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
+        return newIds;
+      });
+      return;
+    }
+
+    // adiciona visíveis aos já selecionados
+    setSelectedVendasIds((prev) => {
+      const newIds = [...new Set([...prev, ...visibleIds])];
+      setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
+      return newIds;
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedVendasIds([]);
+    setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
   return (
@@ -344,9 +391,8 @@ ${url}`;
             </div>
 
             {/* Outros Filtros */}
-            {/* Layout flexível: wrap em mobile, linha em desktop */}
             <div className='flex flex-wrap items-center gap-2'>
-              {/* Filtro: Não pagas - tamanho fixo */}
+              {/* Filtro: Não pagas */}
               <button
                 value={filters.pendencias == 1 ? 0 : 1}
                 onClick={handleChange('pendencias')}
@@ -358,7 +404,9 @@ ${url}`;
                 title='Mostrar apenas vendas não pagas'
               >
                 <span
-                  className={`w-2 h-2 rounded-full ${filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'}`}
+                  className={`w-2 h-2 rounded-full ${
+                    filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'
+                  }`}
                 />
                 Não pagas
               </button>
@@ -421,28 +469,67 @@ ${url}`;
 
           {/* Lista de Vendas */}
           <div className='divide-y divide-gray-100'>
+            <div className='mx-4 px-4 py-3 border-b border-gray-100 bg-gray-50/60 flex items-center'>
+              <div className='flex items-center gap-3'>
+                <div
+                  className={`flex items-center gap-2 text-sm font-semibold rounded-md px-3 py-1.5 border -ml-3 ${
+                    allSelected
+                      ? 'text-primary bg-primary/10 border-primary/20'
+                      : 'text-gray-700 border-transparent'
+                  }`}
+                >
+                  <label className='flex items-center gap-2 cursor-pointer'>
+                    <input
+                      type='checkbox'
+                      checked={allSelected}
+                      onChange={handleToggleSelectAll}
+                      className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
+                    />
+                    Selecionar todas
+                  </label>
+                  <button
+                    type='button'
+                    onClick={handleClearSelection}
+                    className={`text-sm font-semibold border border-gray-200 rounded-md px-3.5 py-1 bg-white ${
+                      selectedVendasIds.length > 0
+                        ? 'text-gray-700 hover:text-gray-900'
+                        : 'opacity-0 pointer-events-none'
+                    }`}
+                  >
+                    Limpar
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {vendas.length === 0 && (
               <div className='py-6 px-3 sm:px-6 text-center text-gray-400'>
                 Nenhuma venda encontrada.
               </div>
             )}
+
             {vendas.length > 0 && (
               <div className='m-4 overflow-hidden rounded-lg'>
-                <ul className='flex flex-col gap-4'>
+                <ul className='flex flex-col gap-3'>
                   {vendas.map((venda) => (
                     <li
                       key={venda.id}
-                      className='flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 hover:border-primary transition-colors duration-150 p-5 h-full min-h-30'
+                      className={`flex flex-col justify-between rounded-xl border transition-colors duration-150 p-4 h-full min-h-30 ${
+                        selectedVendasIds.includes(venda.id)
+                          ? 'border-primary/30 bg-primary/10'
+                          : 'border-gray-200 bg-gray-50 hover:border-primary'
+                      }`}
                     >
-                      <div className='flex w-full items-center justify-start'>
-                        <input 
-                          type="checkbox"
-                          checked={selectedVendasIds.includes(venda.id)}
-                          onChange={() => handleSelectVenda(venda.id)}
-                        />
-                      </div>
                       <div className='flex flex-col gap-2 flex-1'>
-                        <div className='flex items-center gap-2 min-w-0'>
+                        <div className='flex items-center gap-3 min-w-0'>
+                          <div className='shrink-0 flex items-center justify-center'>
+                            <input
+                              type='checkbox'
+                              checked={selectedVendasIds.includes(venda.id)}
+                              onChange={() => handleSelectVenda(venda.id)}
+                              className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
+                            />
+                          </div>
                           <span className='text-base font-semibold text-gray-800 truncate max-w-[60%]'>
                             {venda?.titulo ?? 'Sem título'}
                           </span>
@@ -452,54 +539,145 @@ ${url}`;
                             </span>
                           </span>
                         </div>
-                        <div className='flex items-center gap-2 flex-wrap'>
-                          <span className='text-base text-gray-700 truncate font-medium max-w-[60%]'>
-                            {venda?.cliente?.nome ?? 'Sem cliente'}
-                          </span>
+
+                        <div className='pl-7'>
+                          <div className='sm:hidden'>
+                            <div className='flex flex-col gap-2'>
+                              <span className='text-base text-gray-700 truncate font-medium'>
+                                {venda?.cliente?.nome ?? 'Sem cliente'}
+                              </span>
+
+                              <div className='flex items-center gap-2 flex-wrap'>
+                                {(Number(venda?.valor_pago) || 0) <
+                                (Number(venda?.valor_total) || 0) ? (
+                                  <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 whitespace-normal break-all'>
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_pago) || 0,
+                                    )}{' '}
+                                    /{' '}
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_total) || 0,
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 whitespace-normal break-all'>
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_total) || 0,
+                                    )}
+                                  </span>
+                                )}
+
+                                {(Number(venda?.valor_pago) || 0) <
+                                (Number(venda?.valor_total) || 0) ? (
+                                  <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-2.5 py-0.5 text-xs font-semibold shadow-sm'>
+                                    Pendente
+                                  </span>
+                                ) : (
+                                  <span className='inline-flex items-center rounded-md bg-green-100 text-green-800 border border-green-300 px-2.5 py-0.5 text-xs font-semibold shadow-sm'>
+                                    Pago
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className='flex items-center justify-between w-full'>
+                                <Link
+                                  to={`/vendas/${venda.id}/editar`}
+                                  className='flex items-center gap-3 text-primary hover:text-primary/70 transition cursor-pointer'
+                                  title='Ir até a venda'
+                                >
+                                  <span className='text-sm font-semibold'>
+                                    Ir até a venda
+                                  </span>
+                                  <Logs size={22} />
+                                </Link>
+
+                                <button
+                                  className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveVenda(venda.id);
+                                  }}
+                                >
+                                  <Trash2 size={20} />
+                                </button>
+                              </div>
+                            </div>
+
+                            {venda.descricao && (
+                              <span className='text-xs text-gray-500 mt-1 line-clamp-2'>
+                                {venda.descricao}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className='hidden sm:block'>
+                            <div className='flex items-center gap-2 flex-wrap'>
+                              <span className='text-base text-gray-700 truncate font-medium max-w-[60%]'>
+                                {venda?.cliente?.nome ?? 'Sem cliente'}
+                              </span>
+
+                              {(Number(venda?.valor_pago) || 0) <
+                              (Number(venda?.valor_total) || 0) ? (
+                                <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 ml-auto max-w-full whitespace-normal break-all'>
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_pago) || 0,
+                                  )}{' '}
+                                  /{' '}
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_total) || 0,
+                                  )}
+                                </span>
+                              ) : (
+                                <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 ml-auto max-w-full whitespace-normal break-all'>
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_total) || 0,
+                                  )}
+                                </span>
+                              )}
+                            </div>
+
+                            {venda.descricao && (
+                              <span className='text-xs text-gray-500 mt-1 line-clamp-2'>
+                                {venda.descricao}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='hidden sm:flex items-center justify-between flex-row-reverse mt-3 gap-2 pl-7'>
+                        <div className='flex items-center gap-2'>
                           {(Number(venda?.valor_pago) || 0) <
                           (Number(venda?.valor_total) || 0) ? (
-                            <span className='inline-block bg-yellow-50 text-yellow-700 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-yellow-200 ml-auto max-w-full whitespace-normal break-all'>
-                              {currencyFormatter.format(
-                                Number(venda?.valor_pago) || 0,
-                              )}{' '}
-                              /{' '}
-                              {currencyFormatter.format(
-                                Number(venda?.valor_total) || 0,
-                              )}
+                            <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 py-1 text-sm font-semibold shadow-sm'>
+                              Pendente
                             </span>
                           ) : (
-                            <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100 ml-auto max-w-full whitespace-normal break-all'>
-                              {currencyFormatter.format(
-                                Number(venda?.valor_total) || 0,
-                              )}
+                            <span className='inline-flex items-center rounded-md bg-green-100 text-green-800 border border-green-300 px-3 py-1 text-sm font-semibold shadow-sm'>
+                              Pago
                             </span>
                           )}
+
+                          <button
+                            className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveVenda(venda.id);
+                            }}
+                          >
+                            <Trash2 size={20} />
+                          </button>
                         </div>
-                        {venda.descricao && (
-                          <span className='text-xs text-gray-500 mt-1 line-clamp-2'>
-                            {venda.descricao}
-                          </span>
-                        )}
-                      </div>
-                      <div className='flex items-center justify-between flex-row-reverse mt-4 gap-2'>
-                        <button
-                          className='px-3 py-1.5 rounded-md bg-red-50 text-red-500 text-xs font-semibold flex items-center justify-center cursor-pointer'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveVenda(venda.id);
-                          }}
-                        >
-                          <Trash size={16} />
-                        </button>
+
                         <Link
                           to={`/vendas/${venda.id}/editar`}
                           className='flex items-center gap-5 text-primary hover:text-primary/70 transition cursor-pointer'
                           title='Ir até a venda'
                         >
-                          <span className='text-xs font-semibold'>
+                          <span className='text-sm font-semibold'>
                             Ir até a venda
                           </span>
-                          <Logs size={20} />
+                          <Logs size={22} />
                         </Link>
                       </div>
                     </li>
@@ -508,21 +686,24 @@ ${url}`;
               </div>
             )}
           </div>
+
           <div>
             <Pagination current_page={1} lastPage={1} onPageChange={() => {}} />
           </div>
+
           <div className='px-6 mt-4 mb-6 flex flex-col md:flex-row gap-2'>
             <button
               onClick={handleGerarRelatorio}
-              className='flex-1 px-3 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              className='flex-1 px-3 py-2 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
               title='Gerar relatório em PDF'
             >
               <FileText size={17} />
               <span>Gerar PDF</span>
             </button>
+
             <button
               onClick={handleCopiarLinkRelatorio}
-              className='flex-1 px-3 py-1.5 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              className='flex-1 px-3 py-2 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
               title='Compartilhar PDF'
             >
               <Share2 size={17} />
@@ -531,6 +712,7 @@ ${url}`;
           </div>
         </div>
       </div>
+
       <ConfirmDialog
         open={showDeletePopup}
         title='Remover Venda/OS?'
