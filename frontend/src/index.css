@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -9,16 +10,13 @@
   --color-muted: hsl(218, 17%, 62%);
   --color-light: hsl(0, 0%, 75%);
   --color-background: hsl(0, 0%, 95%);
-}
 
-:root {
-  --font-family: 'Lexend Deca', sans-serif;
-  --font-lumenzia: 'Audiowide', sans-serif;
-  --sidebar-width: 24rem;
+  --font-main: 'Lexend Deca', sans-serif;
+  --font-lumenz: 'Zalando Sans Expanded', sans-serif;
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: var(--font-main);
   background-color: var(--color-background);
   margin-top: 50px;
 }

@@ -1,4 +1,11 @@
 // src/pages/Home.jsx
+import {
+  ArrowRight,
+  Package,
+  ShoppingCart,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 
@@ -11,424 +18,322 @@ const Home = () => {
     return <Navigate to='/dashboard' replace />;
   }
 
+  const featureCardGlassVariants = [
+    'bg-linear-to-br from-white/90 via-violet-50/70 to-white/85 border-violet-300/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_30px_-16px_rgba(139,92,246,0.42)] hover:border-violet-400/60 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_20px_42px_-16px_rgba(139,92,246,0.46)]',
+    'bg-linear-to-br from-white/88 via-purple-50/70 to-white/84 border-purple-300/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_30px_-16px_rgba(147,51,234,0.36)] hover:border-purple-400/55 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_20px_42px_-16px_rgba(147,51,234,0.42)]',
+    'bg-linear-to-br from-white/90 via-fuchsia-50/65 to-white/86 border-fuchsia-300/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_30px_-16px_rgba(192,132,252,0.34)] hover:border-fuchsia-400/50 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_20px_42px_-16px_rgba(192,132,252,0.4)]',
+    'bg-linear-to-br from-white/89 via-violet-100/65 to-white/84 border-violet-300/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_30px_-16px_rgba(124,58,237,0.38)] hover:border-violet-400/55 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_20px_42px_-16px_rgba(124,58,237,0.44)]',
+  ];
+
+  const featureIconGlassVariants = [
+    'bg-linear-to-br from-white/80 via-violet-100/80 to-purple-100/70 border-violet-200/55',
+    'bg-linear-to-br from-white/78 via-purple-100/78 to-violet-100/68 border-purple-200/55',
+    'bg-linear-to-br from-white/80 via-fuchsia-100/70 to-purple-100/68 border-fuchsia-200/50',
+    'bg-linear-to-br from-white/80 via-violet-100/75 to-indigo-100/65 border-violet-200/55',
+  ];
+
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        .lp-root {
-          font-family: 'DM Sans', sans-serif;
-          min-height: 100vh;
-          background: #f7f5ff;
-          overflow-x: hidden;
-          position: relative;
+        @keyframes drift1 { to { transform: translate(30px, 50px) scale(1.06); } }
+        @keyframes drift2 { to { transform: translate(-25px, -35px) scale(1.04); } }
+        @keyframes drift3 { to { transform: translate(-40px, 20px) scale(1.08); } }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(28px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
-        /* ── Noise overlay ── */
-        .lp-root::before {
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: .4; transform: scale(.7); }
+        }
+        .blob-1 {
+          animation: drift1 14s ease-in-out infinite alternate;
+        }
+        .blob-2 {
+          animation: drift2 16s ease-in-out infinite alternate;
+        }
+        .blob-3 {
+          animation: drift3 18s ease-in-out infinite alternate;
+        }
+        .animate-fade-up {
+          animation: fadeUp 0.6s ease both;
+        }
+        .animate-pulse-dot {
+          animation: pulse 2s ease infinite;
+        }
+        .hero-title {
+          animation: fadeUp 0.7s 0.1s ease both;
+        }
+        .hero-subtitle {
+          animation: fadeUp 0.7s 0.2s ease both;
+        }
+        .hero-buttons {
+          animation: fadeUp 0.7s 0.3s ease both;
+        }
+        .hero-card {
+          animation: fadeUp 0.8s 0.45s ease both;
+        }
+        .hero-features {
+          animation: fadeUp 0.8s 0.55s ease both;
+        }
+        .text-gradient {
+          background: linear-gradient(to right, #7c3aed 0%, #9333ea 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .btn-primary-hover:hover svg {
+          transform: translateX(3px);
+        }
+        .noise-overlay::before {
           content: '';
           position: fixed;
           inset: 0;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
           pointer-events: none;
           z-index: 0;
-          opacity: .5;
+          opacity: 0.5;
         }
-
-        /* ── Animated mesh blobs ── */
-        .blob {
-          position: fixed;
-          border-radius: 50%;
-          filter: blur(80px);
-          pointer-events: none;
-          z-index: 0;
+        .hero-radial-glow {
+          background: radial-gradient(ellipse 1000px 700px at center 30%, rgba(139, 92, 246, 0.12), rgba(139, 92, 246, 0.05) 50%, transparent);
         }
-        .blob-1 {
-          width: 55vw; height: 55vw;
-          top: -15%; left: -10%;
-          background: radial-gradient(ellipse, #a78bfa40 0%, transparent 70%);
-          animation: drift1 14s ease-in-out infinite alternate;
+        .grid-overlay {
+          background-image:
+            linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+          background-size: 100px 100px;
         }
-        .blob-2 {
-          width: 45vw; height: 45vw;
-          bottom: -10%; right: -8%;
-          background: radial-gradient(ellipse, #818cf840 0%, transparent 70%);
-          animation: drift2 16s ease-in-out infinite alternate;
+        .icon-gradient {
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(167, 139, 250, 0.1));
         }
-        .blob-3 {
-          width: 28vw; height: 28vw;
-          top: 35%; left: 58%;
-          background: radial-gradient(ellipse, #c4b5fd35 0%, transparent 70%);
-          animation: drift3 18s ease-in-out infinite alternate;
-        }
-        @keyframes drift1 { to { transform: translate(30px, 50px) scale(1.06); } }
-        @keyframes drift2 { to { transform: translate(-25px, -35px) scale(1.04); } }
-        @keyframes drift3 { to { transform: translate(-40px, 20px) scale(1.08); } }
-
-        /* ── Nav ── */
-        .lp-nav {
-          position: fixed;
-          top: 0; left: 0; right: 0;
-          z-index: 100;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1.25rem 3rem;
-          backdrop-filter: blur(16px);
-          background: rgba(247,245,255,0.7);
-          border-bottom: 1px solid rgba(167,139,250,0.15);
-        }
-        .lp-logo {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 1.45rem;
-          color: #7c3aed;
-          letter-spacing: -0.03em;
-        }
-        .lp-logo span { color: #a78bfa; }
-
-        /* ── Hero ── */
-        .lp-hero {
+        .shimmer {
           position: relative;
-          z-index: 1;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 6rem 1.5rem 4rem;
+          overflow: hidden;
         }
-
-        .lp-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: .5rem;
-          background: rgba(167,139,250,0.15);
-          border: 1px solid rgba(167,139,250,0.35);
-          border-radius: 999px;
-          padding: .35rem 1rem;
-          font-size: .8rem;
-          font-weight: 500;
-          color: #7c3aed;
-          letter-spacing: .04em;
-          text-transform: uppercase;
-          margin-bottom: 2rem;
-          animation: fadeUp .6s ease both;
-        }
-        .lp-badge-dot {
-          width: 6px; height: 6px;
-          border-radius: 50%;
-          background: #7c3aed;
-          animation: pulse 2s ease infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: .4; transform: scale(.7); }
-        }
-
-        .lp-h1 {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: clamp(3rem, 7vw, 6rem);
-          line-height: 1.05;
-          letter-spacing: -0.04em;
-          color: #1e1b4b;
-          max-width: 820px;
-          animation: fadeUp .7s .1s ease both;
-        }
-        .lp-h1 .accent {
-          background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #818cf8 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .lp-sub {
-          margin-top: 1.5rem;
-          font-size: 1.15rem;
-          font-weight: 300;
-          color: #6b7280;
-          max-width: 520px;
-          line-height: 1.7;
-          animation: fadeUp .7s .2s ease both;
-        }
-
-        .lp-cta-group {
-          display: flex;
-          gap: 1rem;
-          margin-top: 2.5rem;
-          flex-wrap: wrap;
-          justify-content: center;
-          animation: fadeUp .7s .3s ease both;
-        }
-
-        .btn-primary {
-          display: inline-flex;
-          align-items: center;
-          gap: .5rem;
-          padding: .85rem 2.2rem;
-          background: linear-gradient(135deg, #7c3aed, #818cf8);
-          color: #fff;
-          border-radius: 12px;
-          font-size: 1rem;
-          font-weight: 600;
-          text-decoration: none;
-          box-shadow: 0 4px 24px rgba(124,58,237,.3), inset 0 1px 0 rgba(255,255,255,.15);
-          transition: transform .2s, box-shadow .2s;
-          border: none;
-          cursor: pointer;
-        }
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 32px rgba(124,58,237,.4), inset 0 1px 0 rgba(255,255,255,.2);
-        }
-        .btn-primary svg { transition: transform .2s; }
-        .btn-primary:hover svg { transform: translateX(3px); }
-
-        .btn-ghost {
-          display: inline-flex;
-          align-items: center;
-          gap: .5rem;
-          padding: .85rem 2.2rem;
-          background: rgba(255,255,255,.8);
-          color: #7c3aed;
-          border-radius: 12px;
-          font-size: 1rem;
-          font-weight: 600;
-          text-decoration: none;
-          border: 1.5px solid rgba(124,58,237,.25);
-          transition: all .2s;
-          backdrop-filter: blur(8px);
-        }
-        .btn-ghost:hover {
-          background: rgba(255,255,255,1);
-          border-color: rgba(124,58,237,.6);
-          transform: translateY(-2px);
-        }
-
-        /* ── Floating card preview ── */
-        .lp-card-wrap {
-          position: relative;
-          margin-top: 4rem;
-          width: 100%;
-          max-width: 780px;
-          animation: fadeUp .8s .45s ease both;
-        }
-        .lp-card-glow {
-          position: absolute;
-          inset: -2px;
-          border-radius: 22px;
-          background: linear-gradient(135deg, #a78bfa, #818cf8, #c4b5fd);
-          filter: blur(18px);
-          opacity: .45;
-          z-index: -1;
-        }
-        .lp-card {
-          background: rgba(255,255,255,.92);
-          border: 1px solid rgba(167,139,250,.25);
-          border-radius: 20px;
-          padding: 2rem;
-          backdrop-filter: blur(20px);
-          box-shadow: 0 20px 60px rgba(124,58,237,.08);
-        }
-        .lp-card-header {
-          display: flex;
-          align-items: center;
-          gap: .5rem;
-          margin-bottom: 1.25rem;
-        }
-        .lp-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-        /* ── Features ── */
-        .lp-features {
-          position: relative;
-          z-index: 1;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-          gap: 1.25rem;
-          max-width: 900px;
-          width: 100%;
-          margin: 0 auto;
-          padding: 0 1.5rem 5rem;
-          animation: fadeUp .8s .55s ease both;
-        }
-        .feat-card {
-          background: rgba(255,255,255,.75);
-          border: 1px solid rgba(167,139,250,.2);
-          border-radius: 16px;
-          padding: 1.5rem;
-          backdrop-filter: blur(12px);
-          transition: transform .25s, box-shadow .25s;
-        }
-        .feat-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 40px rgba(124,58,237,.12);
-        }
-        .feat-icon {
-          width: 42px; height: 42px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-          display: flex; align-items: center; justify-content: center;
-          margin-bottom: 1rem;
-          font-size: 1.2rem;
-        }
-        .feat-title {
-          font-family: 'Syne', sans-serif;
-          font-weight: 700;
-          font-size: .95rem;
-          color: #1e1b4b;
-          margin-bottom: .35rem;
-        }
-        .feat-desc {
-          font-size: .85rem;
-          color: #6b7280;
-          line-height: 1.6;
-        }
-
-        /* ── Divider line ── */
-        .lp-divider {
-          position: relative;
-          z-index: 1;
-          max-width: 900px;
-          margin: 0 auto 5rem;
-          padding: 0 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 1.5rem;
-        }
-        .lp-divider::before, .lp-divider::after {
+        .shimmer::after {
           content: '';
-          flex: 1;
-          height: 1px;
-          background: linear-gradient(to right, transparent, rgba(167,139,250,.35), transparent);
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          transform: translateX(-100%);
+          animation: shimmer 3s infinite;
         }
-        .lp-divider-text {
-          font-size: .78rem;
-          color: #a78bfa;
-          letter-spacing: .08em;
-          text-transform: uppercase;
-          font-weight: 500;
-          white-space: nowrap;
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
         }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(28px); }
-          to   { opacity: 1; transform: translateY(0); }
+        .stat-card {
+          position: relative;
+          background: linear-gradient(135deg, #ffffff 0%, #faf9fc 100%);
+          border: 1px solid rgba(139, 92, 246, 0.12);
+          box-shadow:
+            0 1px 3px rgba(139, 92, 246, 0.08),
+            0 8px 24px -8px rgba(139, 92, 246, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
         }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: .75rem;
-        }
-        @media (max-width: 600px) {
-          .lp-nav { padding: 1rem 1.25rem; }
-          .lp-hero { padding: 5rem 1rem 3rem; }
-          .stats-grid { grid-template-columns: 1fr; }
+        .sales-card {
+          background: linear-gradient(135deg, #fdfcfe 0%, #faf8fd 100%);
+          border: 1px solid rgba(139, 92, 246, 0.15);
+          box-shadow:
+            0 2px 8px -2px rgba(139, 92, 246, 0.1),
+            0 12px 32px -12px rgba(139, 92, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
       `}</style>
 
-      <div className="lp-root">
-        {/* Blobs */}
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
-        <div className="blob blob-3" />
+      <div className='noise-overlay relative min-h-screen overflow-x-hidden bg-linear-to-b from-violet-100/50 via-white to-purple-100/50'>
+        {/* Grid overlay sutil */}
+        <div
+          className='fixed inset-0 pointer-events-none z-0'
+          style={{
+            backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.04) 1px, transparent 1px)
+          `,
+            backgroundSize: '80px 80px',
+          }}
+        />
+
+        {/* Blobs - mais visíveis */}
+        <div className='blob-1 fixed w-[60vw] h-[60vw] -top-[20%] -left-[15%] rounded-full blur-[100px] pointer-events-none z-0 bg-gradient-radial from-violet-400/20 to-transparent' />
+        <div className='blob-2 fixed w-[50vw] h-[50vw] -bottom-[15%] -right-[10%] rounded-full blur-[100px] pointer-events-none z-0 bg-gradient-radial from-purple-400/18 to-transparent' />
+        <div className='blob-3 fixed w-[35vw] h-[35vw] top-[30%] left-[55%] rounded-full blur-[90px] pointer-events-none z-0 bg-gradient-radial from-violet-300/15 to-transparent' />
+
+        {/* Camada adicional de luz */}
+        <div className='fixed top-0 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-b from-violet-200/30 via-purple-200/20 to-transparent blur-3xl pointer-events-none z-0' />
 
         {/* Nav */}
-        <nav className="lp-nav">
-          <div className="lp-logo">Lumen<span>z</span></div>
-          <Link to="/login" className="btn-primary" style={{ padding: '.55rem 1.5rem', fontSize: '.9rem' }}>
+        <nav className='fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-12 py-5 bg-linear-to-br from-white/80 via-violet-50/55 to-white/75 backdrop-blur-2xl backdrop-saturate-150 border-b border-violet-100/50 ring-1 ring-white/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(139,92,246,0.08),0_12px_30px_-20px_rgba(139,92,246,0.45)]'>
+          <div className='flex items-center gap-0'>
+            <h1 className='text-2xl font-bold font-lumenz text-violet-600'>
+              Lumen
+            </h1>
+            <span className='text-2xl font-bold font-lumenz text-violet-400'>
+              z
+            </span>
+          </div>
+          <Link
+            to='/login'
+            className='inline-flex items-center justify-center gap-1 px-6 py-2.5 text-sm font-semibold text-white rounded-xl bg-linear-to-r from-violet-600 to-purple-600 shadow-[0_2px_8px_-2px_rgba(124,58,237,0.3)] transition-all duration-200 hover:shadow-[0_4px_12px_-3px_rgba(124,58,237,0.4)] hover:-translate-y-0.5'
+          >
             Entrar
           </Link>
         </nav>
 
         {/* Hero */}
-        <section className="lp-hero">
-          <div className="lp-badge">
-            <span className="lp-badge-dot" />
+        <section className='relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 pt-24 pb-16'>
+          {/* Badge */}
+          <div className='inline-flex items-center gap-2 px-4 py-2 mb-8 text-xs font-semibold tracking-wide uppercase rounded-full bg-violet-100/60 border border-violet-300/40 text-violet-700 animate-fade-up'>
+            <span className='w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse-dot' />
             Gestão de Vendas · Para Pequenos Negócios
           </div>
 
-          <h1 className="lp-h1">
-            Venda mais.<br />
-            <span className="accent">Gerencie melhor.</span>
+          {/* Title */}
+          <h1 className='hero-title font-lumenz max-w-5xl'>
+            <div className='text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-dark mb-3 leading-[0.95]'>
+              Venda mais.
+            </div>
+            <div className='text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-gradient leading-[0.95]'>
+              Gerencie melhor.
+            </div>
           </h1>
 
-          <p className="lp-sub">
-            O Lumenz reúne clientes, produtos e vendas em um só lugar — simples e direto para o seu negócio crescer sem complicação.
+          {/* Subtitle */}
+          <p className='hero-subtitle mt-8 max-w-xl text-lg sm:text-xl font-normal text-muted/70 leading-relaxed'>
+            O Lumenz reúne clientes, produtos e vendas em um só lugar — simples
+            e direto para o seu negócio crescer sem complicação.
           </p>
 
-          <div className="lp-cta-group">
-            <Link to="/login" className="btn-primary">
+          {/* CTA Buttons */}
+          <div className='hero-buttons flex flex-wrap gap-4 mt-10 justify-center'>
+            <Link
+              to='/login'
+              className='btn-primary-hover inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-semibold text-white rounded-xl bg-linear-to-r from-violet-600 to-purple-600 shadow-[0_4px_16px_-4px_rgba(124,58,237,0.3)] transition-all duration-200 hover:shadow-[0_8px_24px_-6px_rgba(124,58,237,0.4)] hover:-translate-y-0.5'
+            >
               Acessar o sistema
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+              <ArrowRight
+                size={18}
+                className='transition-transform duration-200'
+              />
             </Link>
-            <a href="#features" className="btn-ghost">Como funciona</a>
+            <a
+              href='#features'
+              className='inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-semibold text-violet-700 rounded-xl bg-white/80 border border-violet-200/60 shadow-[0_2px_8px_-2px_rgba(139,92,246,0.12)] backdrop-blur-xl transition-all duration-200 hover:bg-white hover:border-violet-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_-3px_rgba(139,92,246,0.15)]'
+            >
+              Como funciona
+            </a>
           </div>
 
           {/* UI Preview card */}
-          <div className="lp-card-wrap">
-            <div className="lp-card-glow" />
-            <div className="lp-card">
-              <div className="lp-card-header">
-                <div className="lp-dot" style={{ background: '#f87171' }} />
-                <div className="lp-dot" style={{ background: '#fbbf24' }} />
-                <div className="lp-dot" style={{ background: '#34d399' }} />
+          <div className='hero-card relative w-full max-w-xl mt-16'>
+            {/* Background glow */}
+            <div className='absolute -inset-8 bg-linear-to-br from-violet-200/30 via-purple-200/20 to-violet-200/30 rounded-[48px] blur-2xl -z-10' />
+
+            {/* Card principal */}
+            <div className='relative rounded-3xl p-6 sm:p-8 bg-linear-to-br from-white/80 via-violet-50/50 to-white/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/60 ring-1 ring-violet-100/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_20px_60px_-12px_rgba(139,92,246,0.25)]'>
+              {/* Card Header - dots */}
+              <div className='flex items-center gap-2 mb-6'>
+                <div className='w-3 h-3 rounded-full bg-red-400' />
+                <div className='w-3 h-3 rounded-full bg-yellow-400' />
+                <div className='w-3 h-3 rounded-full bg-green-400' />
               </div>
-              <div className="stats-grid">
-                {[
-                  { label: 'Vendas hoje', value: 'R$\u00a01.840', color: '#7c3aed' },
-                  { label: 'Clientes', value: '132', color: '#059669' },
-                  { label: 'Produtos', value: '48', color: '#d97706' },
-                ].map((s) => (
-                  <div key={s.label} style={{
-                    background: 'rgba(247,245,255,.8)',
-                    border: '1px solid rgba(167,139,250,.2)',
-                    borderRadius: '12px',
-                    padding: '1rem',
-                    textAlign: 'center',
-                  }}>
-                    <div style={{ fontFamily: 'Syne, sans-serif', fontSize: '1.4rem', fontWeight: 800, color: s.color }}>{s.value}</div>
-                    <div style={{ fontSize: '.78rem', color: '#6b7280', marginTop: '.25rem' }}>{s.label}</div>
+
+              {/* Stats Grid - sem background, apenas espaçamento */}
+              <div className='grid grid-cols-3 gap-4 mb-6'>
+                <div className='text-center'>
+                  <div
+                    className='text-3xl sm:text-4xl font-bold mb-1'
+                    style={{ color: '#8b5cf6' }}
+                  >
+                    R$ 1.840
                   </div>
-                ))}
+                  <div className='text-xs sm:text-sm text-muted/60 font-medium'>
+                    Vendas hoje
+                  </div>
+                </div>
+                <div className='text-center'>
+                  <div
+                    className='text-3xl sm:text-4xl font-bold mb-1'
+                    style={{ color: '#10b981' }}
+                  >
+                    132
+                  </div>
+                  <div className='text-xs sm:text-sm text-muted/60 font-medium'>
+                    Clientes
+                  </div>
+                </div>
+                <div className='text-center'>
+                  <div
+                    className='text-3xl sm:text-4xl font-bold mb-1'
+                    style={{ color: '#f59e0b' }}
+                  >
+                    48
+                  </div>
+                  <div className='text-xs sm:text-sm text-muted/60 font-medium'>
+                    Produtos
+                  </div>
+                </div>
               </div>
-              <div style={{ marginTop: '1.25rem', background: 'rgba(247,245,255,.8)', border: '1px solid rgba(167,139,250,.15)', borderRadius: '12px', padding: '1rem' }}>
-                <div style={{ fontSize: '.72rem', fontWeight: 600, color: '#a78bfa', letterSpacing: '.06em', textTransform: 'uppercase', marginBottom: '.75rem' }}>Últimas vendas</div>
-                <div style={{ display: 'flex', gap: '.65rem', flexDirection: 'column' }}>
+
+              {/* Recent Sales */}
+              <div className='rounded-2xl p-5 bg-linear-to-br from-white/70 via-violet-50/55 to-purple-50/45 backdrop-blur-xl backdrop-saturate-150 border border-white/60 ring-1 ring-violet-100/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_12px_30px_-22px_rgba(139,92,246,0.45)]'>
+                <div className='text-xs font-bold tracking-wider uppercase text-violet-700 mb-4'>
+                  ÚLTIMAS VENDAS
+                </div>
+
+                <div className='flex flex-col gap-3'>
                   {[
-                    { cliente: 'Maria Silva', produto: 'Camiseta P', valor: 'R$ 59,90', status: 'pago' },
-                    { cliente: 'João Souza', produto: 'Calça Jeans', valor: 'R$ 129,90', status: 'pago' },
-                    { cliente: 'Ana Costa', produto: 'Tênis Branco', valor: 'R$ 210,00', status: 'pendente' },
+                    {
+                      cliente: 'Maria Silva',
+                      produto: 'Camiseta P',
+                      valor: 'R$ 59,90',
+                      status: 'pago',
+                    },
+                    {
+                      cliente: 'João Souza',
+                      produto: 'Calça Jeans',
+                      valor: 'R$ 129,90',
+                      status: 'pago',
+                    },
+                    {
+                      cliente: 'Ana Costa',
+                      produto: 'Tênis Branco',
+                      valor: 'R$ 210,00',
+                      status: 'pendente',
+                    },
                   ].map((v, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '.75rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
-                        <div style={{
-                          width: 28, height: 28, borderRadius: '50%',
-                          background: 'linear-gradient(135deg,#ede9fe,#ddd6fe)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '.7rem', fontWeight: 700, color: '#7c3aed', flexShrink: 0,
-                        }}>
-                          {v.cliente.split(' ').map(n => n[0]).join('')}
+                    <div
+                      key={i}
+                      className='flex items-center justify-between gap-3 rounded-xl px-2.5 py-2 bg-white/45 border border-white/40'
+                    >
+                      <div className='flex items-center gap-2.5'>
+                        <div className='w-9 h-9 rounded-full bg-linear-to-br from-violet-200/80 to-purple-200/80 flex items-center justify-center text-xs font-bold text-violet-700 shrink-0'>
+                          {v.cliente
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
                         </div>
                         <div>
-                          <div style={{ fontSize: '.82rem', fontWeight: 500, color: '#1e1b4b' }}>{v.cliente}</div>
-                          <div style={{ fontSize: '.72rem', color: '#9ca3af' }}>{v.produto}</div>
+                          <div className='text-sm font-semibold text-dark'>
+                            {v.cliente}
+                          </div>
+                          <div className='text-xs text-muted/60'>
+                            {v.produto}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontSize: '.85rem', fontWeight: 700, color: '#1e1b4b' }}>{v.valor}</div>
-                        <div style={{
-                          fontSize: '.68rem', fontWeight: 600,
-                          color: v.status === 'pago' ? '#059669' : '#d97706',
-                          background: v.status === 'pago' ? 'rgba(5,150,105,.1)' : 'rgba(217,119,6,.1)',
-                          borderRadius: 99, padding: '1px 7px', display: 'inline-block',
-                        }}>{v.status}</div>
+                      <div className='text-right shrink-0'>
+                        <div className='text-sm font-bold text-dark mb-0.5'>
+                          {v.valor}
+                        </div>
+                        <div
+                          className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${
+                            v.status === 'pago'
+                              ? 'text-green-700 bg-green-100'
+                              : 'text-amber-700 bg-amber-100'
+                          }`}
+                        >
+                          {v.status}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -439,24 +344,69 @@ const Home = () => {
         </section>
 
         {/* Divider */}
-        <div className="lp-divider">
-          <span className="lp-divider-text">o que você encontra no lumenz</span>
+        <div className='relative z-10 flex items-center gap-6 max-w-4xl mx-auto my-12 sm:my-14 px-6'>
+          <div className='flex-1 h-px bg-linear-to-r from-transparent via-violet-300/30 to-transparent' />
+          <span className='text-xs font-bold tracking-widest uppercase text-violet-700 whitespace-nowrap'>
+            O que você encontra no Lumenz
+          </span>
+          <div className='flex-1 h-px bg-linear-to-r from-transparent via-violet-300/30 to-transparent' />
         </div>
 
         {/* Features */}
-        <div id="features" className="lp-features">
+        <div
+          id='features'
+          className='hero-features relative z-10 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 max-w-6xl mx-auto px-6 pb-14 sm:pb-16'
+        >
           {[
-            { icon: '👥', title: 'Cadastro de Clientes', desc: 'Registre e organize sua base de clientes com histórico completo de compras e contatos.' },
-            { icon: '📦', title: 'Gestão de Produtos', desc: 'Controle seu catálogo com preços, descrições e disponibilidade sempre atualizados.' },
-            { icon: '🛒', title: 'Registro de Vendas', desc: 'Lance vendas rapidamente, vincule ao cliente e acompanhe cada transação em tempo real.' },
-            { icon: '📈', title: 'Visão do Negócio', desc: 'Acompanhe o faturamento, os produtos mais vendidos e o desempenho geral do seu negócio.' },
-          ].map((f) => (
-            <div key={f.title} className="feat-card">
-              <div className="feat-icon">{f.icon}</div>
-              <div className="feat-title">{f.title}</div>
-              <div className="feat-desc">{f.desc}</div>
-            </div>
-          ))}
+            {
+              icon: Users,
+              title: 'Cadastro de Clientes',
+              desc: 'Registre e organize sua base de clientes com histórico completo de compras e contatos.',
+              color: 'violet',
+            },
+            {
+              icon: Package,
+              title: 'Gestão de Produtos',
+              desc: 'Controle seu catálogo com preços, descrições e disponibilidade sempre atualizados.',
+              color: 'purple',
+            },
+            {
+              icon: ShoppingCart,
+              title: 'Registro de Vendas',
+              desc: 'Lance vendas rapidamente, vincule ao cliente e acompanhe cada transação em tempo real.',
+              color: 'violet',
+            },
+            {
+              icon: TrendingUp,
+              title: 'Visão do Negócio',
+              desc: 'Acompanhe o faturamento, os produtos mais vendidos e o desempenho geral do seu negócio.',
+              color: 'purple',
+            },
+          ].map((f, idx) => {
+            const Icon = f.icon;
+            const cardVariant =
+              featureCardGlassVariants[idx % featureCardGlassVariants.length];
+            const iconVariant =
+              featureIconGlassVariants[idx % featureIconGlassVariants.length];
+            return (
+              <div
+                key={idx}
+                className={`rounded-2xl p-6 backdrop-blur-xl backdrop-saturate-150 border ring-1 ring-white/70 transition-all duration-300 hover:-translate-y-1 group ${cardVariant}`}
+              >
+                <div
+                  className={`w-12 h-12 rounded-xl backdrop-blur-md border ring-1 ring-white/70 flex items-center justify-center text-violet-600 mb-5 transition-all duration-200 group-hover:scale-105 ${iconVariant}`}
+                >
+                  <Icon size={24} strokeWidth={2} />
+                </div>
+                <div className='font-bold text-lg text-dark mb-2'>
+                  {f.title}
+                </div>
+                <div className='text-sm text-muted/70 leading-relaxed'>
+                  {f.desc}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
