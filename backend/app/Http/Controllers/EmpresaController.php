@@ -24,7 +24,7 @@ class EmpresaController extends Controller
         try {
             $input = $request->validate([
                 'nome' => 'required|string',
-                'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+                'logo' => 'nullable|file|mimes:jpeg,png,jpg,svg,webp|max:5120',
                 'email' => 'nullable|string',
                 'telefone' => 'nullable|string',
             ]);
