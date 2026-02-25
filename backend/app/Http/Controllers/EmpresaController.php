@@ -31,8 +31,7 @@ class EmpresaController extends Controller
             $empresaAtt = $this->service->update($empresa, $input);
             return new EmpresaResource($empresaAtt);
         } catch(Exception $e) {
-            dd($e->getMessage());
-            return $this->errorResponse('Ocorreu um erro ao tentar atualizar a empresa.', 500);
+            return $this->errorResponse('Ocorreu um erro ao tentar atualizar a empresa: '.$e->getMessage(), 500);
         }
     }
 }

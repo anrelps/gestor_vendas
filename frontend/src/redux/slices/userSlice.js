@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getUserData, userLogin, userLogout } from '../services/userService';
+import { getUserData, userLogin, userUpdate, userLogout, userChangePassword } from '../services/userService';
 
 // AsyncThunks
 export const login = createAsyncThunk(
@@ -14,6 +14,16 @@ export const checkAuth = createAsyncThunk('user/checkAuth', async () => {
   const res = await getUserData();
   return res;
 });
+
+export const updateUser = createAsyncThunk('user/update', async ({user_id, data}) => {
+  const res = await userUpdate({user_id, data});
+  return res;
+});
+
+export const changePassword = createAsyncThunk('user/changePassword', async ({user_id, data}) => {
+  const res = await userChangePassword({user_id, data});
+  return res;
+})
 
 export const logoutUser = createAsyncThunk(
   'user/logout',
@@ -107,7 +117,34 @@ const userSlice = createSlice({
         state.authChecked = true;
         state.token = null;
         localStorage.removeItem('token');
-      });
+      })
+
+      // Update
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
+      // Change Password
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
   },
 });
 
@@ -120,8 +157,7 @@ export const selectAuthUserDisplayName = (state) => {
 };
 
 export const selectCompanyName = (state) => {
-  const user = state.user.user;
-  return user?.empresa?.nome || 'Empresa';
+  return state.empresa?.nome || state.user.user?.empresa?.nome || 'Empresa';;
 };
 
 export default userSlice.reducer;

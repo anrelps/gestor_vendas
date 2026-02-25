@@ -25,13 +25,14 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
   const authUserName = useSelector(selectAuthUserDisplayName);
   const companyName = useSelector(selectCompanyName);
   const userState = useSelector((state) => state.user.user);
+  const empresaState = useSelector((state) => state.empresa.empresa);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const authUser = {
     name: authUserName,
     email: userState?.email || '',
-    role: companyName,
+    role: empresaState?.nome ?? companyName,
   };
 
   const handleLogout = () => {
@@ -319,7 +320,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               bg-[radial-gradient(120%_80%_at_30%_0%,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_70%)]'
             />
             {/*<User size={30} className='text-white/90' />*/}
-            <img src={userState?.empresa?.logo_url} alt='' />
+            <img src={empresaState?.logo_url || userState?.empresa?.logo_url} alt='' />
           </div>
 
           <div className='flex flex-col'>

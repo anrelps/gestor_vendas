@@ -1,8 +1,93 @@
+import { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { Building2, Calendar, Upload, User } from 'lucide-react';
-import { useState } from 'react';
+
+// Redux
+import { updateUser, changePassword } from '../redux/slices/userSlice';
+import { updateEmpresa } from '../redux/slices/empresaSlice';
 
 const EditarPerfil = () => {
+  const dispatch = useDispatch();
+  const { user, loading, error } = useSelector((state) => state.user);
+  const { loading: loadingEmpresa } = useSelector((state) => state.empresa);
+
   const [activeTab, setActiveTab] = useState('perfil'); // 'perfil' ou 'empresa'
+
+  // Profile data
+  const [nome, setNome] = useState(user.nome);
+  const [email, setEmail] = useState(user.email);
+  const [telefone, setTelefone] = useState(user.telefone ?? '');
+  const [actualPassword, setActualPassword] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Company data
+  const [empresaNome, setEmpresaNome] = useState(user.empresa.nome);
+  const [empresaEmail, setEmpresaEmail] = useState(user.empresa.email ?? '');
+  const [empresaTelefone, setEmpresaTelefone] = useState(user.empresa.telefone ?? '');
+  const [empresaLogoPreview, setEmpresaLogoPreview] = useState(user.empresa.logo_url ?? null);
+  const [empresaLogoFile, setEmpresaLogoFile] = useState(null);
+
+  const fileInputRef = useRef(null);
+  const [passwordConfirmationError, setPasswordConfirmationError] = useState('');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if(file) {
+      const previewUrl = URL.createObjectURL(file);
+      setEmpresaLogoPreview(previewUrl);
+      setEmpresaLogoFile(file);
+    }
+  }
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  useEffect(() => {
+    if(confirmPassword !== password) {
+      setPasswordConfirmationError('As senhas precisam ser iguais.');
+    } else {
+      setPasswordConfirmationError('');
+    }
+  }, [confirmPassword])
+
+  const handleEditProfileSubmit = async () => {
+    const data = {
+      nome: nome,
+      telefone: telefone,
+      email: email,
+    }
+    await dispatch(
+      updateUser({user_id: user.id, data})
+    ).unwrap();
+
+    if(password.length > 0) {
+      const passwordData = {
+        actualPassword,
+        password,
+        password_confirmation: confirmPassword
+      };
+      await dispatch(
+        changePassword({user_id: user.id, data: passwordData})
+      ).unwrap();
+    }
+  }
+
+  const handleEditCompanySubmit = async () => {
+    const formData = new FormData();
+    formData.append('nome', empresaNome);
+    formData.append('email', empresaEmail);
+    formData.append('telefone', empresaTelefone);
+    if(empresaLogoFile) {
+      formData.append('logo', empresaLogoFile);
+    }
+    for(let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+    await dispatch(updateEmpresa({ empresa_id: user.empresa.id, data: formData })).unwrap();
+  }
 
   return (
     <div className='w-full max-w-3xl mx-auto'>
@@ -55,6 +140,8 @@ const EditarPerfil = () => {
                     Nome
                   </label>
                   <input
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
                     type='text'
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='Seu nome completo'
@@ -67,6 +154,8 @@ const EditarPerfil = () => {
                     Email
                   </label>
                   <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     type='email'
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='seu.email@exemplo.com'
@@ -79,6 +168,8 @@ const EditarPerfil = () => {
                     Telefone
                   </label>
                   <input
+                    value={telefone}
+                    onChange={(e) => setTelefone(e.target.value)}
                     type='tel'
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='(00) 00000-0000'
@@ -99,6 +190,7 @@ const EditarPerfil = () => {
                       </label>
                       <input
                         type='password'
+                        onChange={(e) => setActualPassword(e.target.value)}
                         className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                         placeholder='Digite sua senha atual'
                       />
@@ -111,9 +203,13 @@ const EditarPerfil = () => {
                       </label>
                       <input
                         type='password'
+                        onChange={(e) => setPassword(e.target.value)}
                         className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                         placeholder='Digite sua nova senha'
                       />
+                      {passwordConfirmationError.length > 0 && (
+                        <p className='text-xs text-red-600'>{passwordConfirmationError}</p>
+                      )}
                     </div>
 
                     {/* Confirmar Nova Senha */}
@@ -123,9 +219,13 @@ const EditarPerfil = () => {
                       </label>
                       <input
                         type='password'
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                         placeholder='Confirme sua nova senha'
                       />
+                      {passwordConfirmationError.length > 0 && (
+                        <p className='text-xs text-red-600'>{passwordConfirmationError}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -135,8 +235,12 @@ const EditarPerfil = () => {
                   <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition'>
                     Cancelar
                   </button>
-                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'>
-                    Salvar Alterações
+                  <button
+                    onClick={handleEditProfileSubmit}
+                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'
+                    disabled={loading}
+                  >
+                    {loading ? 'Salvando...' : 'Salvar Alterações'}
                   </button>
                 </div>
               </div>
@@ -158,6 +262,8 @@ const EditarPerfil = () => {
                   </label>
                   <input
                     type='text'
+                    value={empresaNome}
+                    onChange={(e) => setEmpresaNome(e.target.value)}
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='Nome da sua empresa'
                   />
@@ -170,6 +276,8 @@ const EditarPerfil = () => {
                   </label>
                   <input
                     type='email'
+                    value={empresaEmail}
+                    onChange={(e) => setEmpresaEmail(e.target.value)}
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='contato@empresa.com'
                   />
@@ -182,6 +290,8 @@ const EditarPerfil = () => {
                   </label>
                   <input
                     type='tel'
+                    value={empresaTelefone}
+                    onChange={(e) => setEmpresaTelefone(e.target.value)}
                     className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base'
                     placeholder='(00) 00000-0000'
                   />
@@ -195,16 +305,34 @@ const EditarPerfil = () => {
                   <div className='flex items-center gap-4'>
                     {/* Preview da Logo */}
                     <div className='w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50'>
-                      <Building2 size={32} className='text-gray-400' />
+                      {empresaLogoPreview && empresaLogoPreview !== '' ? (
+                        <img src={empresaLogoPreview} alt={empresaNome + ' Logo'} />
+                      ) : (
+                        <Building2 size={32} className='text-gray-400' />
+                      )}
                     </div>
                     {/* Botão Upload */}
                     <div className='flex-1'>
-                      <button className='flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:bg-gray-50 transition'>
+                      {/* Input escondido */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                      />
+                      
+                      <button
+                        type="button"
+                        onClick={handleButtonClick}
+                        className='flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:bg-gray-50 transition'
+                      >
                         <Upload size={18} />
                         <span>Escolher arquivo</span>
                       </button>
+
                       <p className='text-xs text-gray-500 mt-2'>
-                        PNG, JPG ou SVG (máx. 2MB)
+                        PNG, JPG ou SVG (máx. 5MB)
                       </p>
                     </div>
                   </div>
@@ -225,6 +353,7 @@ const EditarPerfil = () => {
                       </label>
                       <input
                         type='date'
+                        value={user.empresa.data_inicio_assinatura.slice(0, 10)}
                         className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base bg-gray-50'
                         disabled
                       />
@@ -240,6 +369,7 @@ const EditarPerfil = () => {
                       </label>
                       <input
                         type='date'
+                        value={user.empresa.data_fim_assinatura.slice(0, 10)}
                         className='w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition text-base bg-gray-50'
                         disabled
                       />
@@ -250,17 +380,31 @@ const EditarPerfil = () => {
                   </div>
 
                   {/* Status da Assinatura */}
-                  <div className='mt-4 p-4 bg-green-50 border border-green-200 rounded-lg'>
-                    <div className='flex items-center gap-2'>
-                      <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                      <span className='text-sm font-medium text-green-800'>
-                        Assinatura Ativa
-                      </span>
+                  {new Date(user.empresa.data_fim_assinatura) < new Date() ? (
+                    <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
+                      <div className='flex items-center gap-2'>
+                        <div className='w-2 h-2 bg-red-500 rounded-full'></div>
+                        <span className='text-sm font-medium text-red-800'>
+                          Assinatura Expirada
+                        </span>
+                      </div>
+                      <p className='text-xs text-red-700 mt-1'>
+                        Parece que sua assinatura expirou. Que tal renovar agora para não perder o acesso aos seus recursos?
+                      </p>
                     </div>
-                    <p className='text-xs text-green-700 mt-1'>
-                      Sua assinatura está ativa e funcionando normalmente.
-                    </p>
-                  </div>
+                  ) : (
+                    <div className='mt-4 p-4 bg-green-50 border border-green-200 rounded-lg'>
+                      <div className='flex items-center gap-2'>
+                        <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                        <span className='text-sm font-medium text-green-800'>
+                          Assinatura Ativa
+                        </span>
+                      </div>
+                      <p className='text-xs text-green-700 mt-1'>
+                        Sua assinatura está ativa e funcionando normalmente.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Botões de Ação */}
@@ -268,8 +412,12 @@ const EditarPerfil = () => {
                   <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition'>
                     Cancelar
                   </button>
-                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'>
-                    Salvar Alterações
+                  <button 
+                    onClick={handleEditCompanySubmit}
+                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'
+                    disabled={loadingEmpresa}
+                  >
+                    {loadingEmpresa ? "Salvando..." : "Salvar Alterações"}
                   </button>
                 </div>
               </div>

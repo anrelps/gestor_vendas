@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserService {
 
@@ -37,11 +38,22 @@ class UserService {
     }
 
     public function update(User $user, array $input) {
-        return $user->update([
-            'empresa_id' => $input['empresa_id'],
+        $user->update([
             'nome' => $input['nome'],
             'telefone' => $input['telefone'],
+            'email' => $input['email'],
         ]);
+        return $user;
+    }
+
+    public function updatePassword(User $user, array $input) {
+        if(!Hash::check($input['actualPassword'], $user->password)) {
+            throw new Exception('Senha incorreta!');
+        }
+        $user->update([
+            'password' => bcrypt($input['password']),
+        ]);
+        return $user;
     }
 
     public function logout(User $user) {

@@ -3,6 +3,7 @@ import userReducer from "./slices/userSlice";
 import clienteReducer from "./slices/clienteSlice";
 import produtoReducer from "./slices/produtoSlice";
 import vendaSlicer from "./slices/vendaSlice";
+import empresaReducer from "./slices/empresaSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,13 @@ export const store = configureStore({
     cliente: clienteReducer,
     produto: produtoReducer,
     venda: vendaSlicer,
+    empresa: empresaReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['empresa/update/pending', 'empresa/update/fulfilled', 'empresa/update/rejected'],
+        ignoredActionPaths: ['meta.arg.data'],
+      },
+    }),
 });
