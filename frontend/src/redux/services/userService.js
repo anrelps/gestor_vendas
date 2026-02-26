@@ -10,7 +10,17 @@ export const getUserData = async () => {
   return res.data;
 };
 
+export const userUpdate = async ({user_id, data}) => {
+  const res = await api.put(`/user/update/${user_id}`, data);
+  return res.data;
+};
+
+export const userChangePassword = async({user_id, data}) => {
+  const res = await api.put(`/user/change-password/${user_id}`, data);
+  return res.data;
+};
+
 export const userLogout = async() => {
   const res = await api.get("/user/logout");
   return res.data;
-}
+};

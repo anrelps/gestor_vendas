@@ -61,13 +61,26 @@ class UserController extends Controller
     public function update(User $user, Request $request) {
         try {
             $data = $request->validate([
-                'empresa_id' => 'required|numeric',
                 'nome' => 'required|string',
                 'telefone' => 'nullable|string',
+                'email' => 'required|email',
             ]);
             $res = $this->service->update($user, $data);
             return $this->successResponse(new UserResource($res), 200);
         } catch(Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
+    public function updatePassword(User $user, Request $request) {
+        try {
+            $data = $request->validate([
+                'actualPassword' => 'required|string|min:8',
+                'password' => 'required|string|min:8|confirmed'
+            ]);
+            $res = $this->service->updatePassword($user, $data);
+            return $this->successResponse(new UserResource($res), 200);
+        } catch (Exception $e) {
             return $this->errorResponse($e->getMessage());
         }
     }

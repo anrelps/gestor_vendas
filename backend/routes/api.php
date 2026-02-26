@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function() {
         Route::prefix('/user')->controller(UserController::class)->group(function() {
             Route::get('/logout', 'logout');
             Route::put('/update/{user}', 'update');
+            Route::put('/change-password/{user}', 'updatePassword');
         });
         Route::apiResource('/empresas', EmpresaController::class);
         Route::prefix('/{empresa}')->group(function() {
