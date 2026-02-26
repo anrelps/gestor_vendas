@@ -282,10 +282,14 @@ ${url}`;
     setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
+  const valorTotal = vendas.reduce((total, venda) => total + venda.valor_total, 0);
+  const valorTotalPendente = valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
+
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+          
           {/* Header */}
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
@@ -302,6 +306,34 @@ ${url}`;
                 icon={<Plus size={18} />}
                 onClick={() => navigate('/nova-venda')}
               />
+            </div>
+
+            {/* RESUMO DE VENDAS */}
+            <div className="w-full mt-5 p-4 md:flex justify-between gap-3">
+              <div className='w-full border border-gray-300 rounded-xl p-5'>
+                <span className='block text-gray-600 text-left text-sm'>Total Pendente</span>
+                <p className='text-red-500 font-semibold text-left'>
+                  {currencyFormatter.format(
+                    Number(valorTotalPendente) || 0,
+                  )}
+                </p>
+              </div>
+
+              <div className='w-full border border-gray-300 rounded-xl p-5 my-3 md:my-0'>
+                <span className='block text-gray-600 text-left text-sm'>Total Geral</span>
+                <p className='text-primary font-semibold text-left'>
+                  {currencyFormatter.format(
+                    Number(valorTotal) || 0,
+                  )}
+                </p>
+              </div>
+
+              <div className='w-full border border-gray-300 bg-primary rounded-xl p-5'>
+                <span className='block text-left text-sm text-white'>Qtd. Vendas/Serviços</span>
+                <p className='font-semibold text-left text-white'>
+                  { vendas.length }
+                </p>
+              </div>
             </div>
           </div>
 
