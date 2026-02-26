@@ -165,7 +165,7 @@ const ClientList = () => {
               </div>
             )}
             {!loading && clientes.length > 0 && (
-              <div className='m-4 overflow-hidden rounded-lg border border-gray-200 shadow-sm'>
+              <div className='m-4 overflow-hidden rounded-lg border border-gray-200 '>
                 <ul className='flex flex-col'>
                   {clientes.map((cliente, idx) => (
                     <li
