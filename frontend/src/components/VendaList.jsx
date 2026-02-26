@@ -167,6 +167,8 @@ const VendaList = () => {
 
   const [selectedVendasIds, setSelectedVendasIds] = useState([]);
 
+  const isDateFilterApplied = Boolean(filters.data_min || filters.data_max);
+
   const handleGerarRelatorio = async () => {
     setLoading(true);
     const empresa_id = user?.empresa?.id;
@@ -280,10 +282,14 @@ ${url}`;
     setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
+  const valorTotal = vendas.reduce((total, venda) => total + venda.valor_total, 0);
+  const valorTotalPendente = valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
+
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+          
           {/* Header */}
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
@@ -300,6 +306,34 @@ ${url}`;
                 icon={<Plus size={18} />}
                 onClick={() => navigate('/nova-venda')}
               />
+            </div>
+
+            {/* RESUMO DE VENDAS */}
+            <div className="w-full mt-5 p-4 md:flex justify-between gap-3">
+              <div className='w-full border border-gray-300 rounded-xl p-5'>
+                <span className='block text-gray-600 text-left text-sm'>Total Pendente</span>
+                <p className='text-red-500 font-semibold text-left'>
+                  {currencyFormatter.format(
+                    Number(valorTotalPendente) || 0,
+                  )}
+                </p>
+              </div>
+
+              <div className='w-full border border-gray-300 rounded-xl p-5 my-3 md:my-0'>
+                <span className='block text-gray-600 text-left text-sm'>Total Geral</span>
+                <p className='text-primary font-semibold text-left'>
+                  {currencyFormatter.format(
+                    Number(valorTotal) || 0,
+                  )}
+                </p>
+              </div>
+
+              <div className='w-full border border-gray-300 bg-primary rounded-xl p-5'>
+                <span className='block text-left text-sm text-white'>Qtd. Vendas/Serviços</span>
+                <p className='font-semibold text-left text-white'>
+                  { vendas.length }
+                </p>
+              </div>
             </div>
           </div>
 
@@ -392,6 +426,33 @@ ${url}`;
 
             {/* Outros Filtros */}
             <div className='flex flex-wrap items-center gap-2'>
+              <div
+                className={`flex items-center gap-2 text-sm font-semibold rounded-lg px-2 h-9 border ${
+                  allSelected
+                    ? 'text-primary bg-primary/10 border-primary/20'
+                    : 'text-gray-700 bg-white border-transparent'
+                }`}
+              >
+                <label className='flex items-center gap-2 cursor-pointer'>
+                  <input
+                    type='checkbox'
+                    checked={allSelected}
+                    onChange={handleToggleSelectAll}
+                    className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
+                  />
+                  Selecionar todas
+                </label>
+                {selectedVendasIds.length > 0 && (
+                  <button
+                    type='button'
+                    onClick={handleClearSelection}
+                    className='text-sm font-semibold border border-gray-200 rounded-md px-3.5 py-1 bg-white text-gray-700 hover:text-gray-900'
+                  >
+                    Limpar
+                  </button>
+                )}
+              </div>
+
               {/* Filtro: Não pagas */}
               <button
                 value={filters.pendencias == 1 ? 0 : 1}
@@ -411,97 +472,78 @@ ${url}`;
                 Não pagas
               </button>
 
-              {/* Filtro: Data Início */}
-              <div
-                className='relative cursor-pointer'
-                onClick={() => {
-                  const input = dateStartRef.current;
-                  if (input?.showPicker) input.showPicker();
-                  else input?.focus();
-                }}
-              >
-                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
-                  <Calendar size={16} className='text-gray-400' />
-                  <span className='text-gray-500 text-xs'>De</span>
-                  <span className='text-gray-700'>{dateStart}</span>
-                </div>
-                <input
-                  ref={dateStartRef}
-                  type='date'
-                  value={dateStart}
-                  onChange={(e) => {
-                    setDateStart(e.target.value);
-                    handleChange('data_min')(e);
+              <div className='flex items-center gap-2 flex-nowrap'>
+                {/* Filtro: Data Início */}
+                <div
+                  className='relative cursor-pointer'
+                  onClick={() => {
+                    const input = dateStartRef.current;
+                    if (input?.showPicker) input.showPicker();
+                    else input?.focus();
                   }}
-                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
-                  tabIndex={-1}
-                />
-              </div>
+                >
+                  <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                    <Calendar size={16} className='text-gray-400' />
+                    <span className='text-gray-500 text-xs'>De</span>
+                    <span
+                      className={
+                        filters.data_min ? 'text-gray-700' : 'text-gray-400'
+                      }
+                    >
+                      {filters.data_min ? dateStart : 'Selecionar'}
+                    </span>
+                  </div>
+                  <input
+                    ref={dateStartRef}
+                    type='date'
+                    value={dateStart}
+                    onChange={(e) => {
+                      setDateStart(e.target.value);
+                      handleChange('data_min')(e);
+                    }}
+                    className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                    tabIndex={-1}
+                  />
+                </div>
 
-              {/* Filtro: Data Fim */}
-              <div
-                className='relative cursor-pointer'
-                onClick={() => {
-                  const input = dateEndRef.current;
-                  if (input?.showPicker) input.showPicker();
-                  else input?.focus();
-                }}
-              >
-                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
-                  <Calendar size={16} className='text-gray-400' />
-                  <span className='text-gray-500 text-xs'>Até</span>
-                  <span className='text-gray-700'>{dateEnd}</span>
-                </div>
-                <input
-                  ref={dateEndRef}
-                  type='date'
-                  value={dateEnd}
-                  onChange={(e) => {
-                    setDateEnd(e.target.value);
-                    handleChange('data_max')(e);
+                {/* Filtro: Data Fim */}
+                <div
+                  className='relative cursor-pointer'
+                  onClick={() => {
+                    const input = dateEndRef.current;
+                    if (input?.showPicker) input.showPicker();
+                    else input?.focus();
                   }}
-                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
-                  tabIndex={-1}
-                />
+                >
+                  <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                    <Calendar size={16} className='text-gray-400' />
+                    <span className='text-gray-500 text-xs'>Até</span>
+                    <span
+                      className={
+                        filters.data_max ? 'text-gray-700' : 'text-gray-400'
+                      }
+                    >
+                      {filters.data_max ? dateEnd : 'Selecionar'}
+                    </span>
+                  </div>
+                  <input
+                    ref={dateEndRef}
+                    type='date'
+                    value={dateEnd}
+                    onChange={(e) => {
+                      setDateEnd(e.target.value);
+                      handleChange('data_max')(e);
+                    }}
+                    className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                    tabIndex={-1}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {/* Lista de Vendas */}
           <div className='divide-y divide-gray-100'>
-            <div className='mx-4 px-4 py-3 border-b border-gray-100 bg-gray-50/60 flex items-center'>
-              <div className='flex items-center gap-3'>
-                <div
-                  className={`flex items-center gap-2 text-sm font-semibold rounded-md px-3 py-1.5 border -ml-3 ${
-                    allSelected
-                      ? 'text-primary bg-primary/10 border-primary/20'
-                      : 'text-gray-700 border-transparent'
-                  }`}
-                >
-                  <label className='flex items-center gap-2 cursor-pointer'>
-                    <input
-                      type='checkbox'
-                      checked={allSelected}
-                      onChange={handleToggleSelectAll}
-                      className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
-                    />
-                    Selecionar todas
-                  </label>
-                  <button
-                    type='button'
-                    onClick={handleClearSelection}
-                    className={`text-sm font-semibold border border-gray-200 rounded-md px-3.5 py-1 bg-white ${
-                      selectedVendasIds.length > 0
-                        ? 'text-gray-700 hover:text-gray-900'
-                        : 'opacity-0 pointer-events-none'
-                    }`}
-                  >
-                    Limpar
-                  </button>
-                </div>
-              </div>
-            </div>
-
             {vendas.length === 0 && (
               <div className='py-6 px-3 sm:px-6 text-center text-gray-400'>
                 Nenhuma venda encontrada.

@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux";
 import { Building2, Calendar, Upload, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Redux
-import { updateUser, changePassword } from '../redux/slices/userSlice';
 import { updateEmpresa } from '../redux/slices/empresaSlice';
+import { changePassword, updateUser } from '../redux/slices/userSlice';
 
 const EditarPerfil = () => {
   const dispatch = useDispatch();
@@ -24,70 +24,75 @@ const EditarPerfil = () => {
   // Company data
   const [empresaNome, setEmpresaNome] = useState(user.empresa.nome);
   const [empresaEmail, setEmpresaEmail] = useState(user.empresa.email ?? '');
-  const [empresaTelefone, setEmpresaTelefone] = useState(user.empresa.telefone ?? '');
-  const [empresaLogoPreview, setEmpresaLogoPreview] = useState(user.empresa.logo_url ?? null);
+  const [empresaTelefone, setEmpresaTelefone] = useState(
+    user.empresa.telefone ?? '',
+  );
+  const [empresaLogoPreview, setEmpresaLogoPreview] = useState(
+    user.empresa.logo_url ?? null,
+  );
   const [empresaLogoFile, setEmpresaLogoFile] = useState(null);
 
   const fileInputRef = useRef(null);
-  const [passwordConfirmationError, setPasswordConfirmationError] = useState('');
+  const [passwordConfirmationError, setPasswordConfirmationError] =
+    useState('');
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
 
-    if(file) {
+    if (file) {
       const previewUrl = URL.createObjectURL(file);
       setEmpresaLogoPreview(previewUrl);
       setEmpresaLogoFile(file);
     }
-  }
+  };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
 
   useEffect(() => {
-    if(confirmPassword !== password) {
+    if (confirmPassword !== password) {
       setPasswordConfirmationError('As senhas precisam ser iguais.');
     } else {
       setPasswordConfirmationError('');
     }
-  }, [confirmPassword])
+  }, [confirmPassword]);
 
   const handleEditProfileSubmit = async () => {
     const data = {
       nome: nome,
       telefone: telefone,
       email: email,
-    }
-    await dispatch(
-      updateUser({user_id: user.id, data})
-    ).unwrap();
+    };
+    await dispatch(updateUser({ user_id: user.id, data })).unwrap();
 
-    if(password.length > 0) {
+    if (password.length > 0) {
       const passwordData = {
         actualPassword,
         password,
-        password_confirmation: confirmPassword
+        password_confirmation: confirmPassword,
       };
       await dispatch(
-        changePassword({user_id: user.id, data: passwordData})
+        changePassword({ user_id: user.id, data: passwordData }),
       ).unwrap();
     }
-  }
+  };
 
   const handleEditCompanySubmit = async () => {
     const formData = new FormData();
     formData.append('nome', empresaNome);
     formData.append('email', empresaEmail);
     formData.append('telefone', empresaTelefone);
-    if(empresaLogoFile) {
+    if (empresaLogoFile) {
       formData.append('logo', empresaLogoFile);
     }
-    for(let [key, value] of formData.entries()) {
+    for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
-    await dispatch(updateEmpresa({ empresa_id: user.empresa.id, data: formData })).unwrap();
-  }
+    await dispatch(
+      updateEmpresa({ empresa_id: user.empresa.id, data: formData }),
+    ).unwrap();
+  };
 
   return (
     <div className='w-full max-w-3xl mx-auto'>
@@ -208,7 +213,9 @@ const EditarPerfil = () => {
                         placeholder='Digite sua nova senha'
                       />
                       {passwordConfirmationError.length > 0 && (
-                        <p className='text-xs text-red-600'>{passwordConfirmationError}</p>
+                        <p className='text-xs text-red-600'>
+                          {passwordConfirmationError}
+                        </p>
                       )}
                     </div>
 
@@ -224,7 +231,9 @@ const EditarPerfil = () => {
                         placeholder='Confirme sua nova senha'
                       />
                       {passwordConfirmationError.length > 0 && (
-                        <p className='text-xs text-red-600'>{passwordConfirmationError}</p>
+                        <p className='text-xs text-red-600'>
+                          {passwordConfirmationError}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -232,12 +241,12 @@ const EditarPerfil = () => {
 
                 {/* Botões de Ação */}
                 <div className='flex gap-3 pt-4'>
-                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition'>
+                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition cursor-pointer'>
                     Cancelar
                   </button>
                   <button
                     onClick={handleEditProfileSubmit}
-                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'
+                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition cursor-pointer'
                     disabled={loading}
                   >
                     {loading ? 'Salvando...' : 'Salvar Alterações'}
@@ -306,7 +315,10 @@ const EditarPerfil = () => {
                     {/* Preview da Logo */}
                     <div className='w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50'>
                       {empresaLogoPreview && empresaLogoPreview !== '' ? (
-                        <img src={empresaLogoPreview} alt={empresaNome + ' Logo'} />
+                        <img
+                          src={empresaLogoPreview}
+                          alt={empresaNome + ' Logo'}
+                        />
                       ) : (
                         <Building2 size={32} className='text-gray-400' />
                       )}
@@ -315,15 +327,15 @@ const EditarPerfil = () => {
                     <div className='flex-1'>
                       {/* Input escondido */}
                       <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
+                        type='file'
+                        accept='image/*'
+                        className='hidden'
                         ref={fileInputRef}
                         onChange={handleFileChange}
                       />
-                      
+
                       <button
-                        type="button"
+                        type='button'
                         onClick={handleButtonClick}
                         className='flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-700 font-medium hover:bg-gray-50 transition'
                       >
@@ -389,7 +401,8 @@ const EditarPerfil = () => {
                         </span>
                       </div>
                       <p className='text-xs text-red-700 mt-1'>
-                        Parece que sua assinatura expirou. Que tal renovar agora para não perder o acesso aos seus recursos?
+                        Parece que sua assinatura expirou. Que tal renovar agora
+                        para não perder o acesso aos seus recursos?
                       </p>
                     </div>
                   ) : (
@@ -409,15 +422,15 @@ const EditarPerfil = () => {
 
                 {/* Botões de Ação */}
                 <div className='flex gap-3 pt-4'>
-                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition'>
+                  <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition cursor-pointer'>
                     Cancelar
                   </button>
-                  <button 
+                  <button
                     onClick={handleEditCompanySubmit}
-                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition'
+                    className='flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition cursor-pointer'
                     disabled={loadingEmpresa}
                   >
-                    {loadingEmpresa ? "Salvando..." : "Salvar Alterações"}
+                    {loadingEmpresa ? 'Salvando...' : 'Salvar Alterações'}
                   </button>
                 </div>
               </div>
