@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ProdutoController;
@@ -38,6 +39,11 @@ Route::prefix('v1')->group(function() {
                 Route::get('/pdf/vendas', [RelatorioController::class, 'vendas']);
                 Route::get('/pdf/vendas/{venda}', [RelatorioController::class, 'detalhesVenda']);
             });
+        });
+        Route::prefix('/charts')->controller(ChartController::class)->group(function() {
+            Route::get('/lucro-semanal', 'lucroSemana');
+            Route::get('/resumo-financeiro', 'resumoFinanceiro');
+            Route::get('/resumo-mes', 'resumoMes');
         });
     });
 });

@@ -1,4 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+
+// Components
+import DonutChart from '../components/charts/DonutChart';
+
+// Redux
+import { getLucroSemanal, getResumoFinanceiro, getResumoMes } from '../redux/slices/chartSlice';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -6,8 +13,22 @@ const currencyFormatter = new Intl.NumberFormat('pt-BR', {
 });
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  
   const user = useSelector((state) => state.user.user);
 
+  const { lucroSemanal, resumoFinanceiro, resumoMes } = useSelector((state) => state.chart);
+
+  useEffect(() => {
+    dispatch(getLucroSemanal());
+    dispatch(getResumoFinanceiro());
+    dispatch(getResumoMes());
+  }, [dispatch]);
+
+  const [activeBar, setActiveBar] = useState(null);
+
+  const percentualMesAnterior = ((resumoMes.atual - resumoMes.anterior) / (resumoMes.anterior || 1)) * 100;
+  
   return (
     <div className='w-full'>
       <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 space-y-8'>
@@ -18,12 +39,12 @@ const Dashboard = () => {
               Bem-vindo{user?.nome ? `, ${user.nome}` : ''}!
             </div>
             <div className='text-sm text-white/80'>
-              Tenha um ótimo dia e bons negócios!
+              Tenha um ótimo dia e boas vendas!
             </div>
           </div>
         </div>
 
-        {/* <section className='flex justify-center items-center'>
+        <section className='flex justify-center items-center'>
           <div
             className='relative w-full rounded-3xl p-10 overflow-hidden
             bg-linear-to-br from-violet-100 via-purple-50 to-violet-200 border border-violet-100
@@ -58,26 +79,41 @@ const Dashboard = () => {
                 </div>
 
                 <h2 className='mt-3 text-2xl font-semibold tracking-tight text-slate-900'>
-                  Vendas Totais / Mês
+                  Total Recebido / Mês
                 </h2>
 
                 <p className='mt-1 text-sm text-slate-600'>
-                  Visão rápida do desempenho e valores em aberto.
+                  Visão rápida do desempenho e valores.
                 </p>
               </div>
 
               <div className='shrink-0 text-right'>
-                <div className='text-xs text-slate-500'>Total geral</div>
+                <div className='text-xs text-slate-500'>Total pago</div>
                 <div className='mt-1 text-3xl font-semibold tracking-tight text-slate-900'>
-                  {currencyFormatter.format(128450)}
+                  {currencyFormatter.format(resumoMes.atual)}
                 </div>
-
+                {/*}
                 <div
                   className='mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs
                   text-emerald-700 bg-emerald-100 border border-emerald-200'
                 >
                   <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-                  +12,4% vs mês anterior
+                  +{percentualMesAnterior.toFixed(2)}% vs mês anterior
+                </div>
+                */}
+                <div
+                  className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs
+                    ${percentualMesAnterior > 0
+                      ? 'text-emerald-700 bg-emerald-100 border border-emerald-200'
+                      : percentualMesAnterior < 0
+                        ? 'text-red-700 bg-red-100 border border-red-200'
+                        : 'text-slate-500 bg-slate-100 border border-slate-200'
+                    }`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full 
+                    ${percentualMesAnterior > 0 ? 'bg-emerald-500' : percentualMesAnterior < 0 ? 'bg-red-500' : 'bg-slate-400'}`} 
+                  />
+                  {percentualMesAnterior > 0 ? '+' : ''}{percentualMesAnterior.toFixed(2)}% vs mês anterior
                 </div>
               </div>
             </div>
@@ -87,16 +123,6 @@ const Dashboard = () => {
                 className='absolute -inset-3 rounded-[28px]
                 bg-[linear-gradient(120deg,rgba(167,139,250,0.10),transparent_35%,rgba(196,181,253,0.08))]
                 blur-xl opacity-70 pointer-events-none'
-              />
-
-              <StatCard
-                label='Total recebido/mês'
-                value={currencyFormatter.format(1000)}
-              />
-              <StatCard
-                label='Total pendente/mês'
-                value={currencyFormatter.format(2850)}
-                warning
               />
             </div>
           </div>
@@ -108,16 +134,40 @@ const Dashboard = () => {
               <h3 className='text-sm font-semibold text-slate-700'>
                 Receita semanal
               </h3>
-              <span className='text-xs text-slate-400'>Últimos 7 dias</span>
+              <span className='text-xs text-slate-400'>Semana Atual</span>
             </div>
             <div className='mt-4 flex items-end gap-2 h-36'>
-              {[42, 56, 38, 70, 54, 80, 62].map((value, index) => (
-                <div
-                  key={`bar-${index}`}
-                  className='flex-1 rounded-xl bg-linear-to-t from-primary/70 via-primary/40 to-primary/20'
-                  style={{ height: `${value}%` }}
-                />
-              ))}
+              {Object.keys(lucroSemanal).map((dia, index) => {
+                const maxValue = Math.max(...Object.values(lucroSemanal));
+                const normalizedHeight = maxValue > 0 ? (lucroSemanal[dia] / maxValue) * 100 : 0;
+                const valor = parseFloat(lucroSemanal[dia]).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const isActive = activeBar === index;
+
+                return (
+                  <div
+                    key={`bar-${index}`} 
+                    className='relative flex-1 flex flex-col items-center justify-end h-full group'
+                    onClick={() => setActiveBar(isActive ? null : index)}
+                    onMouseEnter={() => setActiveBar(index)}
+                    onMouseOut={() => setActiveBar(null)}
+                  >
+                    {/* Tooltip */}
+                    {isActive && (
+                      <div className='absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-10 bg-slate-800 text-white text-[10px] font-medium rounded-lg px-2 py-1 whitespace-nowrap shadow-lg pointer-events-none'>
+                        {valor}
+                        {/* Setinha */}
+                        <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800' />
+                      </div>
+                    )}
+
+                    {/* Barra */}
+                    <div
+                      className='w-full rounded-xl bg-linear-to-t from-primary/70 via-primary/40 to-primary/20'
+                      style={{ height: `${normalizedHeight}%` }}
+                    />
+                  </div>
+                );
+              })}
             </div>
             <div className='mt-3 flex justify-between text-xs text-slate-400'>
               <span>Seg</span>
@@ -129,37 +179,14 @@ const Dashboard = () => {
               <span>Dom</span>
             </div>
           </div>
-
-          <div className='rounded-2xl bg-white border border-slate-200 shadow-sm p-6'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-sm font-semibold text-slate-700'>
-                Mix de produtos
-              </h3>
-              <span className='text-xs text-slate-400'>Top categorias</span>
-            </div>
-            <div className='mt-6 flex items-center gap-6'>
-              <div className='relative h-24 w-24 rounded-full bg-slate-100'>
-                <div className='absolute inset-0 rounded-full bg-[conic-gradient(#7c3aed_0deg,#7c3aed_130deg,#a78bfa_130deg,#a78bfa_230deg,#ddd6fe_230deg,#ddd6fe_360deg)]' />
-                <div className='absolute inset-3 rounded-full bg-white' />
-              </div>
-              <div className='space-y-2 text-sm'>
-                <div className='flex items-center gap-2 text-slate-600'>
-                  <span className='h-2 w-2 rounded-full bg-violet-600' />
-                  Serviços (45%)
-                </div>
-                <div className='flex items-center gap-2 text-slate-600'>
-                  <span className='h-2 w-2 rounded-full bg-violet-400' />
-                  Produtos (30%)
-                </div>
-                <div className='flex items-center gap-2 text-slate-600'>
-                  <span className='h-2 w-2 rounded-full bg-violet-200' />
-                  Acessórios (25%)
-                </div>
-              </div>
-            </div>
-          </div>
+          
+          <DonutChart
+            total={resumoFinanceiro.total}
+            pago={resumoFinanceiro.pago}
+            pendente={resumoFinanceiro.pendente}
+          />
         </div>
-
+        {/* 
         <div className='grid gap-6 lg:grid-cols-3'>
           <div className='rounded-2xl bg-white border border-slate-200 shadow-sm p-6'>
             <div className='flex items-center justify-between'>
@@ -218,7 +245,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
+        */}
       </div>
     </div>
   );

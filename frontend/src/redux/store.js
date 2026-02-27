@@ -4,6 +4,7 @@ import clienteReducer from "./slices/clienteSlice";
 import produtoReducer from "./slices/produtoSlice";
 import vendaSlicer from "./slices/vendaSlice";
 import empresaReducer from "./slices/empresaSlice";
+import chartReducer from "./slices/chartSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     produto: produtoReducer,
     venda: vendaSlicer,
     empresa: empresaReducer,
+    chart: chartReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
