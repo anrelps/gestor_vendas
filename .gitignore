@@ -1,3 +1,4 @@
 backend/config/cors.php
 frontend/src/services/api.js
 frontend/src/services/api.js
+frontend/.env

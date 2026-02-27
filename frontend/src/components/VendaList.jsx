@@ -211,9 +211,7 @@ const VendaList = () => {
 
   const handleCopiarLinkRelatorio = async () => {
     const empresa_id = user?.empresa?.id;
-    //const baseURL = ''; // URL PROD
-    //const baseURL = 'http://127.0.0.1:8000/api/v1/'; // URL DEV
-    const baseURL = 'https://uselumenz.com/api/v1/'; // URL PROD
+    const baseURL = import.meta.env.VITE_API_URL;
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
 
     const filtrosLimpos = Object.fromEntries(
