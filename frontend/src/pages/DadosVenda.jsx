@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -256,10 +257,10 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         ).unwrap();
       }
       // Sucesso - navegar para lista de vendas
-      alert('Venda salva com sucesso!');
+      toast.success('Venda salva com sucesso!');
       navigate('/vendas');
     } catch (error) {
-      alert('Erro ao salvar venda. Tente novamente.');
+      toast.error('Erro ao salvar venda. Tente novamente.');
     }
   };
 

@@ -1,5 +1,6 @@
 import { ChevronRight, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { destroy, index } from '../redux/slices/clienteSlice';
 import ConfirmDialog from './ConfirmDialog';
@@ -111,7 +112,9 @@ const ClientList = () => {
       ).unwrap();
       setShowDeletePopup(false);
       setRemoveClientId(null);
+      toast.success('Cliente removido com sucesso!');
     } catch (error) {
+      toast.error('Erro ao remover cliente. Tente novamente.');
       console.log('Client destroy error: ', error);
     }
   };

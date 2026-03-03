@@ -17,6 +17,7 @@ import {
   User,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoading } from '../context/LoadingContext';
@@ -81,17 +82,9 @@ const VendaList = () => {
     }
   }, [loading, shouldFetch]);
 
-  const [dateStart, setDateStart] = useState(() => {
-    const now = new Date();
-    const start = startOfMonth(now);
-    return format(start, 'yyyy-MM-dd');
-  });
+  const [dateStart, setDateStart] = useState('');
 
-  const [dateEnd, setDateEnd] = useState(() => {
-    const now = new Date();
-    const end = endOfMonth(now);
-    return format(end, 'yyyy-MM-dd');
-  });
+  const [dateEnd, setDateEnd] = useState('');
 
   const dateStartRef = useRef(null);
   const dateEndRef = useRef(null);
@@ -111,7 +104,9 @@ const VendaList = () => {
       ).unwrap();
       setShowDeletePopup(false);
       setRemoveVendaId(null);
+      toast.success('Venda removida com sucesso!');
     } catch (error) {
+      toast.error('Erro ao remover venda. Tente novamente.');
       console.log('Venda destroy error: ', error);
     }
   };
@@ -235,7 +230,7 @@ const VendaList = () => {
     const mensagem = `Olá! Segue seu relatório de venda/serviços:
 ${url}`;
     navigator.clipboard.writeText(mensagem);
-    alert('Mensagem Copiada com sucesso!');
+    toast.success('Mensagem copiada com sucesso!');
     return url;
   };
 
@@ -280,14 +275,17 @@ ${url}`;
     setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
-  const valorTotal = vendas.reduce((total, venda) => total + venda.valor_total, 0);
-  const valorTotalPendente = valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
+  const valorTotal = vendas.reduce(
+    (total, venda) => total + venda.valor_total,
+    0,
+  );
+  const valorTotalPendente =
+    valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
 
   return (
     <div className=''>
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          
           {/* Header */}
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
@@ -307,29 +305,31 @@ ${url}`;
             </div>
 
             {/* RESUMO DE VENDAS */}
-            <div className="w-full mt-5 p-4 md:flex justify-between gap-3">
+            <div className='w-full mt-5 p-4 md:flex justify-between gap-3'>
               <div className='w-full border border-gray-300 rounded-xl p-5'>
-                <span className='block text-gray-600 text-left text-sm'>Total Pendente</span>
+                <span className='block text-gray-600 text-left text-sm'>
+                  Total Pendente
+                </span>
                 <p className='text-red-500 font-semibold text-left'>
-                  {currencyFormatter.format(
-                    Number(valorTotalPendente) || 0,
-                  )}
+                  {currencyFormatter.format(Number(valorTotalPendente) || 0)}
                 </p>
               </div>
 
               <div className='w-full border border-gray-300 rounded-xl p-5 my-3 md:my-0'>
-                <span className='block text-gray-600 text-left text-sm'>Total Geral</span>
+                <span className='block text-gray-600 text-left text-sm'>
+                  Total Geral
+                </span>
                 <p className='text-primary font-semibold text-left'>
-                  {currencyFormatter.format(
-                    Number(valorTotal) || 0,
-                  )}
+                  {currencyFormatter.format(Number(valorTotal) || 0)}
                 </p>
               </div>
 
               <div className='w-full border border-gray-300 bg-primary rounded-xl p-5'>
-                <span className='block text-left text-sm text-white'>Qtd. Vendas/Serviços</span>
+                <span className='block text-left text-sm text-white'>
+                  Qtd. Vendas/Serviços
+                </span>
                 <p className='font-semibold text-left text-white'>
-                  { vendas.length }
+                  {vendas.length}
                 </p>
               </div>
             </div>
