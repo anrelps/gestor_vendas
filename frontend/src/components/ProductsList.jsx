@@ -1,4 +1,4 @@
-import { ChevronRight, Plus, Trash } from 'lucide-react';
+import { Edit2, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +22,6 @@ const ProductsList = () => {
   );
   const { user } = useSelector((state) => state.user);
   const [search, setSearch] = useState('');
-  const [openDropdownId, setOpenDropdownId] = useState(null);
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [removeProductId, setRemoveProductId] = useState(null);
@@ -78,10 +77,6 @@ const ProductsList = () => {
     );
   };
 
-  const handleDropdown = (id) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
-  };
-
   const handleRemoveProduct = (id) => {
     setRemoveProductId(id);
     setShowDeletePopup(true);
@@ -107,13 +102,14 @@ const ProductsList = () => {
   };
 
   return (
-    <div className=''>
-      <div className='w-full max-w-5xl'>
-        <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
-            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+    <div className='w-full'>
+      <div className='w-full'>
+        <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
+          {/* Header */}
+          <div className='px-4 sm:px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-purple-50/30 to-purple-50/10'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
               <div>
-                <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>
+                <h2 className='text-2xl sm:text-3xl font-bold text-gray-900'>
                   Produtos
                 </h2>
                 <p className='text-sm text-gray-500 mt-1'>
@@ -127,132 +123,182 @@ const ProductsList = () => {
               />
             </div>
           </div>
-          <div className='flex flex-col gap-3 px-6 py-4 border-b-2 bg-linear-to-r from-white via-white/30 to-black/1 border-black/2'>
-            <div className='w-full flex flex-col sm:flex-row sm:items-center sm:justify-start gap-2'>
-              <div className='flex flex-1 gap-2'>
+
+          {/* Search Bar */}
+          <div className='px-4 sm:px-6 py-4 border-b border-gray-100 bg-gray-50'>
+            <div className='flex flex-col sm:flex-row gap-3 items-start sm:items-center'>
+              <div className='w-full sm:w-auto'>
                 <input
                   type='text'
-                  className='w-full max-w-xs truncate rounded-sm border border-gray-200 px-3 sm:px-4 py-2 text-gray-700 bg-gray- focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-100 '
+                  className='w-full sm:w-64 rounded-sm border border-gray-300 px-4 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all cursor-pointer'
                   placeholder='Buscar produto...'
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
+              <span className='text-sm text-gray-600 font-medium whitespace-nowrap'>
+                {produtos.length} produto{produtos.length !== 1 ? 's' : ''}
+              </span>
             </div>
           </div>
+
+          {/* Products List */}
           <div className='divide-y divide-gray-100'>
             {!loading && produtos.length === 0 && (
-              <div className='py-8 px-3 sm:px-6 text-center text-gray-400'>
-                Nenhum produto encontrado.
+              <div className='py-12 px-4 sm:px-6 text-center'>
+                <p className='text-gray-400 text-base'>
+                  Nenhum produto encontrado.
+                </p>
               </div>
             )}
+
             {!loading && produtos.length > 0 && (
-              <div className='m-4 overflow-hidden rounded-lg border border-gray-200'>
-                <ul className='flex flex-col'>
-                  {produtos.map((produto, idx) => (
-                    <li
-                      key={produto.id}
-                      className={`flex flex-col px-4 py-3 cursor-pointer transition-colors ${
-                        idx % 2 === 0 ? 'bg-white' : 'bg-white/85'
-                      } hover:bg-primary/5 ${idx !== produtos.length - 1 ? 'border-b-2 border-b-gray-100' : ''}`}
-                      onClick={() => handleDropdown(produto.id)}
-                    >
-                      <div className='flex items-center'>
-                        <div className='flex-1 min-w-0 flex items-center gap-3'>
-                          <span className='text-base text-gray-800 truncate font-medium max-w-45 sm:max-w-none'>
-                            {produto.titulo.length > 25
-                              ? produto.titulo.slice(0, 22) + '...'
-                              : produto.titulo}
-                          </span>
-                          <span className='inline-block bg-green-50 text-green-600 font-semibold rounded px-2 py-0.5 text-sm shadow-sm border border-green-100'>
-                            {currencyFormatter.format(Number(produto.valor))}
-                          </span>
-                        </div>
-                        <ChevronRight
-                          size={20}
-                          className={`text-gray-400 ml-2 transition-transform duration-150 ${
-                            openDropdownId === produto.id ? 'rotate-90' : ''
-                          }`}
-                        />
-                      </div>
-                      {openDropdownId === produto.id && (
-                        <div
-                          className='mt-3 flex flex-col gap-2 text-sm items-start'
-                          onClick={(e) => e.stopPropagation()}
+              <>
+                {/* Desktop Table View */}
+                <div className='hidden lg:block overflow-x-auto'>
+                  <table className='w-full table-fixed'>
+                    <thead>
+                      <tr className='bg-gray-50 border-b border-gray-200'>
+                        <th className='px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-[50%]'>
+                          Produto
+                        </th>
+                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[25%]'>
+                          Preço
+                        </th>
+                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[25%]'>
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className='divide-y divide-gray-100'>
+                      {produtos.map((produto) => (
+                        <tr
+                          key={produto.id}
+                          className='hover:bg-purple-50/50 transition-colors duration-150'
                         >
-                          <div className='mb-1 w-full'>
-                            <span className='block text-xs text-gray-400 font-semibold mb-0.5'>
-                              Nome:
-                            </span>
-                            <span className='block text-gray-900 font-medium wrap-break-word'>
+                          <td className='px-4 sm:px-6 py-4'>
+                            <p className='text-sm sm:text-base lg:text-lg font-semibold text-gray-900 truncate'>
                               {produto.titulo}
+                            </p>
+                            <p className='text-xs text-gray-500 mt-1 truncate'>
+                              {produto.descricao || (
+                                <span className='italic text-gray-400'>
+                                  Sem descrição
+                                </span>
+                              )}
+                            </p>
+                          </td>
+                          <td className='px-4 sm:px-6 py-4 text-center'>
+                            <span className='bg-gray-50 text-gray-700 font-semibold text-xs sm:text-sm px-3 py-2 rounded border border-gray-200/40 whitespace-nowrap inline-block'>
+                              {currencyFormatter.format(Number(produto.valor))}
                             </span>
-                          </div>
-                          <div className='flex flex-row gap-2 w-full'>
-                            <div className='flex flex-col gap-1 flex-1'>
-                              <div className='flex items-center gap-2'>
-                                <span className='text-gray-500 font-semibold min-w-15'>
-                                  Descrição:
-                                </span>
-                                <span className='text-gray-700'>
-                                  {produto.descricao || (
-                                    <span className='italic text-gray-300'>
-                                      Não informado
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                            <div className='flex items-end justify-end ml-4 gap-2'>
+                          </td>
+                          <td className='px-4 sm:px-6 py-4 text-center'>
+                            <div className='inline-flex items-stretch rounded bg-linear-to-b from-gray-50 to-gray-50 border border-gray-200'>
                               <button
-                                className='px-3 py-1 rounded bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition flex items-center justify-center cursor-pointer'
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditProduct(produto);
-                                }}
-                                type='button'
+                                className='flex items-center gap-2 px-3 py-1.5 text-purple-800 font-medium text-sm transition-colors duration-150 cursor-pointer'
+                                onClick={() => setEditProduct(produto)}
+                                title='Editar produto'
                               >
+                                <Edit2 size={16} />
                                 Editar
                               </button>
+                              <div className='w-px bg-gray-200'></div>
                               <button
-                                className='px-3 py-1 rounded bg-red-50 text-red-500 text-xs font-medium hover:bg-red-100 transition flex items-center justify-center cursor-pointer'
+                                className='flex items-center justify-center p-2 text-red-600 transition-colors duration-150 cursor-pointer'
+                                onClick={() => handleRemoveProduct(produto.id)}
                                 title='Remover produto'
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRemoveProduct(produto.id);
-                                }}
-                                type='button'
                               >
-                                <Trash size={16} />
+                                <Trash2 size={18} />
                               </button>
                             </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Tablet and Mobile Card View */}
+                <div className='lg:hidden'>
+                  <div className='space-y-3 p-4 sm:p-6'>
+                    {produtos.map((produto) => (
+                      <div
+                        key={produto.id}
+                        className='bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-150'
+                      >
+                        {/* Product Name */}
+                        <h3 className='text-lg font-bold text-gray-900 mb-1'>
+                          {produto.titulo}
+                        </h3>
+
+                        {/* Description */}
+                        <p className='text-sm text-gray-600 mb-3 leading-relaxed'>
+                          {produto.descricao || (
+                            <span className='italic text-gray-400'>
+                              Sem descrição
+                            </span>
+                          )}
+                        </p>
+
+                        {/* Price and Actions */}
+                        <div className='flex items-center justify-between gap-3'>
+                          <span className='bg-gray-50 text-gray-700 font-semibold text-sm px-3 py-2 rounded border border-gray-200/40'>
+                            {currencyFormatter.format(Number(produto.valor))}
+                          </span>
+                          <div className='inline-flex items-stretch rounded bg-linear-to-b from-gray-50 to-gray-50 border border-gray-200'>
+                            <button
+                              className='flex items-center gap-2 px-3 py-1.5 text-purple-800 font-medium text-sm transition-colors duration-150 cursor-pointer'
+                              onClick={() => setEditProduct(produto)}
+                            >
+                              <Edit2 size={16} />
+                              Editar
+                            </button>
+                            <div className='w-px bg-gray-200'></div>
+                            <button
+                              className='flex items-center justify-center p-2 text-red-600 transition-colors duration-150 cursor-pointer'
+                              onClick={() => handleRemoveProduct(produto.id)}
+                              title='Remover produto'
+                            >
+                              <Trash2 size={18} />
+                            </button>
                           </div>
                         </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </div>
-          <div>
-            <Pagination
-              current_page={pagination.current_page}
-              lastPage={pagination.last_page}
-              onPageChange={handlePageChange}
-            />
-          </div>
+
+          {/* Pagination */}
+          {!loading && produtos.length > 0 && (
+            <div className='border-t border-gray-100 bg-gray-50'>
+              <Pagination
+                current_page={pagination.current_page}
+                lastPage={pagination.last_page}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Edit Product Modal */}
       {editProduct && (
         <EditProductPopup
           product={editProduct}
           onClose={() => setEditProduct(null)}
         />
       )}
+
+      {/* New Product Modal */}
       {showNewProduct && (
-        <EditProductPopup product='' onClose={() => setShowNewProduct(null)} />
+        <EditProductPopup product='' onClose={() => setShowNewProduct(false)} />
       )}
+
+      {/* Delete Dialog */}
       <ConfirmDialog
         open={showDeletePopup}
         title='Remover produto?'

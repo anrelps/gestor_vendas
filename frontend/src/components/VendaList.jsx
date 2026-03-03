@@ -349,7 +349,7 @@ ${url}`;
               >
                 <div className='relative'>
                   <div
-                    className='h-11 flex items-center px-4 rounded-lg border border-primary-light bg-white hover:bg-primary/5 hover:border-primary/50 transition cursor-text'
+                    className='h-11 flex items-center px-4 rounded-sm border border-primary-light bg-white hover:bg-primary/5 hover:border-primary/50 transition cursor-text'
                     onClick={() => clienteInputRef.current?.focus()}
                   >
                     <User size={18} className='text-primary mr-3 shrink-0' />
