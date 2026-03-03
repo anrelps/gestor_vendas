@@ -102,4 +102,18 @@ class VendaController extends Controller
             return $this->errorResponse('Ocorreu um erro ao tentar excluir esta venda.', 500);
         }
     }
+
+    public function applyPaymentToMultipleSales(Request $request) {
+        try {
+            $input = $request->validate([
+                'value' => 'numeric|required',
+                'paymentType' => 'string|required',
+            ]);
+            $this->service->applyPaymentToMultipleSales($input['value'], $input['paymentType']);
+            return $this->successResponse('Venda atualizadas com sucesso.', 200);
+        } catch(Exception $e) {
+            dd($e->getMessage());
+            return $this->errorResponse('Ocorreu um erro ao tentar realizar o pagamento multiplo.', 500);
+        }
+    }
 }

@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class VendaService {
 
-    private $model;
+    private $venda;
 
     public function __construct(Venda $venda) {
-        $this->model = $venda;
+        $this->venda = $venda;
     }
 
     public function index(Empresa $empresa, array $filters) {
@@ -107,5 +107,42 @@ class VendaService {
     public function destroy(Venda $venda) {
         $venda->detalhesVendas()->delete();
         return $venda->delete();
+    }
+
+    public function applyPaymentToMultipleSales(float $value, string $paymentType) {
+        $vendas = $this->venda
+            ->where('empresa_id', auth()->user()->empresa_id)
+            ->whereColumn('valor_pago', '<>', 'valor_total');
+
+        switch($paymentType) {
+            case 'split_equally':
+                $vendas = $vendas->get();
+                $vendas_qty = $vendas->count();
+                if ($vendas_qty === 0) break;
+                if($value >= ($vendas->sum('valor_total') - $vendas->sum('valor_pago'))) {
+                    foreach ($vendas as $venda) {
+                        $venda->update(['valor_pago' => $venda->valor_total]);
+                    }
+                    break;
+                }
+                $valuePerSale = floor($value / $vendas_qty);
+                foreach ($vendas as $venda) {
+                    $valueToDiscount = min($valuePerSale, $venda->valor_total - $venda->valor_pago);
+                    $venda->update(['valor_pago' => $venda->valor_pago + $valueToDiscount]);
+                }
+                break;
+            case 'oldest_first':
+                $vendas = $vendas->orderBy('created_at', 'ASC')->get();
+                foreach ($vendas as $venda) {
+                    if($value > 0) {
+                        $valueToDiscount = min(($venda->valor_total - $venda->valor_pago), $value);
+                        $venda->update([
+                            'valor_pago' => $venda->valor_pago + $valueToDiscount,
+                        ]);
+                        $value -= $valueToDiscount;
+                    }
+                }
+                break;
+        }
     }
 }

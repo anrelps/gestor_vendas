@@ -33,8 +33,10 @@ Route::prefix('v1')->group(function() {
         Route::prefix('/{empresa}')->group(function() {
             Route::apiResource('/clientes', ClienteController::class);
             Route::apiResource('/produtos', ProdutoController::class);
+            Route::prefix('/vendas')->controller(VendaController::class)->group(function() {
+                Route::put('/pay-multiple-sales', 'applyPaymentToMultipleSales');
+            });
             Route::apiResource('/vendas', VendaController::class);
-
             Route::prefix('/relatorios')->controller(RelatorioController::class)->group(function() {
                 Route::get('/pdf/vendas', [RelatorioController::class, 'vendas']);
                 Route::get('/pdf/vendas/{venda}', [RelatorioController::class, 'detalhesVenda']);
