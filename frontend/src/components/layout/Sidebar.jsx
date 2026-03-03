@@ -411,12 +411,87 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             role='dialog'
             aria-modal='true'
             aria-label='Menu de navegação'
-            className='md:hidden fixed top-0 left-0 h-full w-72 bg-primary text-white flex flex-col'
-            style={{ zIndex: Z_INDEX.DRAWER_MOBILE }}
+            className='md:hidden fixed top-0 left-0 h-full w-72 overflow-hidden text-white flex flex-col'
+            style={{
+              zIndex: Z_INDEX.DRAWER_MOBILE,
+              background:
+                'linear-gradient(160deg, hsl(275, 93%, 24%) 0%, hsl(276, 76%, 31%) 35%, hsl(277, 60%, 38%) 100%)',
+            }}
           >
-            {renderMobileMenuHeader()}
-            {renderMobileMenuItems()}
-            {renderMobileUserSection()}
+            {/* Elementos decorativos de fundo mobile */}
+            <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+              <div
+                className='absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-30'
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(196, 181, 253, 0.8) 0%, transparent 70%)',
+                }}
+              />
+              <div
+                className='absolute -bottom-32 -left-32 w-72 h-72 rounded-full opacity-25'
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(167, 139, 250, 0.6) 0%, transparent 65%)',
+                }}
+              />
+              <div
+                className='absolute top-1/3 -left-16 w-56 h-64 rounded-full opacity-15 blur-2xl'
+                style={{
+                  background:
+                    'linear-gradient(135deg, rgba(196, 181, 253, 0.5) 0%, rgba(139, 92, 246, 0.25) 100%)',
+                  transform: 'rotate(-25deg)',
+                }}
+              />
+
+              {/* Círculo adicional meio */}
+              <div
+                className='absolute top-1/2 right-0 w-32 h-32 rounded-full opacity-20 blur-xl'
+                style={{
+                  background:
+                    'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%)',
+                }}
+              />
+
+              {/* Linha de luz sutil */}
+              <div
+                className='absolute top-0 left-1/4 h-full w-20 opacity-8'
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)',
+                  filter: 'blur(20px)',
+                }}
+              />
+
+              <div
+                className='absolute inset-0 opacity-5'
+                style={{
+                  backgroundImage: `linear-gradient(90deg, transparent 1px, rgba(255,255,255,0.1) 1px),
+                                   linear-gradient(0deg, transparent 1px, rgba(255,255,255,0.1) 1px)`,
+                  backgroundSize: '30px 30px',
+                }}
+              />
+
+              {/* Padrão diagonal */}
+              <div
+                className='absolute inset-0 opacity-3'
+                style={{
+                  backgroundImage: `repeating-linear-gradient(
+                    45deg,
+                    rgba(255,255,255,0.05) 0px,
+                    rgba(255,255,255,0.05) 2px,
+                    transparent 2px,
+                    transparent 8px
+                  )`,
+                }}
+              />
+            </div>
+
+            {/* Conteúdo do menu mobile */}
+            <div className='relative z-10 flex flex-col h-full'>
+              {renderMobileMenuHeader()}
+              {renderMobileMenuItems()}
+              {renderMobileUserSection()}
+            </div>
           </div>
         </>
       )}
@@ -547,16 +622,160 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
       {/* Sidebar Desktop */}
       <div
-        className='hidden md:flex fixed left-0 top-0 h-full bg-linear-60 from-primary bg-primary-accent text-white flex-col'
+        className='hidden md:flex fixed left-0 top-0 h-full overflow-hidden text-white flex-col'
         style={{
           width: 'var(--sidebar-width)',
           zIndex: Z_INDEX.SIDEBAR_DESKTOP,
+          background:
+            'linear-gradient(160deg, hsl(275, 93%, 24%) 0%, hsl(276, 76%, 31%) 35%, hsl(277, 60%, 38%) 100%)',
         }}
       >
-        {renderNewVendaButton()}
-        {renderLogo()}
-        {renderNavMenu()}
-        {renderDesktopUserFooter()}
+        {/* Elementos decorativos de fundo */}
+        <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+          {/* Círculo grande superior direito - efeito glow */}
+          <div
+            className='absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-30'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(196, 181, 253, 0.8) 0%, transparent 70%)',
+            }}
+          />
+
+          {/* Círculo médio inferior esquerdo */}
+          <div
+            className='absolute -bottom-48 -left-48 w-96 h-96 rounded-full opacity-25'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(167, 139, 250, 0.6) 0%, transparent 65%)',
+            }}
+          />
+
+          {/* Forma oval central com interpolação */}
+          <div
+            className='absolute top-1/4 -left-24 w-80 h-96 rounded-full opacity-15 blur-3xl'
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(196, 181, 253, 0.5) 0%, rgba(139, 92, 246, 0.25) 100%)',
+              transform: 'rotate(-25deg)',
+            }}
+          />
+
+          {/* Forma no canto superior direito */}
+          <div
+            className='absolute top-12 right-8 w-32 h-32 rounded-full opacity-20 blur-2xl'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(196, 181, 253, 0.7) 0%, transparent 70%)',
+            }}
+          />
+
+          {/* Círculo médio central */}
+          <div
+            className='absolute top-1/2 left-1/3 w-40 h-40 rounded-full opacity-15 blur-2xl'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(167, 139, 250, 0.5) 0%, transparent 70%)',
+              transform: 'translate(-50%, -50%)',
+            }}
+          />
+
+          {/* Círculo pequeno inferior direito */}
+          <div
+            className='absolute -bottom-16 right-1/4 w-48 h-48 rounded-full opacity-12 blur-3xl'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(196, 181, 253, 0.4) 0%, transparent 65%)',
+            }}
+          />
+
+          {/* Círculo mínimo topo central */}
+          <div
+            className='absolute top-1/4 right-1/3 w-20 h-20 rounded-full opacity-25 blur-xl'
+            style={{
+              background:
+                'radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)',
+            }}
+          />
+
+          {/* Padrão de grid sutil */}
+          <div
+            className='absolute inset-0 opacity-5'
+            style={{
+              backgroundImage: `linear-gradient(90deg, transparent 1px, rgba(255,255,255,0.1) 1px),
+                               linear-gradient(0deg, transparent 1px, rgba(255,255,255,0.1) 1px)`,
+              backgroundSize: '40px 40px',
+            }}
+          />
+
+          {/* Padrão diagonal sutil */}
+          <div
+            className='absolute inset-0 opacity-3'
+            style={{
+              backgroundImage: `repeating-linear-gradient(
+                45deg,
+                rgba(255,255,255,0.05) 0px,
+                rgba(255,255,255,0.05) 2px,
+                transparent 2px,
+                transparent 10px
+              )`,
+            }}
+          />
+
+          {/* Linha di luz vertical sutil */}
+          <div
+            className='absolute top-0 left-1/3 h-full w-32 opacity-10'
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+              filter: 'blur(40px)',
+            }}
+          />
+
+          {/* Linha de luz horizontal sutil */}
+          <div
+            className='absolute top-1/3 left-0 right-0 h-20 opacity-8'
+            style={{
+              background:
+                'linear-gradient(180deg, transparent 0%, rgba(196, 181, 253, 0.15) 50%, transparent 100%)',
+              filter: 'blur(30px)',
+            }}
+          />
+
+          {/* Gradiente overlay radial */}
+          <div
+            className='absolute inset-0 opacity-40'
+            style={{
+              background:
+                'radial-gradient(ellipse 800px 600px at 100% 0%, rgba(196, 181, 253, 0.2) 0%, transparent 60%)',
+            }}
+          />
+
+          {/* Overlay adicional inferior */}
+          <div
+            className='absolute inset-0 opacity-30'
+            style={{
+              background:
+                'radial-gradient(ellipse 800px 600px at 0% 100%, rgba(167, 139, 250, 0.15) 0%, transparent 60%)',
+            }}
+          />
+
+          {/* Camada de profundidade central */}
+          <div
+            className='absolute inset-0 opacity-20'
+            style={{
+              background:
+                'radial-gradient(circle at 50% 50%, rgba(196, 181, 253, 0.1) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
+        {/* Conteúdo do sidebar */}
+        <div className='relative z-10 flex flex-col h-full'>
+          {renderNewVendaButton()}
+          {renderLogo()}
+          {renderNavMenu()}
+          {renderDesktopUserFooter()}
+        </div>
       </div>
 
       {renderMobileMenu()}
