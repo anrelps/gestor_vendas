@@ -1,5 +1,6 @@
 import { ChevronRight, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { destroy, index } from '../redux/slices/produtoSlice';
 import ConfirmDialog from './ConfirmDialog';
@@ -93,7 +94,9 @@ const ProductsList = () => {
       ).unwrap();
       setShowDeletePopup(false);
       setRemoveProductId(null);
+      toast.success('Produto removido com sucesso!');
     } catch (error) {
+      toast.error('Erro ao remover produto. Tente novamente.');
       console.log('Product delete error: ', error);
     }
   };

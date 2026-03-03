@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { create, update } from '../redux/slices/produtoSlice';
 
@@ -80,6 +81,7 @@ const EditProductPopup = ({
       onSave();
       onClose();
     } catch (error) {
+      toast.error('Erro ao salvar produto. Tente novamente.');
       console.log('Product submit error: ', error);
     }
   };

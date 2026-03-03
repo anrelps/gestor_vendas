@@ -1,5 +1,6 @@
 import { Building2, Calendar, Upload, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Redux
@@ -59,39 +60,51 @@ const EditarPerfil = () => {
   }, [confirmPassword]);
 
   const handleEditProfileSubmit = async () => {
-    const data = {
-      nome: nome,
-      telefone: telefone,
-      email: email,
-    };
-    await dispatch(updateUser({ user_id: user.id, data })).unwrap();
-
-    if (password.length > 0) {
-      const passwordData = {
-        actualPassword,
-        password,
-        password_confirmation: confirmPassword,
+    try {
+      const data = {
+        nome: nome,
+        telefone: telefone,
+        email: email,
       };
-      await dispatch(
-        changePassword({ user_id: user.id, data: passwordData }),
-      ).unwrap();
+      await dispatch(updateUser({ user_id: user.id, data })).unwrap();
+
+      if (password.length > 0) {
+        const passwordData = {
+          actualPassword,
+          password,
+          password_confirmation: confirmPassword,
+        };
+        await dispatch(
+          changePassword({ user_id: user.id, data: passwordData }),
+        ).unwrap();
+      }
+      toast.success('Perfil atualizado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao atualizar perfil. Tente novamente.');
+      console.error('Profile update error:', error);
     }
   };
 
   const handleEditCompanySubmit = async () => {
-    const formData = new FormData();
-    formData.append('nome', empresaNome);
-    formData.append('email', empresaEmail);
-    formData.append('telefone', empresaTelefone);
-    if (empresaLogoFile) {
-      formData.append('logo', empresaLogoFile);
+    try {
+      const formData = new FormData();
+      formData.append('nome', empresaNome);
+      formData.append('email', empresaEmail);
+      formData.append('telefone', empresaTelefone);
+      if (empresaLogoFile) {
+        formData.append('logo', empresaLogoFile);
+      }
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      await dispatch(
+        updateEmpresa({ empresa_id: user.empresa.id, data: formData }),
+      ).unwrap();
+      toast.success('Empresa atualizada com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao atualizar empresa. Tente novamente.');
+      console.error('Company update error:', error);
     }
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-    await dispatch(
-      updateEmpresa({ empresa_id: user.empresa.id, data: formData }),
-    ).unwrap();
   };
 
   return (

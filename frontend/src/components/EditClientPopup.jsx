@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { create, update } from '../redux/slices/clienteSlice';
 
@@ -74,13 +75,13 @@ const EditClientPopup = ({
     try {
       // Guard clauses - validações
       if (!user?.empresa?.id) {
-        alert('Erro: Empresa não identificada. Faça login novamente.');
+        toast.error('Erro: Empresa não identificada. Faça login novamente.');
         return;
       }
 
       const fullNameTrimmed = form.fullName.trim();
       if (!fullNameTrimmed || fullNameTrimmed.length === 0) {
-        alert('Nome completo é obrigatório.');
+        toast.error('Nome completo é obrigatório.');
         return;
       }
 
@@ -88,7 +89,7 @@ const EditClientPopup = ({
       if (form.email && form.email.trim() !== '') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(form.email)) {
-          alert('Email inválido. Por favor, verifique o formato.');
+          toast.error('Email inválido. Por favor, verifique o formato.');
           return;
         }
       }
@@ -120,7 +121,7 @@ const EditClientPopup = ({
       onSave();
       handleClose();
     } catch (error) {
-      alert('Erro ao salvar cliente. Tente novamente.');
+      toast.error('Erro ao salvar cliente. Tente novamente.');
     }
   };
 
