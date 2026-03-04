@@ -15,6 +15,7 @@ import {
   Share2,
   Trash2,
   User,
+  BanknoteArrowUp,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -282,8 +283,29 @@ ${url}`;
   const valorTotalPendente =
     valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
 
+  // Multiple Payment
+
+  const [showButtonMultiplePayment, setshowButtonMultiplePayment] = useState(false);
+
+  // End Multiple Payment
+
   return (
     <div className=''>
+
+      {/* Multiple Payment */}
+
+      {/* Button */}
+      {showButtonMultiplePayment && (
+        <button className='px-5 py-3 bg-linear-to-r from-primary-accent to-primary-light rounded-3xl fixed bottom-10 right-10 cursor-pointer'>
+            <span className='text-white font-semibold flex gap-2 items-center'>
+              <BanknoteArrowUp size={17} />
+              Pagar Vários
+            </span>
+        </button>
+      )}
+
+      {/* End Multiple Payment */}
+
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
           {/* Header */}
@@ -535,6 +557,18 @@ ${url}`;
                     className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                     tabIndex={-1}
                   />
+                </div>
+                {/* Habilitar botao de multiplos pagamentos */}
+                <div>
+                  <label className='flex items-center gap-2 cursor-pointer text-sm'>
+                    <input
+                      type='checkbox'
+                      checked={showButtonMultiplePayment}
+                      onChange={() => setshowButtonMultiplePayment(!showButtonMultiplePayment)}
+                      className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
+                    />
+                    Realizar Vários Pagamentos
+                  </label>
                 </div>
               </div>
             </div>
