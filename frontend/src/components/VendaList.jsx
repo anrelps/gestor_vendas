@@ -7,18 +7,18 @@ import {
 } from '@headlessui/react';
 import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
 import {
+  BanknoteArrowUp,
   Calendar,
   ChevronRight,
   FileText,
   Logs,
   Plus,
   Share2,
+  ShoppingCart,
   Trash2,
-  User,
-  BanknoteArrowUp,
   TrendingDown,
   TrendingUp,
-  ShoppingCart,
+  User,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -34,8 +34,8 @@ import {
 } from '../redux/slices/vendaSlice';
 import ConfirmDialog from './ConfirmDialog';
 import NewButton from './layout/NewButton';
-import Pagination from './Pagination';
 import MultiplePaymentPopup from './MultiplePaymentPopup';
+import Pagination from './Pagination';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -171,15 +171,22 @@ const VendaList = () => {
   const handleGerarRelatorio = async () => {
     setLoading(true);
     const empresa_id = user?.empresa?.id;
-    if (!empresa_id) { setLoading(false); return; }
+    if (!empresa_id) {
+      setLoading(false);
+      return;
+    }
     const finalFilters = { ...filters, vendas_ids: selectedVendasIds };
     try {
-      const response = await dispatch(gerarRelatorioVendas({ empresa_id, filters: finalFilters }));
+      const response = await dispatch(
+        gerarRelatorioVendas({ empresa_id, filters: finalFilters }),
+      );
       if (gerarRelatorioVendas.fulfilled.match(response)) {
         const blob = response.payload;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
-        setTimeout(() => { window.URL.revokeObjectURL(url); }, 1000);
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 1000);
       }
     } finally {
       setLoading(false);
@@ -248,8 +255,12 @@ const VendaList = () => {
     setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
-  const valorTotal = vendas.reduce((total, venda) => total + venda.valor_total, 0);
-  const valorTotalPendente = valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
+  const valorTotal = vendas.reduce(
+    (total, venda) => total + venda.valor_total,
+    0,
+  );
+  const valorTotalPendente =
+    valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
 
   const handleOpenMultiplePayment = () => {
     if (!filters.cliente) {
@@ -259,14 +270,27 @@ const VendaList = () => {
     setShowPopupMultiplePayment(true);
   };
 
-  const [showButtonMultiplePayment, setshowButtonMultiplePayment] = useState(false);
-  const [showPopUpMultiplePayment, setShowPopupMultiplePayment] = useState(false);
+  const [showButtonMultiplePayment, setshowButtonMultiplePayment] =
+    useState(false);
+  const [showPopUpMultiplePayment, setShowPopupMultiplePayment] =
+    useState(false);
 
-  const handleMultiplePayments = async ({ valor, metodo, cliente, vendasIds }) => {
+  const handleMultiplePayments = async ({
+    valor,
+    metodo,
+    cliente,
+    vendasIds,
+  }) => {
     setLoading(true);
     try {
       await dispatch(
-        realizarMultiplePayment({ empresa_id: user.empresa.id, valor, metodo, cliente, vendasIds })
+        realizarMultiplePayment({
+          empresa_id: user.empresa.id,
+          valor,
+          metodo,
+          cliente,
+          vendasIds,
+        }),
       ).unwrap();
       await dispatch(
         index({
@@ -275,7 +299,7 @@ const VendaList = () => {
           data_min: filters['data_min'],
           pendencias: filters['pendencias'],
           cliente: filters['cliente'],
-        })
+        }),
       ).unwrap();
       setShowPopupMultiplePayment(false);
       toast.success('Pagamentos processados com sucesso!');
@@ -287,9 +311,8 @@ const VendaList = () => {
 
   return (
     <div className=''>
-
       {/* Multiple Payment Button */}
-      {(showButtonMultiplePayment && filters.cliente) && (
+      {showButtonMultiplePayment && filters.cliente && (
         <button
           className='px-5 py-3 bg-linear-to-r from-primary-accent to-primary-light rounded-3xl fixed bottom-10 right-10 cursor-pointer'
           onClick={handleOpenMultiplePayment}
@@ -313,7 +336,6 @@ const VendaList = () => {
 
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
-
           {/* Header */}
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
@@ -334,7 +356,6 @@ const VendaList = () => {
 
             {/* ── CARDS DE RESUMO ── */}
             <div className='w-full mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3'>
-
               {/* Card: Total Pendente */}
               <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50 to-red-50 border border-red-100 p-5 flex flex-col gap-3'>
                 {/* Decorative blob */}
@@ -354,9 +375,10 @@ const VendaList = () => {
                   <div
                     className='h-1 rounded-full bg-gradient-to-r from-red-400 to-rose-400 transition-all duration-700'
                     style={{
-                      width: valorTotal > 0
-                        ? `${Math.min(100, (valorTotalPendente / valorTotal) * 100)}%`
-                        : '0%',
+                      width:
+                        valorTotal > 0
+                          ? `${Math.min(100, (valorTotalPendente / valorTotal) * 100)}%`
+                          : '0%',
                     }}
                   />
                 </div>
@@ -394,7 +416,9 @@ const VendaList = () => {
                 </div>
                 <p className='text-2xl font-bold text-white leading-none tracking-tight'>
                   {vendas.length}
-                  <span className='text-sm font-medium text-white/60 ml-1'>vendas</span>
+                  <span className='text-sm font-medium text-white/60 ml-1'>
+                    vendas
+                  </span>
                 </p>
                 <div className='h-1 w-full rounded-full bg-white/20'>
                   <div className='h-1 rounded-full bg-white/60 w-full' />
@@ -405,7 +429,6 @@ const VendaList = () => {
 
           {/* ── FILTROS ── */}
           <div className='px-4 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50'>
-
             {/* Filtro de Cliente */}
             <div className='mb-3'>
               <Combobox
@@ -441,7 +464,9 @@ const VendaList = () => {
                   <ComboboxOptions className='absolute z-20 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>
                     {(() => {
                       const clientesFiltrados = clientes.filter((cliente) =>
-                        cliente.nome.toLowerCase().includes(queryCliente.toLowerCase()),
+                        cliente.nome
+                          .toLowerCase()
+                          .includes(queryCliente.toLowerCase()),
                       );
                       return (
                         <>
@@ -451,7 +476,9 @@ const VendaList = () => {
                               `flex items-center px-3 py-2.5 cursor-pointer text-sm whitespace-nowrap ${
                                 selected
                                   ? 'bg-primary/10 text-primary font-medium'
-                                  : active ? 'bg-gray-50' : ''
+                                  : active
+                                    ? 'bg-gray-50'
+                                    : ''
                               }`
                             }
                           >
@@ -470,7 +497,9 @@ const VendaList = () => {
                                   `flex items-center px-3 py-2.5 cursor-pointer text-sm ${
                                     selected
                                       ? 'bg-primary/10 text-primary font-medium'
-                                      : active ? 'bg-gray-50' : ''
+                                      : active
+                                        ? 'bg-gray-50'
+                                        : ''
                                   }`
                                 }
                               >
@@ -487,8 +516,7 @@ const VendaList = () => {
             </div>
 
             {/* Filtros: tudo em uma linha no desktop, wrap no mobile */}
-            <div className='flex flex-wrap sm:flex-nowrap items-center gap-2'>
-
+            <div className='flex flex-wrap lg:flex-nowrap items-center gap-2'>
               {/* Selecionar todas */}
               <div
                 className={`flex items-center gap-2 text-sm font-semibold rounded-lg px-2 h-9 border shrink-0 ${
@@ -528,7 +556,9 @@ const VendaList = () => {
                 } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap shrink-0`}
                 title='Mostrar apenas vendas não pagas'
               >
-                <span className={`w-2 h-2 rounded-full ${filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'}`} />
+                <span
+                  className={`w-2 h-2 rounded-full ${filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'}`}
+                />
                 Não pagas
               </button>
 
@@ -544,7 +574,11 @@ const VendaList = () => {
                 <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
                   <Calendar size={16} className='text-gray-400' />
                   <span className='text-gray-500 text-xs'>De</span>
-                  <span className={filters.data_min ? 'text-gray-700' : 'text-gray-400'}>
+                  <span
+                    className={
+                      filters.data_min ? 'text-gray-700' : 'text-gray-400'
+                    }
+                  >
                     {filters.data_min ? dateStart : 'Selecionar'}
                   </span>
                 </div>
@@ -552,7 +586,10 @@ const VendaList = () => {
                   ref={dateStartRef}
                   type='date'
                   value={dateStart}
-                  onChange={(e) => { setDateStart(e.target.value); handleChange('data_min')(e); }}
+                  onChange={(e) => {
+                    setDateStart(e.target.value);
+                    handleChange('data_min')(e);
+                  }}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                   tabIndex={-1}
                 />
@@ -570,7 +607,11 @@ const VendaList = () => {
                 <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
                   <Calendar size={16} className='text-gray-400' />
                   <span className='text-gray-500 text-xs'>Até</span>
-                  <span className={filters.data_max ? 'text-gray-700' : 'text-gray-400'}>
+                  <span
+                    className={
+                      filters.data_max ? 'text-gray-700' : 'text-gray-400'
+                    }
+                  >
                     {filters.data_max ? dateEnd : 'Selecionar'}
                   </span>
                 </div>
@@ -578,7 +619,10 @@ const VendaList = () => {
                   ref={dateEndRef}
                   type='date'
                   value={dateEnd}
-                  onChange={(e) => { setDateEnd(e.target.value); handleChange('data_max')(e); }}
+                  onChange={(e) => {
+                    setDateEnd(e.target.value);
+                    handleChange('data_max')(e);
+                  }}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                   tabIndex={-1}
                 />
@@ -587,12 +631,14 @@ const VendaList = () => {
               {/* Realizar Vários Pagamentos */}
               {filters.cliente && (
                 <button
-                  onClick={() => setshowButtonMultiplePayment(!showButtonMultiplePayment)}
+                  onClick={() =>
+                    setshowButtonMultiplePayment(!showButtonMultiplePayment)
+                  }
                   className={`${
                     showButtonMultiplePayment
                       ? 'bg-primary text-white border-primary'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start shrink-0`}
+                  } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start`}
                   title='Realizar vários pagamentos para as vendas filtradas'
                 >
                   <BanknoteArrowUp size={15} />
@@ -650,19 +696,27 @@ const VendaList = () => {
                               </span>
 
                               <div className='flex items-center gap-2 flex-wrap'>
-                                {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
+                                {(Number(venda?.valor_pago) || 0) <
+                                (Number(venda?.valor_total) || 0) ? (
                                   <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 whitespace-normal break-all'>
-                                    {currencyFormatter.format(Number(venda?.valor_pago) || 0)}{' '}
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_pago) || 0,
+                                    )}{' '}
                                     /{' '}
-                                    {currencyFormatter.format(Number(venda?.valor_total) || 0)}
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_total) || 0,
+                                    )}
                                   </span>
                                 ) : (
                                   <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 whitespace-normal break-all'>
-                                    {currencyFormatter.format(Number(venda?.valor_total) || 0)}
+                                    {currencyFormatter.format(
+                                      Number(venda?.valor_total) || 0,
+                                    )}
                                   </span>
                                 )}
 
-                                {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
+                                {(Number(venda?.valor_pago) || 0) <
+                                (Number(venda?.valor_total) || 0) ? (
                                   <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-2.5 py-0.5 text-xs font-semibold shadow-sm'>
                                     Pendente
                                   </span>
@@ -679,13 +733,18 @@ const VendaList = () => {
                                   className='flex items-center gap-3 text-primary hover:text-primary/70 transition cursor-pointer'
                                   title='Ir até a venda'
                                 >
-                                  <span className='text-sm font-semibold'>Ir até a venda</span>
+                                  <span className='text-sm font-semibold'>
+                                    Ir até a venda
+                                  </span>
                                   <Logs size={22} />
                                 </Link>
 
                                 <button
                                   className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
-                                  onClick={(e) => { e.stopPropagation(); handleRemoveVenda(venda.id); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveVenda(venda.id);
+                                  }}
                                 >
                                   <Trash2 size={20} />
                                 </button>
@@ -705,15 +764,22 @@ const VendaList = () => {
                                 {venda?.cliente?.nome ?? 'Sem cliente'}
                               </span>
 
-                              {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
+                              {(Number(venda?.valor_pago) || 0) <
+                              (Number(venda?.valor_total) || 0) ? (
                                 <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 ml-auto max-w-full whitespace-normal break-all'>
-                                  {currencyFormatter.format(Number(venda?.valor_pago) || 0)}{' '}
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_pago) || 0,
+                                  )}{' '}
                                   /{' '}
-                                  {currencyFormatter.format(Number(venda?.valor_total) || 0)}
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_total) || 0,
+                                  )}
                                 </span>
                               ) : (
                                 <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 ml-auto max-w-full whitespace-normal break-all'>
-                                  {currencyFormatter.format(Number(venda?.valor_total) || 0)}
+                                  {currencyFormatter.format(
+                                    Number(venda?.valor_total) || 0,
+                                  )}
                                 </span>
                               )}
                             </div>
@@ -729,7 +795,8 @@ const VendaList = () => {
 
                       <div className='hidden sm:flex items-center justify-between flex-row-reverse mt-3 gap-2 pl-7'>
                         <div className='flex items-center gap-2'>
-                          {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
+                          {(Number(venda?.valor_pago) || 0) <
+                          (Number(venda?.valor_total) || 0) ? (
                             <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 py-1 text-sm font-semibold shadow-sm'>
                               Pendente
                             </span>
@@ -741,7 +808,10 @@ const VendaList = () => {
 
                           <button
                             className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
-                            onClick={(e) => { e.stopPropagation(); handleRemoveVenda(venda.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveVenda(venda.id);
+                            }}
                           >
                             <Trash2 size={20} />
                           </button>
@@ -752,7 +822,9 @@ const VendaList = () => {
                           className='flex items-center gap-5 text-primary hover:text-primary/70 transition cursor-pointer'
                           title='Ir até a venda'
                         >
-                          <span className='text-sm font-semibold'>Ir até a venda</span>
+                          <span className='text-sm font-semibold'>
+                            Ir até a venda
+                          </span>
                           <Logs size={22} />
                         </Link>
                       </div>

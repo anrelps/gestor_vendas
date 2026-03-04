@@ -195,10 +195,10 @@ const ClientList = () => {
                       </tr>
                     </thead>
                     <tbody className='divide-y divide-gray-100'>
-                      {clientes.map((cliente) => (
+                      {clientes.map((cliente, index) => (
                         <tr
                           key={cliente.id}
-                          className='hover:bg-purple-50/50 transition-colors duration-150'
+                          className={`hover:bg-purple-50/50 transition-colors duration-150 ${index % 2 === 1 ? 'bg-gray-100' : ''}`}
                         >
                           <td className='px-4 sm:px-6 py-4'>
                             <p className='text-sm sm:text-base lg:text-lg font-semibold text-gray-900 truncate'>

@@ -159,22 +159,22 @@ const ProductsList = () => {
                   <table className='w-full table-fixed'>
                     <thead>
                       <tr className='bg-gray-50 border-b border-gray-200'>
-                        <th className='px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-[50%]'>
+                        <th className='px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider w-[60%]'>
                           Produto
                         </th>
-                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[25%]'>
+                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[20%]'>
                           Preço
                         </th>
-                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[25%]'>
+                        <th className='px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-[20%]'>
                           Ações
                         </th>
                       </tr>
                     </thead>
                     <tbody className='divide-y divide-gray-100'>
-                      {produtos.map((produto) => (
+                      {produtos.map((produto, index) => (
                         <tr
                           key={produto.id}
-                          className='hover:bg-purple-50/50 transition-colors duration-150'
+                          className={`hover:bg-purple-50/50 transition-colors duration-150 ${index % 2 === 1 ? 'bg-gray-100' : ''}`}
                         >
                           <td className='px-4 sm:px-6 py-4'>
                             <p className='text-sm sm:text-base lg:text-lg font-semibold text-gray-900 truncate'>
