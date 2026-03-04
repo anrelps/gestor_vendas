@@ -109,10 +109,14 @@ class VendaService {
         return $venda->delete();
     }
 
-    public function applyPaymentToMultipleSales(float $value, string $paymentType) {
+    public function applyPaymentToMultipleSales(float $value, string $paymentType, array $data) {
         $vendas = $this->venda
             ->where('empresa_id', auth()->user()->empresa_id)
-            ->whereColumn('valor_pago', '<>', 'valor_total');
+            ->whereColumn('valor_pago', '<>', 'valor_total')
+            ->where('cliente_id', $data['cliente'])
+            ->when(isset($data['vendas_ids']) && !empty($data['vendas_ids']), function($q) use ($data) {
+                $q->whereIn('id', $data['vendas_ids']);
+            });
 
         switch($paymentType) {
             case 'split_equally':

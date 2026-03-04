@@ -83,3 +83,14 @@ export const detalhesVendaPdf = async({empresa_id, venda_id}) => {
     });
     return res;
 }
+
+export const multiplePayment = async({empresa_id, valor, metodo, cliente, vendasIds}) => {
+    const res = await api.put(`/${empresa_id}/vendas/pay-multiple-sales`, {
+        value: valor,
+        paymentType: metodo,
+        cliente,
+        vendas_ids: vendasIds,
+    });
+    console.log('Resposta do servidor:', res);
+    return res;
+}

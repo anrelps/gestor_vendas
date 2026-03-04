@@ -7,6 +7,7 @@ import {
   updateVenda,
   relatorioVendasPdf,
   detalhesVendaPdf,
+  multiplePayment,
 } from '../services/vendaService';
 
 export const index = createAsyncThunk(
@@ -95,6 +96,14 @@ export const gerarRelatorioDetalhesVenda = createAsyncThunk(
       empresa_id,
       venda_id,
     })
+    return res.data;
+  }
+);
+
+export const realizarMultiplePayment = createAsyncThunk(
+  'venda/multiplePayment',
+  async({empresa_id, valor, metodo, cliente, vendasIds}) => {
+    const res = await multiplePayment({empresa_id, valor, metodo, cliente, vendasIds});
     return res.data;
   }
 );
@@ -232,6 +241,20 @@ const vendaSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(gerarRelatorioDetalhesVenda.rejected, function(state, action) {
+        state.loading = false;
+        state.isSuccess = false;
+        state.error = action.error.message;
+      })
+      .addCase(realizarMultiplePayment.pending, function(state) {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(realizarMultiplePayment.fulfilled, function(state) {
+        state.loading = false;
+        state.error = null;
+        state.isSuccess = true;
+      })
+      .addCase(realizarMultiplePayment.rejected, function(state, action) {
         state.loading = false;
         state.isSuccess = false;
         state.error = action.error.message;
