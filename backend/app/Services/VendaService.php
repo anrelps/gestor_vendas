@@ -113,10 +113,8 @@ class VendaService {
         $vendas = $this->venda
             ->where('empresa_id', auth()->user()->empresa_id)
             ->whereColumn('valor_pago', '<>', 'valor_total')
-            ->when(isset($data['cliente']), function($q) use ($data) {
-                $q->where('cliente_id', $data['cliente']);
-            })
-            ->when(isset($data['vendas_ids']), function($q) use ($data) {
+            ->where('cliente_id', $data['cliente'])
+            ->when(isset($data['vendas_ids']) && !empty($data['vendas_ids']), function($q) use ($data) {
                 $q->whereIn('id', $data['vendas_ids']);
             });
 

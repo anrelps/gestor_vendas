@@ -108,11 +108,12 @@ class VendaController extends Controller
             $input = $request->validate([
                 'value' => 'numeric|required',
                 'paymentType' => 'string|required',
+                'cliente' => 'numeric|required',
+                'vendas_ids' => 'array|nullable',
             ]);
-            $this->service->applyPaymentToMultipleSales($input['value'], $input['paymentType']);
-            return $this->successResponse('Venda atualizadas com sucesso.', 200);
+            $this->service->applyPaymentToMultipleSales($input['value'], $input['paymentType'], $input);
+            return $this->successResponse('Vendas atualizadas com sucesso.', 200);
         } catch(Exception $e) {
-            dd($e->getMessage());
             return $this->errorResponse('Ocorreu um erro ao tentar realizar o pagamento multiplo.', 500);
         }
     }

@@ -16,6 +16,9 @@ import {
   Trash2,
   User,
   BanknoteArrowUp,
+  TrendingDown,
+  TrendingUp,
+  ShoppingCart,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -27,10 +30,12 @@ import {
   destroy,
   gerarRelatorioVendas,
   index,
+  realizarMultiplePayment,
 } from '../redux/slices/vendaSlice';
 import ConfirmDialog from './ConfirmDialog';
 import NewButton from './layout/NewButton';
 import Pagination from './Pagination';
+import MultiplePaymentPopup from './MultiplePaymentPopup';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -84,7 +89,6 @@ const VendaList = () => {
   }, [loading, shouldFetch]);
 
   const [dateStart, setDateStart] = useState('');
-
   const [dateEnd, setDateEnd] = useState('');
 
   const dateStartRef = useRef(null);
@@ -117,7 +121,6 @@ const VendaList = () => {
     setRemoveVendaId(null);
   };
 
-  // Carregar clientes
   useEffect(() => {
     if (user?.empresa?.id) {
       dispatch(
@@ -168,37 +171,15 @@ const VendaList = () => {
   const handleGerarRelatorio = async () => {
     setLoading(true);
     const empresa_id = user?.empresa?.id;
-
-    if (!empresa_id) {
-      setLoading(false);
-      return;
-    }
-
-    // Fonte de verdade: seleção atual (evita filters "atrasado")
-    const finalFilters = {
-      ...filters,
-      vendas_ids: selectedVendasIds,
-    };
-
-    // Se você quiser impedir "imprimir tudo" quando nada estiver selecionado:
-    // if (!finalFilters.vendas_ids?.length) { setLoading(false); return; }
-
+    if (!empresa_id) { setLoading(false); return; }
+    const finalFilters = { ...filters, vendas_ids: selectedVendasIds };
     try {
-      const response = await dispatch(
-        gerarRelatorioVendas({
-          empresa_id,
-          filters: finalFilters,
-        }),
-      );
-
+      const response = await dispatch(gerarRelatorioVendas({ empresa_id, filters: finalFilters }));
       if (gerarRelatorioVendas.fulfilled.match(response)) {
         const blob = response.payload;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
-
-        setTimeout(() => {
-          window.URL.revokeObjectURL(url);
-        }, 1000);
+        setTimeout(() => { window.URL.revokeObjectURL(url); }, 1000);
       }
     } finally {
       setLoading(false);
@@ -209,7 +190,6 @@ const VendaList = () => {
     const empresa_id = user?.empresa?.id;
     const baseURL = import.meta.env.VITE_API_URL;
     const endpoint = `public/relatorios/${empresa_id}/pdf/vendas`;
-
     const filtrosLimpos = Object.fromEntries(
       Object.entries(filters).filter(([key, value]) => {
         if (typeof value === 'string') return value.length > 0;
@@ -217,7 +197,6 @@ const VendaList = () => {
         return true;
       }),
     );
-
     const params = new URLSearchParams();
     Object.entries(filtrosLimpos).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -226,10 +205,8 @@ const VendaList = () => {
         params.append(key, value);
       }
     });
-
     const url = `${baseURL}${endpoint}?${params.toString()}`;
-    const mensagem = `Olá! Segue seu relatório de venda/serviços:
-${url}`;
+    const mensagem = `Olá! Segue seu relatório de venda/serviços:\n${url}`;
     navigator.clipboard.writeText(mensagem);
     toast.success('Mensagem copiada com sucesso!');
     return url;
@@ -240,7 +217,6 @@ ${url}`;
       const newIds = prev.includes(id)
         ? prev.filter((vendaId) => vendaId !== id)
         : [...prev, id];
-
       setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
       return newIds;
     });
@@ -252,9 +228,7 @@ ${url}`;
 
   const handleToggleSelectAll = () => {
     const visibleIds = vendas.map((v) => v.id);
-
     if (allSelected) {
-      // remove os visíveis baseado no estado anterior (sem stale)
       setSelectedVendasIds((prev) => {
         const newIds = prev.filter((id) => !visibleIds.includes(id));
         setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
@@ -262,8 +236,6 @@ ${url}`;
       });
       return;
     }
-
-    // adiciona visíveis aos já selecionados
     setSelectedVendasIds((prev) => {
       const newIds = [...new Set([...prev, ...visibleIds])];
       setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: newIds }));
@@ -276,38 +248,72 @@ ${url}`;
     setFilters((prevFilters) => ({ ...prevFilters, vendas_ids: [] }));
   };
 
-  const valorTotal = vendas.reduce(
-    (total, venda) => total + venda.valor_total,
-    0,
-  );
-  const valorTotalPendente =
-    valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
+  const valorTotal = vendas.reduce((total, venda) => total + venda.valor_total, 0);
+  const valorTotalPendente = valorTotal - vendas.reduce((total, venda) => total + venda.valor_pago, 0);
 
-  // Multiple Payment
+  const handleOpenMultiplePayment = () => {
+    if (!filters.cliente) {
+      toast.error('Escolha um cliente primeiro');
+      return;
+    }
+    setShowPopupMultiplePayment(true);
+  };
 
   const [showButtonMultiplePayment, setshowButtonMultiplePayment] = useState(false);
+  const [showPopUpMultiplePayment, setShowPopupMultiplePayment] = useState(false);
 
-  // End Multiple Payment
+  const handleMultiplePayments = async ({ valor, metodo, cliente, vendasIds }) => {
+    setLoading(true);
+    try {
+      await dispatch(
+        realizarMultiplePayment({ empresa_id: user.empresa.id, valor, metodo, cliente, vendasIds })
+      ).unwrap();
+      await dispatch(
+        index({
+          empresa_id: user?.empresa?.id,
+          data_max: filters['data_max'],
+          data_min: filters['data_min'],
+          pendencias: filters['pendencias'],
+          cliente: filters['cliente'],
+        })
+      ).unwrap();
+      setShowPopupMultiplePayment(false);
+      toast.success('Pagamentos processados com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao processar pagamentos. Tente novamente.');
+    }
+    setLoading(false);
+  };
 
   return (
     <div className=''>
 
-      {/* Multiple Payment */}
-
-      {/* Button */}
-      {showButtonMultiplePayment && (
-        <button className='px-5 py-3 bg-linear-to-r from-primary-accent to-primary-light rounded-3xl fixed bottom-10 right-10 cursor-pointer'>
-            <span className='text-white font-semibold flex gap-2 items-center'>
-              <BanknoteArrowUp size={17} />
-              Pagar Vários
-            </span>
+      {/* Multiple Payment Button */}
+      {(showButtonMultiplePayment && filters.cliente) && (
+        <button
+          className='px-5 py-3 bg-linear-to-r from-primary-accent to-primary-light rounded-3xl fixed bottom-10 right-10 cursor-pointer'
+          onClick={handleOpenMultiplePayment}
+        >
+          <span className='text-white font-semibold flex gap-2 items-center'>
+            <BanknoteArrowUp size={17} />
+            Pagar Vários
+          </span>
         </button>
       )}
 
-      {/* End Multiple Payment */}
+      {showPopUpMultiplePayment && (
+        <MultiplePaymentPopup
+          cliente={filters.cliente}
+          vendasIds={filters.vendas_ids ?? null}
+          open={showPopUpMultiplePayment}
+          onClose={() => setShowPopupMultiplePayment(false)}
+          onConfirm={handleMultiplePayments}
+        />
+      )}
 
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+
           {/* Header */}
           <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
@@ -326,40 +332,81 @@ ${url}`;
               />
             </div>
 
-            {/* RESUMO DE VENDAS */}
-            <div className='w-full mt-5 p-4 md:flex justify-between gap-3'>
-              <div className='w-full border border-gray-300 rounded-xl p-5'>
-                <span className='block text-gray-600 text-left text-sm'>
-                  Total Pendente
-                </span>
-                <p className='text-red-500 font-semibold text-left'>
+            {/* ── CARDS DE RESUMO ── */}
+            <div className='w-full mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3'>
+
+              {/* Card: Total Pendente */}
+              <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50 to-red-50 border border-red-100 p-5 flex flex-col gap-3'>
+                {/* Decorative blob */}
+                <div className='absolute -top-4 -right-4 w-20 h-20 rounded-full bg-red-100/60 blur-xl pointer-events-none' />
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs font-semibold uppercase tracking-widest text-red-400'>
+                    Total Pendente
+                  </span>
+                  <span className='flex items-center justify-center w-8 h-8 rounded-xl bg-red-100 text-red-500'>
+                    <TrendingDown size={16} />
+                  </span>
+                </div>
+                <p className='text-2xl font-bold text-red-500 leading-none tracking-tight'>
                   {currencyFormatter.format(Number(valorTotalPendente) || 0)}
                 </p>
+                <div className='h-1 w-full rounded-full bg-red-100'>
+                  <div
+                    className='h-1 rounded-full bg-gradient-to-r from-red-400 to-rose-400 transition-all duration-700'
+                    style={{
+                      width: valorTotal > 0
+                        ? `${Math.min(100, (valorTotalPendente / valorTotal) * 100)}%`
+                        : '0%',
+                    }}
+                  />
+                </div>
               </div>
 
-              <div className='w-full border border-gray-300 rounded-xl p-5 my-3 md:my-0'>
-                <span className='block text-gray-600 text-left text-sm'>
-                  Total Geral
-                </span>
-                <p className='text-primary font-semibold text-left'>
+              {/* Card: Total Geral */}
+              <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/15 p-5 flex flex-col gap-3'>
+                <div className='absolute -top-4 -right-4 w-20 h-20 rounded-full bg-primary/10 blur-xl pointer-events-none' />
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs font-semibold uppercase tracking-widest text-primary/70'>
+                    Total Geral
+                  </span>
+                  <span className='flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 text-primary'>
+                    <TrendingUp size={16} />
+                  </span>
+                </div>
+                <p className='text-2xl font-bold text-primary leading-none tracking-tight'>
                   {currencyFormatter.format(Number(valorTotal) || 0)}
                 </p>
+                <div className='h-1 w-full rounded-full bg-primary/10'>
+                  <div className='h-1 rounded-full bg-gradient-to-r from-primary to-primary-light w-full transition-all duration-700' />
+                </div>
               </div>
 
-              <div className='w-full border border-gray-300 bg-primary rounded-xl p-5'>
-                <span className='block text-left text-sm text-white'>
-                  Qtd. Vendas/Serviços
-                </span>
-                <p className='font-semibold text-left text-white'>
+              {/* Card: Qtd Vendas */}
+              <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-light border-0 p-5 flex flex-col gap-3'>
+                <div className='absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/10 blur-xl pointer-events-none' />
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs font-semibold uppercase tracking-widest text-white/70'>
+                    Qtd. Vendas
+                  </span>
+                  <span className='flex items-center justify-center w-8 h-8 rounded-xl bg-white/20 text-white'>
+                    <ShoppingCart size={16} />
+                  </span>
+                </div>
+                <p className='text-2xl font-bold text-white leading-none tracking-tight'>
                   {vendas.length}
+                  <span className='text-sm font-medium text-white/60 ml-1'>vendas</span>
                 </p>
+                <div className='h-1 w-full rounded-full bg-white/20'>
+                  <div className='h-1 rounded-full bg-white/60 w-full' />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Filtros */}
+          {/* ── FILTROS ── */}
           <div className='px-4 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50'>
-            {/* Filtro de Cliente - Destacado */}
+
+            {/* Filtro de Cliente */}
             <div className='mb-3'>
               <Combobox
                 value={filters.cliente}
@@ -379,6 +426,7 @@ ${url}`;
                       ref={clienteInputRef}
                       className='flex-1 bg-transparent border-none outline-none text-gray-800 font-medium placeholder-gray-400'
                       placeholder='Todos os clientes'
+                      autoComplete='off'
                       displayValue={(clienteId) => {
                         if (!clienteId) return '';
                         const c = clientes.find((c) => c.id === clienteId);
@@ -393,9 +441,7 @@ ${url}`;
                   <ComboboxOptions className='absolute z-20 w-full bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-xl'>
                     {(() => {
                       const clientesFiltrados = clientes.filter((cliente) =>
-                        cliente.nome
-                          .toLowerCase()
-                          .includes(queryCliente.toLowerCase()),
+                        cliente.nome.toLowerCase().includes(queryCliente.toLowerCase()),
                       );
                       return (
                         <>
@@ -405,9 +451,7 @@ ${url}`;
                               `flex items-center px-3 py-2.5 cursor-pointer text-sm whitespace-nowrap ${
                                 selected
                                   ? 'bg-primary/10 text-primary font-medium'
-                                  : active
-                                    ? 'bg-gray-50'
-                                    : ''
+                                  : active ? 'bg-gray-50' : ''
                               }`
                             }
                           >
@@ -426,9 +470,7 @@ ${url}`;
                                   `flex items-center px-3 py-2.5 cursor-pointer text-sm ${
                                     selected
                                       ? 'bg-primary/10 text-primary font-medium'
-                                      : active
-                                        ? 'bg-gray-50'
-                                        : ''
+                                      : active ? 'bg-gray-50' : ''
                                   }`
                                 }
                               >
@@ -444,10 +486,12 @@ ${url}`;
               </Combobox>
             </div>
 
-            {/* Outros Filtros */}
-            <div className='flex flex-wrap items-center gap-2'>
+            {/* Filtros: tudo em uma linha no desktop, wrap no mobile */}
+            <div className='flex flex-wrap sm:flex-nowrap items-center gap-2'>
+
+              {/* Selecionar todas */}
               <div
-                className={`flex items-center gap-2 text-sm font-semibold rounded-lg px-2 h-9 border ${
+                className={`flex items-center gap-2 text-sm font-semibold rounded-lg px-2 h-9 border shrink-0 ${
                   allSelected
                     ? 'text-primary bg-primary/10 border-primary/20'
                     : 'text-gray-700 bg-white border-transparent'
@@ -473,7 +517,7 @@ ${url}`;
                 )}
               </div>
 
-              {/* Filtro: Não pagas */}
+              {/* Não pagas */}
               <button
                 value={filters.pendencias == 1 ? 0 : 1}
                 onClick={handleChange('pendencias')}
@@ -481,96 +525,80 @@ ${url}`;
                   filters.pendencias == 1
                     ? 'bg-primary text-white border-primary'
                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap`}
+                } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap shrink-0`}
                 title='Mostrar apenas vendas não pagas'
               >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'
-                  }`}
-                />
+                <span className={`w-2 h-2 rounded-full ${filters.pendencias == 1 ? 'bg-white' : 'bg-yellow-500'}`} />
                 Não pagas
               </button>
 
-              <div className='flex items-center gap-2 flex-nowrap'>
-                {/* Filtro: Data Início */}
-                <div
-                  className='relative cursor-pointer'
-                  onClick={() => {
-                    const input = dateStartRef.current;
-                    if (input?.showPicker) input.showPicker();
-                    else input?.focus();
-                  }}
-                >
-                  <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
-                    <Calendar size={16} className='text-gray-400' />
-                    <span className='text-gray-500 text-xs'>De</span>
-                    <span
-                      className={
-                        filters.data_min ? 'text-gray-700' : 'text-gray-400'
-                      }
-                    >
-                      {filters.data_min ? dateStart : 'Selecionar'}
-                    </span>
-                  </div>
-                  <input
-                    ref={dateStartRef}
-                    type='date'
-                    value={dateStart}
-                    onChange={(e) => {
-                      setDateStart(e.target.value);
-                      handleChange('data_min')(e);
-                    }}
-                    className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
-                    tabIndex={-1}
-                  />
+              {/* Data Início */}
+              <div
+                className='relative cursor-pointer shrink-0'
+                onClick={() => {
+                  const input = dateStartRef.current;
+                  if (input?.showPicker) input.showPicker();
+                  else input?.focus();
+                }}
+              >
+                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                  <Calendar size={16} className='text-gray-400' />
+                  <span className='text-gray-500 text-xs'>De</span>
+                  <span className={filters.data_min ? 'text-gray-700' : 'text-gray-400'}>
+                    {filters.data_min ? dateStart : 'Selecionar'}
+                  </span>
                 </div>
-
-                {/* Filtro: Data Fim */}
-                <div
-                  className='relative cursor-pointer'
-                  onClick={() => {
-                    const input = dateEndRef.current;
-                    if (input?.showPicker) input.showPicker();
-                    else input?.focus();
-                  }}
-                >
-                  <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
-                    <Calendar size={16} className='text-gray-400' />
-                    <span className='text-gray-500 text-xs'>Até</span>
-                    <span
-                      className={
-                        filters.data_max ? 'text-gray-700' : 'text-gray-400'
-                      }
-                    >
-                      {filters.data_max ? dateEnd : 'Selecionar'}
-                    </span>
-                  </div>
-                  <input
-                    ref={dateEndRef}
-                    type='date'
-                    value={dateEnd}
-                    onChange={(e) => {
-                      setDateEnd(e.target.value);
-                      handleChange('data_max')(e);
-                    }}
-                    className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
-                    tabIndex={-1}
-                  />
-                </div>
-                {/* Habilitar botao de multiplos pagamentos */}
-                <div>
-                  <label className='flex items-center gap-2 cursor-pointer text-sm'>
-                    <input
-                      type='checkbox'
-                      checked={showButtonMultiplePayment}
-                      onChange={() => setshowButtonMultiplePayment(!showButtonMultiplePayment)}
-                      className='h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary'
-                    />
-                    Realizar Vários Pagamentos
-                  </label>
-                </div>
+                <input
+                  ref={dateStartRef}
+                  type='date'
+                  value={dateStart}
+                  onChange={(e) => { setDateStart(e.target.value); handleChange('data_min')(e); }}
+                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                  tabIndex={-1}
+                />
               </div>
+
+              {/* Data Fim */}
+              <div
+                className='relative cursor-pointer shrink-0'
+                onClick={() => {
+                  const input = dateEndRef.current;
+                  if (input?.showPicker) input.showPicker();
+                  else input?.focus();
+                }}
+              >
+                <div className='h-9 inline-flex items-center justify-center gap-2 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 transition text-sm font-medium whitespace-nowrap'>
+                  <Calendar size={16} className='text-gray-400' />
+                  <span className='text-gray-500 text-xs'>Até</span>
+                  <span className={filters.data_max ? 'text-gray-700' : 'text-gray-400'}>
+                    {filters.data_max ? dateEnd : 'Selecionar'}
+                  </span>
+                </div>
+                <input
+                  ref={dateEndRef}
+                  type='date'
+                  value={dateEnd}
+                  onChange={(e) => { setDateEnd(e.target.value); handleChange('data_max')(e); }}
+                  className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                  tabIndex={-1}
+                />
+              </div>
+
+              {/* Realizar Vários Pagamentos */}
+              {filters.cliente && (
+                <button
+                  onClick={() => setshowButtonMultiplePayment(!showButtonMultiplePayment)}
+                  className={`${
+                    showButtonMultiplePayment
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  } h-9 rounded-lg px-3 border transition text-sm font-medium cursor-pointer inline-flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start shrink-0`}
+                  title='Realizar vários pagamentos para as vendas filtradas'
+                >
+                  <BanknoteArrowUp size={15} />
+                  Realizar Vários Pagamentos
+                </button>
+              )}
             </div>
           </div>
 
@@ -622,27 +650,19 @@ ${url}`;
                               </span>
 
                               <div className='flex items-center gap-2 flex-wrap'>
-                                {(Number(venda?.valor_pago) || 0) <
-                                (Number(venda?.valor_total) || 0) ? (
+                                {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
                                   <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 whitespace-normal break-all'>
-                                    {currencyFormatter.format(
-                                      Number(venda?.valor_pago) || 0,
-                                    )}{' '}
+                                    {currencyFormatter.format(Number(venda?.valor_pago) || 0)}{' '}
                                     /{' '}
-                                    {currencyFormatter.format(
-                                      Number(venda?.valor_total) || 0,
-                                    )}
+                                    {currencyFormatter.format(Number(venda?.valor_total) || 0)}
                                   </span>
                                 ) : (
                                   <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 whitespace-normal break-all'>
-                                    {currencyFormatter.format(
-                                      Number(venda?.valor_total) || 0,
-                                    )}
+                                    {currencyFormatter.format(Number(venda?.valor_total) || 0)}
                                   </span>
                                 )}
 
-                                {(Number(venda?.valor_pago) || 0) <
-                                (Number(venda?.valor_total) || 0) ? (
+                                {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
                                   <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-2.5 py-0.5 text-xs font-semibold shadow-sm'>
                                     Pendente
                                   </span>
@@ -659,18 +679,13 @@ ${url}`;
                                   className='flex items-center gap-3 text-primary hover:text-primary/70 transition cursor-pointer'
                                   title='Ir até a venda'
                                 >
-                                  <span className='text-sm font-semibold'>
-                                    Ir até a venda
-                                  </span>
+                                  <span className='text-sm font-semibold'>Ir até a venda</span>
                                   <Logs size={22} />
                                 </Link>
 
                                 <button
                                   className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveVenda(venda.id);
-                                  }}
+                                  onClick={(e) => { e.stopPropagation(); handleRemoveVenda(venda.id); }}
                                 >
                                   <Trash2 size={20} />
                                 </button>
@@ -690,22 +705,15 @@ ${url}`;
                                 {venda?.cliente?.nome ?? 'Sem cliente'}
                               </span>
 
-                              {(Number(venda?.valor_pago) || 0) <
-                              (Number(venda?.valor_total) || 0) ? (
+                              {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
                                 <span className='inline-block bg-gray-100 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-gray-200 ml-auto max-w-full whitespace-normal break-all'>
-                                  {currencyFormatter.format(
-                                    Number(venda?.valor_pago) || 0,
-                                  )}{' '}
+                                  {currencyFormatter.format(Number(venda?.valor_pago) || 0)}{' '}
                                   /{' '}
-                                  {currencyFormatter.format(
-                                    Number(venda?.valor_total) || 0,
-                                  )}
+                                  {currencyFormatter.format(Number(venda?.valor_total) || 0)}
                                 </span>
                               ) : (
                                 <span className='inline-block bg-green-50 text-gray-700 font-semibold rounded px-2 py-0.5 text-sm border border-green-300 ml-auto max-w-full whitespace-normal break-all'>
-                                  {currencyFormatter.format(
-                                    Number(venda?.valor_total) || 0,
-                                  )}
+                                  {currencyFormatter.format(Number(venda?.valor_total) || 0)}
                                 </span>
                               )}
                             </div>
@@ -721,8 +729,7 @@ ${url}`;
 
                       <div className='hidden sm:flex items-center justify-between flex-row-reverse mt-3 gap-2 pl-7'>
                         <div className='flex items-center gap-2'>
-                          {(Number(venda?.valor_pago) || 0) <
-                          (Number(venda?.valor_total) || 0) ? (
+                          {(Number(venda?.valor_pago) || 0) < (Number(venda?.valor_total) || 0) ? (
                             <span className='inline-flex items-center rounded-md bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 py-1 text-sm font-semibold shadow-sm'>
                               Pendente
                             </span>
@@ -734,10 +741,7 @@ ${url}`;
 
                           <button
                             className='px-2 py-2 text-gray-600 hover:text-gray-800 text-sm font-semibold flex items-center justify-center cursor-pointer'
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveVenda(venda.id);
-                            }}
+                            onClick={(e) => { e.stopPropagation(); handleRemoveVenda(venda.id); }}
                           >
                             <Trash2 size={20} />
                           </button>
@@ -748,9 +752,7 @@ ${url}`;
                           className='flex items-center gap-5 text-primary hover:text-primary/70 transition cursor-pointer'
                           title='Ir até a venda'
                         >
-                          <span className='text-sm font-semibold'>
-                            Ir até a venda
-                          </span>
+                          <span className='text-sm font-semibold'>Ir até a venda</span>
                           <Logs size={22} />
                         </Link>
                       </div>
