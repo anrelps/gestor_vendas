@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\DB;
 class VendaService {
 
     private $venda;
+    private $registroPagamentoService;
 
-    public function __construct(Venda $venda) {
+    public function __construct(Venda $venda, RegistroPagamentoService $registroPagamentoService) {
         $this->venda = $venda;
+        $this->registroPagamentoService = $registroPagamentoService;
     }
 
     public function index(Empresa $empresa, array $filters) {
@@ -57,6 +59,11 @@ class VendaService {
                 'valor_pago' => $input['valor_pago'],
             ]);
 
+            if($input['valor_pago'] > 0) {
+                $registroData = ['type' => 'single', 'amount' => $input['valor_pago'], 'description' => "Pagamento inicial de R$ {$input['valor_pago']} registrado no cadastro da venda."];
+                $this->registroPagamentoService->createFromSale($venda, $registroData);
+            }
+
             foreach($input['produtos'] as $produto) {
                 $venda->detalhesVendas()->create([
                     'produto_id' => $produto['produto_id'],
@@ -76,6 +83,11 @@ class VendaService {
     public function update(Venda $venda, array $input) {
         try {
             DB::beginTransaction();
+
+            if($input['valor_pago'] > $venda->valor_pago) {
+                $registroData  = ['type' => 'single', 'amount' => $input['valor_pago'], 'description' => "Pagamento de R$ {$input['valor_pago']} adicionado via atualização da venda."];
+                $this->registroPagamentoService->createFromSale($venda, $registroData);
+            }
 
             $venda->update([
                 'cliente_id' => $input['cliente'],
@@ -125,6 +137,11 @@ class VendaService {
                 if ($vendas_qty === 0) break;
                 if($value >= ($vendas->sum('valor_total') - $vendas->sum('valor_pago'))) {
                     foreach ($vendas as $venda) {
+                        // Inserindo registro na tabela de registro de pagamentos
+                        $valorPagoVenda = $venda->valor_total - $venda->valor_pago;
+                        $registroData  = ['type' => 'general', 'amount' => $valorPagoVenda, 'description' => "Venda quitada via pagamento geral de R$ {$value}."];
+                        $this->registroPagamentoService->createFromSale($venda, $registroData);
+
                         $venda->update(['valor_pago' => $venda->valor_total]);
                     }
                     break;
@@ -133,10 +150,15 @@ class VendaService {
                 foreach ($vendas as $venda) {
                     $valueToDiscount = min($valuePerSale, $venda->valor_total - $venda->valor_pago);
                     $venda->update(['valor_pago' => $venda->valor_pago + $valueToDiscount]);
+
+                    // Inserindo registro na tabela de registro de pagamentos
+                    $registroData  = ['type' => 'general', 'amount' => $valueToDiscount, 'description' => "R$ {$valueToDiscount} abatido via pagamento geral de R$ {$value} dividido igualmente entre as vendas."];
+                    $this->registroPagamentoService->createFromSale($venda, $registroData);
                 }
                 break;
             case 'oldest_first':
                 $vendas = $vendas->orderBy('created_at', 'ASC')->get();
+                $total = $value;
                 foreach ($vendas as $venda) {
                     if($value > 0) {
                         $valueToDiscount = min(($venda->valor_total - $venda->valor_pago), $value);
@@ -144,6 +166,10 @@ class VendaService {
                             'valor_pago' => $venda->valor_pago + $valueToDiscount,
                         ]);
                         $value -= $valueToDiscount;
+
+                        // Inserindo registro na tabela de registro de pagamentos
+                        $registroData  = ['type' => 'general', 'amount' => $valueToDiscount, 'description' => "R$ {$valueToDiscount} abatido via pagamento geral de R$ {$total}, priorizando vendas mais antigas."];
+                        $this->registroPagamentoService->createFromSale($venda, $registroData);
                     }
                 }
                 break;
