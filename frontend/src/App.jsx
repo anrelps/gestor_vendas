@@ -16,6 +16,7 @@ import Login from './pages/Login';
 import NovaVenda from './pages/NovaVenda';
 import Products from './pages/Products';
 import Vendas from './pages/Vendas';
+import RegistroPagamentos from './pages/RegistroPagamentos';
 
 // Components
 import Layout from './Layout';
@@ -53,6 +54,7 @@ const App = () => {
           <Route path='/nova-venda' element={<NovaVenda />} />
           <Route path='/vendas/:id/editar' element={<EditarVenda />} />
           <Route path='/editar-perfil' element={<EditarPerfil />} />
+          <Route path='/registros-pagamentos' element={<RegistroPagamentos/>}/> 
         </Route>
       </Routes>
     </BrowserRouter>

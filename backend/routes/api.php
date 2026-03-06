@@ -4,6 +4,7 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\RegistroPagamentoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendaController;
@@ -40,6 +41,10 @@ Route::prefix('v1')->group(function() {
             Route::prefix('/relatorios')->controller(RelatorioController::class)->group(function() {
                 Route::get('/pdf/vendas', [RelatorioController::class, 'vendas']);
                 Route::get('/pdf/vendas/{venda}', [RelatorioController::class, 'detalhesVenda']);
+            });
+
+            Route::prefix('/pagamentos')->controller(RegistroPagamentoController::class)->group(function() {
+                Route::get('/', 'index');
             });
         });
         Route::prefix('/charts')->controller(ChartController::class)->group(function() {

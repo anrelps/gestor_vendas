@@ -85,7 +85,8 @@ class VendaService {
             DB::beginTransaction();
 
             if($input['valor_pago'] > $venda->valor_pago) {
-                $registroData  = ['type' => 'single', 'amount' => $input['valor_pago'], 'description' => "Pagamento de R$ {$input['valor_pago']} adicionado via atualização da venda."];
+                $valorAdicionado = $input['valor_pago'] - $venda->valor_pago;
+                $registroData  = ['type' => 'single', 'amount' => $input['valor_pago'], 'description' => "Pagamento de R$ {$valorAdicionado} adicionado via atualização da venda."];
                 $this->registroPagamentoService->createFromSale($venda, $registroData);
             }
 

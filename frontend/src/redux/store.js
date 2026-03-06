@@ -5,6 +5,7 @@ import produtoReducer from "./slices/produtoSlice";
 import vendaSlicer from "./slices/vendaSlice";
 import empresaReducer from "./slices/empresaSlice";
 import chartReducer from "./slices/chartSlice";
+import registroPagamentoReducer from "./slices/registroPagamentoSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     venda: vendaSlicer,
     empresa: empresaReducer,
     chart: chartReducer,
+    pagamento: registroPagamentoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
