@@ -28,4 +28,8 @@ class Venda extends Model
     public function detalhesVendas() {
         return $this->hasMany(DetalheVenda::class);
     }
+
+    public function registrosPagamentos() {
+        return $this->hasMany(RegistroPagamento::class);
+    }
 }
