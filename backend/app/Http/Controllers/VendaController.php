@@ -90,7 +90,7 @@ class VendaController extends Controller
             $venda = $this->service->update($venda, $input);
             return new VendaResource($venda);
         } catch(Exception $e) {
-            return $this->errorResponse('Ocorreu um erro ao tentar atualizar esta venda.', 500);
+            return $this->errorResponse('Ocorreu um erro ao tentar atualizar esta venda: '.$e->getMessage(), 500);
         }
     }
 
