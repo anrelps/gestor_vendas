@@ -69,13 +69,13 @@ const RegistroPagamentosList = () => {
 
   return (
     <div className='w-full max-w-5xl'>
-      <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+      <div className='bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
 
-        <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
+        <div className='px-6 pt-6 pb-4 border-b border-gray-100'>
           <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
             <div>
-              <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>Pagamentos</h2>
-              <p className='text-sm text-gray-500 mt-1'>Histórico de todos os pagamentos registrados.</p>
+              <h2 className='text-lg font-semibold tracking-tight text-gray-900'>Pagamentos</h2>
+              <p className='text-sm text-gray-400 mt-0.5'>Histórico de todos os pagamentos registrados.</p>
             </div>
           </div>
 
@@ -115,8 +115,8 @@ const RegistroPagamentosList = () => {
           )}
 
           {pagamentos.length > 0 && (
-            <div className='m-4 overflow-hidden rounded-lg'>
-              <ul className='flex flex-col gap-3'>
+            <div className='p-4'>
+              <ul className='flex flex-col gap-2'>
                 {pagamentos.map((pagamento) => (
                   <PagamentoCard key={pagamento.id} pagamento={pagamento} />
                 ))}
@@ -126,7 +126,7 @@ const RegistroPagamentosList = () => {
         </div>
 
         {pagamentos.length > 0 && (
-          <div className='border-t border-gray-100 bg-gray-50'>
+          <div className='border-t border-gray-100'>
             <Pagination
               current_page={pagination?.current_page ?? 1}
               lastPage={pagination?.last_page ?? 1}

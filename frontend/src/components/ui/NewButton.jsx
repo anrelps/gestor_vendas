@@ -11,13 +11,12 @@ const NewButton = ({
     <button
       type='button'
       className={`
-        cursor-pointer rounded-md
-        bg-primary-accent text-white text-sm font-semibold
-        hover:bg-primary-light active:scale-[0.97]
+        cursor-pointer rounded-lg
+        bg-primary text-white text-sm font-medium
+        hover:bg-primary-accent active:scale-[0.97]
         transition-all duration-150
-        flex items-center justify-center gap-2
-        w-full sm:w-auto px-6 py-2.5
-        shadow-sm
+        flex items-center justify-center gap-1.5
+        w-full sm:w-auto px-4 py-2
         ${className}
       `}
       onClick={onClick}

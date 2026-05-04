@@ -71,7 +71,7 @@ const ClientList = () => {
 
   return (
     <div className='w-full'>
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
+      <div className='bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
         <PageHeader
           title='Clientes'
           subtitle='Gerencie os clientes cadastrados.'
@@ -92,7 +92,7 @@ const ClientList = () => {
           countLabel='cliente'
         />
 
-        <div className='divide-y divide-gray-100'>
+        <div>
           {!loading && clientes.length === 0 && (
             <EmptyState message='Nenhum cliente encontrado.' />
           )}
@@ -105,7 +105,7 @@ const ClientList = () => {
         </div>
 
         {!loading && clientes.length > 0 && (
-          <div className='border-t border-gray-100 bg-gray-50'>
+          <div className='border-t border-gray-100'>
             <Pagination
               current_page={pagination.current_page}
               lastPage={pagination.last_page}

@@ -71,7 +71,7 @@ const ProductsList = () => {
 
   return (
     <div className='w-full'>
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200'>
+      <div className='bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
         <PageHeader
           title='Produtos'
           subtitle='Gerencie os produtos cadastrados.'
@@ -92,7 +92,7 @@ const ProductsList = () => {
           countLabel='produto'
         />
 
-        <div className='divide-y divide-gray-100'>
+        <div>
           {!loading && produtos.length === 0 && (
             <EmptyState message='Nenhum produto encontrado.' />
           )}
@@ -105,7 +105,7 @@ const ProductsList = () => {
         </div>
 
         {!loading && produtos.length > 0 && (
-          <div className='border-t border-gray-100 bg-gray-50'>
+          <div className='border-t border-gray-100'>
             <Pagination
               current_page={pagination.current_page}
               lastPage={pagination.last_page}

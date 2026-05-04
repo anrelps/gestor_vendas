@@ -319,12 +319,16 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               className='pointer-events-none absolute inset-0 -z-10
               bg-[radial-gradient(120%_80%_at_30%_0%,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_70%)]'
             />
-            {/*<User size={30} className='text-white/90' />*/}
-            {(empresaState?.logo_url || userState?.empresa?.logo_url) && (
+            {(empresaState?.logo_url || userState?.empresa?.logo_url) ? (
               <img
                 src={empresaState?.logo_url || userState?.empresa?.logo_url}
                 alt=''
+                className='w-full h-full object-cover'
               />
+            ) : (
+              <span className='text-xl font-bold text-white/90 select-none'>
+                {authUser.name?.[0]?.toUpperCase() ?? '?'}
+              </span>
             )}
           </div>
 
@@ -571,7 +575,17 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               className='pointer-events-none absolute inset-0 -z-10
                 bg-[radial-gradient(100%_100%_at_50%_0%,rgba(255,255,255,0.2)_0%,transparent_70%)]'
             />
-            <User size={26} className='text-white' />
+            {(empresaState?.logo_url || userState?.empresa?.logo_url) ? (
+              <img
+                src={empresaState?.logo_url || userState?.empresa?.logo_url}
+                alt=''
+                className='w-full h-full object-cover'
+              />
+            ) : (
+              <span className='text-xl font-bold text-white/90 select-none'>
+                {authUser.name?.[0]?.toUpperCase() ?? '?'}
+              </span>
+            )}
           </div>
 
           <div className='flex flex-col items-center'>

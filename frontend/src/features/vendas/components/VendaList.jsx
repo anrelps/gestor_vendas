@@ -204,13 +204,13 @@ const VendaList = () => {
       )}
 
       <div className='w-full max-w-5xl'>
-        <div className='bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200'>
+        <div className='bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
           {/* Header + Cards */}
-          <div className='px-6 pt-6 pb-4 border-b border-gray-100 bg-linear-to-r from-white via-primary/2 to-primary/3'>
+          <div className='px-6 pt-6 pb-4 border-b border-gray-100'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
               <div>
-                <h2 className='text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900'>Vendas</h2>
-                <p className='text-sm text-gray-500 mt-1'>Acompanhe as vendas e pagamentos.</p>
+                <h2 className='text-lg font-semibold tracking-tight text-gray-900'>Vendas</h2>
+                <p className='text-sm text-gray-400 mt-0.5'>Acompanhe as vendas e pagamentos.</p>
               </div>
               <NewButton label='Nova Venda' icon={<Plus size={18} />} onClick={() => navigate('/nova-venda')} />
             </div>
@@ -218,7 +218,7 @@ const VendaList = () => {
           </div>
 
           {/* Filtros */}
-          <div className='px-4 sm:px-6 py-3 border-b border-gray-100 bg-gray-50/50'>
+          <div className='px-6 py-3 border-b border-gray-100'>
             <VendaClientFilter
               clientes={clientes}
               value={filters.cliente}
@@ -249,8 +249,8 @@ const VendaList = () => {
           <div className='divide-y divide-gray-100'>
             {vendas.length === 0 && <EmptyState message='Nenhuma venda encontrada.' />}
             {vendas.length > 0 && (
-              <div className='m-4 overflow-hidden rounded-lg'>
-                <ul className='flex flex-col gap-3'>
+              <div className='p-4'>
+                <ul className='flex flex-col gap-2'>
                   {vendas.map((venda) => (
                     <VendaCard
                       key={venda.id}
@@ -280,18 +280,18 @@ const VendaList = () => {
           />
 
           {/* Ações de relatório */}
-          <div className='px-6 mt-4 mb-6 flex flex-col md:flex-row gap-2'>
+          <div className='px-6 py-4 border-t border-gray-100 flex flex-col md:flex-row gap-2'>
             <button
               onClick={handleGerarRelatorio}
-              className='flex-1 px-3 py-2 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              className='flex-1 px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium text-sm transition flex items-center justify-center gap-2 cursor-pointer'
             >
-              <FileText size={17} /> Gerar PDF
+              <FileText size={15} /> Gerar PDF
             </button>
             <button
               onClick={handleCopiarLinkRelatorio}
-              className='flex-1 px-3 py-2 rounded bg-primary hover:bg-primary/90 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer'
+              className='flex-1 px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-medium text-sm transition flex items-center justify-center gap-2 cursor-pointer'
             >
-              <Share2 size={17} /> Compartilhar (PDF)
+              <Share2 size={15} /> Compartilhar (PDF)
             </button>
           </div>
         </div>

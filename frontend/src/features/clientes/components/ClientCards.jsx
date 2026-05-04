@@ -1,45 +1,45 @@
-import { Edit2, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { formatTelefone } from '../utils';
 
 const ClientCards = ({ clientes, onEdit, onDelete }) => (
-  <div className='lg:hidden'>
-    <div className='space-y-3 p-4 sm:p-6'>
-      {clientes.map((cliente) => (
-        <div
-          key={cliente.id}
-          className='bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-150'
-        >
-          <h3 className='text-lg font-bold text-gray-900 mb-1'>{cliente.nome}</h3>
-
-          <p className='text-sm text-gray-600 mb-1 leading-relaxed'>
-            <span className='font-semibold text-gray-700'>Email: </span>
-            {cliente.email || <span className='italic text-gray-400'>Não informado</span>}
-          </p>
-
-          <p className='text-sm text-gray-600 mb-3 leading-relaxed'>
-            <span className='font-semibold text-gray-700'>Telefone: </span>
-            {cliente.telefone ? formatTelefone(cliente.telefone) : <span className='italic text-gray-400'>Não informado</span>}
-          </p>
-
-          <div className='inline-flex items-stretch rounded bg-linear-to-b from-gray-50 to-gray-50 border border-gray-200'>
-            <button
-              className='flex items-center gap-2 px-3 py-1.5 text-purple-800 font-medium text-sm transition-colors duration-150 cursor-pointer'
-              onClick={() => onEdit(cliente)}
-            >
-              <Edit2 size={16} /> Editar
-            </button>
-            <div className='w-px bg-gray-200' />
-            <button
-              className='flex items-center justify-center p-2 text-red-600 transition-colors duration-150 cursor-pointer'
-              onClick={() => onDelete(cliente.id)}
-              title='Remover cliente'
-            >
-              <Trash2 size={18} />
-            </button>
+  <div className='lg:hidden divide-y divide-gray-100'>
+    {clientes.map((cliente) => (
+      <div
+        key={cliente.id}
+        className='px-4 py-3.5 flex items-center justify-between gap-4 hover:bg-primary/3 transition-colors duration-100'
+      >
+        <div className='flex items-center gap-3 min-w-0'>
+          <div className='w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0'>
+            <span className='text-xs font-bold text-primary'>{cliente.nome[0].toUpperCase()}</span>
+          </div>
+          <div className='min-w-0'>
+            <p className='text-sm font-semibold text-gray-900 truncate'>{cliente.nome}</p>
+            <p className='text-xs text-gray-500 mt-0.5 truncate'>
+              {cliente.email || <span className='text-gray-300'>Email não informado</span>}
+            </p>
+            <p className='text-xs text-gray-500 mt-0.5'>
+              {cliente.telefone ? formatTelefone(cliente.telefone) : <span className='text-gray-300'>Telefone não informado</span>}
+            </p>
           </div>
         </div>
-      ))}
-    </div>
+        <div className='flex items-center gap-0.5 shrink-0'>
+          <button
+            className='p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-md transition-all duration-150 cursor-pointer'
+            onClick={() => onEdit(cliente)}
+            title='Editar cliente'
+          >
+            <Pencil size={14} />
+          </button>
+          <button
+            className='p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all duration-150 cursor-pointer'
+            onClick={() => onDelete(cliente.id)}
+            title='Remover cliente'
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      </div>
+    ))}
   </div>
 );
 
