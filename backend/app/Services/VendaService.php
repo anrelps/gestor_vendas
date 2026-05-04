@@ -122,6 +122,21 @@ class VendaService {
         return $venda->delete();
     }
 
+    public function quickPay(Venda $venda): void
+    {
+        if ($venda->valor_pago >= $venda->valor_total) return;
+
+        $pendente = $venda->valor_total - $venda->valor_pago;
+
+        $this->registroPagamentoService->createFromSale($venda, [
+            'type'        => 'general',
+            'amount'      => $pendente,
+            'description' => 'Venda quitada via pagamento rápido.',
+        ]);
+
+        $venda->update(['valor_pago' => $venda->valor_total]);
+    }
+
     public function applyPaymentToMultipleSales(float $value, string $paymentType, array $data) {
         $vendas = $this->venda
             ->where('empresa_id', auth()->user()->empresa_id)

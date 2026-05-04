@@ -176,7 +176,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       />
       {!collapsed && (
         <div className='mb-10 text-center'>
-          <span className='text-4xl font-bold text-white/90 tracking-tight uppercase font-(family-name:--font-lumenzia)'>
+          <span className='text-4xl font-bold text-white/90 tracking-tight uppercase font-lumenz'>
             Lumenz
           </span>
         </div>
@@ -320,10 +320,12 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               bg-[radial-gradient(120%_80%_at_30%_0%,rgba(255,255,255,0.35)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_70%)]'
             />
             {/*<User size={30} className='text-white/90' />*/}
-            <img
-              src={empresaState?.logo_url || userState?.empresa?.logo_url}
-              alt=''
-            />
+            {(empresaState?.logo_url || userState?.empresa?.logo_url) && (
+              <img
+                src={empresaState?.logo_url || userState?.empresa?.logo_url}
+                alt=''
+              />
+            )}
           </div>
 
           <div className='flex flex-col'>

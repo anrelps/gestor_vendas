@@ -8,6 +8,7 @@ import {
   relatorioVendasPdf,
   detalhesVendaPdf,
   multiplePayment,
+  quickPayVenda,
 } from '../services/vendaService';
 
 export const index = createAsyncThunk(
@@ -100,6 +101,14 @@ export const gerarRelatorioDetalhesVenda = createAsyncThunk(
   }
 );
 
+export const quickPay = createAsyncThunk(
+  'venda/quickPay',
+  async ({ empresa_id, venda_id }) => {
+    const res = await quickPayVenda({ empresa_id, venda_id });
+    return { venda_id };
+  },
+);
+
 export const realizarMultiplePayment = createAsyncThunk(
   'venda/multiplePayment',
   async({empresa_id, valor, metodo, cliente, vendasIds}) => {
@@ -134,6 +143,7 @@ const vendaSlice = createSlice({
       .addCase(index.fulfilled, function (state, action) {
         state.loading = false;
         state.error = null;
+        if (!action.payload) return;
         state.vendas = action.payload.data;
         state.pagination = {
           current_page: action.payload.meta.current_page,
@@ -249,6 +259,16 @@ const vendaSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      .addCase(quickPay.fulfilled, function (state, action) {
+        const idx = state.vendas.findIndex((v) => v.id === action.payload.venda_id);
+        if (idx !== -1) {
+          state.vendas[idx] = {
+            ...state.vendas[idx],
+            valor_pago: state.vendas[idx].valor_total,
+          };
+        }
+      })
+
       .addCase(realizarMultiplePayment.fulfilled, function(state) {
         state.loading = false;
         state.error = null;

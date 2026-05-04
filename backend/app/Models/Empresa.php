@@ -14,6 +14,8 @@ class Empresa extends Model
         'telefone',
         'logo_path',
         'assinatura_ativa',
+        'is_demo',
+        'demo_expires_at',
         'data_inicio_assinatura',
         'data_fim_assinatura',
     ];

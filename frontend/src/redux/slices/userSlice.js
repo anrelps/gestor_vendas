@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getUserData, userLogin, userUpdate, userLogout, userChangePassword } from '../services/userService';
+import { getUserData, userLogin, userUpdate, userLogout, userChangePassword, userDemoLogin } from '../services/userService';
 
 // AsyncThunks
 export const login = createAsyncThunk(
@@ -24,6 +24,11 @@ export const changePassword = createAsyncThunk('user/changePassword', async ({us
   const res = await userChangePassword({user_id, data});
   return res;
 })
+
+export const demoLogin = createAsyncThunk('user/demoLogin', async () => {
+  const res = await userDemoLogin();
+  return res;
+});
 
 export const logoutUser = createAsyncThunk(
   'user/logout',
@@ -56,6 +61,29 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
+      // demoLogin
+      .addCase(demoLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(demoLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.authChecked = true;
+        state.token = action.payload.token;
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(demoLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.authChecked = true;
+        state.token = null;
+        state.error = action.error.message;
+        localStorage.removeItem('token');
+      })
 
       // login
       .addCase(login.pending, (state) => {

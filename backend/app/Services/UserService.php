@@ -6,6 +6,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Services\DemoService;
 
 class UserService {
 
@@ -57,6 +58,10 @@ class UserService {
     }
 
     public function logout(User $user) {
-        return $user->currentAccessToken()->delete();
+        $user->currentAccessToken()->delete();
+
+        if ($user->empresa?->is_demo) {
+            (new DemoService())->deleteSession($user->empresa);
+        }
     }
 }

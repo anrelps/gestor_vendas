@@ -44,6 +44,11 @@ export const updateVenda = async ({empresa_id, venda_id, data}) => {
     return res;
 }
 
+export const quickPayVenda = async ({ empresa_id, venda_id }) => {
+    const res = await api.post(`/${empresa_id}/vendas/${venda_id}/quick-pay`);
+    return res.data;
+};
+
 export const destroyVenda = async ({empresa_id, venda_id}) => {
     const res = await api.delete(`/${empresa_id}/vendas/${venda_id}`);
     return res;

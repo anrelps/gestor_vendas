@@ -7,20 +7,20 @@ import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import { checkAuth } from './redux/slices/userSlice';
 
 // Pages
-import Clients from './pages/Clients';
-import Dashboard from './pages/Dashboard';
-import EditarPerfil from './pages/EditarPerfil';
-import EditarVenda from './pages/EditarVenda';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import NovaVenda from './pages/NovaVenda';
-import Products from './pages/Products';
-import Vendas from './pages/Vendas';
-import RegistroPagamentos from './pages/RegistroPagamentos';
+import Clients from './features/clientes/pages/Clients';
+import Dashboard from './features/dashboard/pages/Dashboard';
+import EditarPerfil from './features/perfil/pages/EditarPerfil';
+import EditarVenda from './features/vendas/pages/EditarVenda';
+import Home from './features/auth/pages/Home';
+import Login from './features/auth/pages/Login';
+import NovaVenda from './features/vendas/pages/NovaVenda';
+import Products from './features/produtos/pages/Products';
+import Vendas from './features/vendas/pages/Vendas';
+import RegistroPagamentos from './features/pagamentos/pages/RegistroPagamentos';
 
 // Components
-import Layout from './Layout';
-import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/layout/Layout';
+import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 const App = () => {
   const dispatch = useDispatch();

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\RegistroPagamentoController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function() {
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/register', [UserController::class, 'register']);
+    Route::post('/demo-login', [DemoController::class, 'login']);
 
     Route::prefix('/public')->group(function() {
         Route::prefix('/relatorios')->controller(RelatorioController::class)->group(function() {
@@ -36,6 +38,7 @@ Route::prefix('v1')->group(function() {
             Route::apiResource('/produtos', ProdutoController::class);
             Route::prefix('/vendas')->controller(VendaController::class)->group(function() {
                 Route::put('/pay-multiple-sales', 'applyPaymentToMultipleSales');
+                Route::post('/{venda}/quick-pay', 'quickPay');
             });
             Route::apiResource('/vendas', VendaController::class);
             Route::prefix('/relatorios')->controller(RelatorioController::class)->group(function() {

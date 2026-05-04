@@ -103,6 +103,15 @@ class VendaController extends Controller
         }
     }
 
+    public function quickPay(Empresa $empresa, Venda $venda) {
+        try {
+            $this->service->quickPay($venda);
+            return $this->successResponse('Venda marcada como paga.', 200);
+        } catch (Exception $e) {
+            return $this->errorResponse('Erro ao marcar venda como paga.', 500);
+        }
+    }
+
     public function applyPaymentToMultipleSales(Request $request) {
         try {
             $input = $request->validate([

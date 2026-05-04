@@ -8,41 +8,26 @@ use Carbon\Carbon;
 class ChartService {
 
     public function lucroSemana() {
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
-        $lucroSemana = ['Seg' => 0, 'Ter' => 0, 'Qua' => 0, 'Qui' => 0, 'Sex' => 0, 'Sab' => 0, 'Dom' => 0];
-        $vendas = Venda::where('empresa_id', auth()->user()->empresa_id)
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->selectRaw('DATE(created_at) as dia, SUM(valor_pago) as lucro_dia')
-            ->groupBy('dia')
-            ->orderBy('dia', 'asc')
+        // ISODOW: 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo
+        $keys = [1 => 'Seg', 2 => 'Ter', 3 => 'Qua', 4 => 'Qui', 5 => 'Sex', 6 => 'Sab', 7 => 'Dom'];
+        $lucroSemana = array_fill_keys(array_values($keys), 0);
+
+        $start = now()->startOfWeek()->format('Y-m-d H:i:s');
+        $end   = now()->endOfWeek()->format('Y-m-d H:i:s');
+
+        $rows = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->whereRaw("created_at BETWEEN ? AND ?", [$start, $end])
+            ->selectRaw('EXTRACT(ISODOW FROM created_at)::int AS dia_num, SUM(valor_pago) AS lucro_dia')
+            ->groupByRaw('EXTRACT(ISODOW FROM created_at)')
             ->get();
-        foreach($vendas as $venda) {
-            $diaSemana = Carbon::parse($venda->dia)->format('D');
-            switch ($diaSemana) {
-                case 'Mon':
-                    $lucroSemana['Seg'] = $venda->lucro_dia;
-                    break;
-                case 'Tue':
-                    $lucroSemana['Ter'] = $venda->lucro_dia;
-                    break;
-                case 'Wed':
-                    $lucroSemana['Qua'] = $venda->lucro_dia;
-                    break;
-                case 'Thu':
-                    $lucroSemana['Qui'] = $venda->lucro_dia;
-                    break;
-                case 'Fri':
-                    $lucroSemana['Sex'] = $venda->lucro_dia;
-                    break;
-                case 'Sat':
-                    $lucroSemana['Sab'] = $venda->lucro_dia;
-                    break;
-                case 'Sun':
-                    $lucroSemana['Dom'] = $venda->lucro_dia;
-                    break;
+
+        foreach ($rows as $row) {
+            $key = $keys[(int) $row->dia_num] ?? null;
+            if ($key) {
+                $lucroSemana[$key] = (float) $row->lucro_dia;
             }
         }
+
         return $lucroSemana;
     }
 

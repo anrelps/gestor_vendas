@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchLucroSemanal, fetchResumoFinanceiro, fetchResumoMes } from "../services/chartService";
+import { logoutUser } from "./userSlice";
 
 export const getLucroSemanal = createAsyncThunk(
     'chart/getLucroSemanal',
@@ -86,6 +87,12 @@ const chartSlice = createSlice({
             .addCase(getResumoMes.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.lucroSemanal = { Seg: 0, Ter: 0, Qua: 0, Qui: 0, Sex: 0, Sab: 0, Dom: 0 };
+                state.resumoFinanceiro = { total: 0, pago: 0, pendente: 0 };
+                state.resumoMes = { atual: 0, anterior: 0 };
+                state.error = null;
             });
     }
 });
