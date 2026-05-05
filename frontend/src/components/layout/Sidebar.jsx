@@ -172,11 +172,11 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       <img
         src={logoSrc}
         alt='Logo'
-        className={collapsed ? 'w-10' : 'size-48'}
+        className={collapsed ? 'w-10' : 'h-[clamp(5rem,18vh,12rem)] w-auto'}
       />
       {!collapsed && (
-        <div className='mb-10 text-center'>
-          <span className='text-4xl font-bold text-white/90 tracking-tight uppercase font-lumenz'>
+        <div className='mb-[clamp(0.25rem,1.5vh,2.5rem)] text-center'>
+          <span className='text-[clamp(1.25rem,2.5vh,2.25rem)] font-bold text-white/90 tracking-tight uppercase font-lumenz'>
             Lumenz
           </span>
         </div>
@@ -292,7 +292,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
     <>
       {/* Card Usuário (glass) */}
       <div
-        className='group relative isolate overflow-hidden mb-6 py-6 px-6 rounded-2xl
+        className='group relative isolate overflow-hidden mb-[clamp(0.5rem,1vh,1.5rem)] py-[clamp(0.75rem,1.5vh,1.5rem)] px-[clamp(0.75rem,1.5vw,1.5rem)] rounded-2xl
         bg-white/10 backdrop-blur-2xl border border-white/18
         shadow-[0_6px_18px_-10px_rgba(0,0,0,0.18)]'
       >
@@ -638,7 +638,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
       {/* Sidebar Desktop */}
       <div
-        className='hidden md:flex fixed left-0 top-0 h-full overflow-hidden text-white flex-col'
+        className='hidden md:flex fixed left-0 top-0 h-full overflow-y-auto text-white flex-col'
         style={{
           width: 'var(--sidebar-width)',
           zIndex: Z_INDEX.SIDEBAR_DESKTOP,
