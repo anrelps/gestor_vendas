@@ -638,7 +638,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
       {/* Sidebar Desktop */}
       <div
-        className='hidden md:flex fixed left-0 top-0 h-full overflow-y-auto text-white flex-col'
+        className='hidden md:flex fixed left-0 top-0 h-full overflow-hidden text-white flex-col'
         style={{
           width: 'var(--sidebar-width)',
           zIndex: Z_INDEX.SIDEBAR_DESKTOP,
@@ -786,7 +786,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         </div>
 
         {/* Conteúdo do sidebar */}
-        <div className='relative z-10 flex flex-col h-full'>
+        <div className='relative z-10 flex flex-col h-full overflow-y-auto'>
           {renderNewVendaButton()}
           {renderLogo()}
           {renderNavMenu()}
