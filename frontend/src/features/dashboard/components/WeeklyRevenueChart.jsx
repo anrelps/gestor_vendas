@@ -13,15 +13,15 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
   const totalSemana = values.reduce((a, b) => a + b, 0);
 
   return (
-    <div className='rounded-2xl bg-white border border-slate-200 shadow-sm p-6 flex flex-col'>
+    <div className='rounded-xl bg-white border border-gray-100 shadow-xs p-6 flex flex-col h-full'>
       <div className='flex items-start justify-between gap-4'>
         <div>
-          <h3 className='text-sm font-semibold text-slate-700'>Receita semanal</h3>
-          <p className='mt-1 text-2xl font-bold text-slate-900 tracking-tight'>
+          <h3 className='text-sm font-semibold text-gray-700'>Receita semanal</h3>
+          <p className='mt-1 text-2xl font-bold text-gray-900 tracking-tight'>
             {currencyFormatter.format(totalSemana)}
           </p>
         </div>
-        <span className='shrink-0 text-xs text-slate-400 bg-slate-50 border border-slate-100 rounded-full px-2.5 py-1'>
+        <span className='shrink-0 text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-2.5 py-1'>
           Semana atual
         </span>
       </div>
@@ -51,9 +51,9 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
                     transform: index > 0 && index < values.length - 1 ? 'translateX(-50%)' : 'none',
                   }}
                 >
-                  <div className='bg-slate-800 text-white text-[10px] font-semibold rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg'>
+                  <div className='bg-gray-800 text-white text-[10px] font-semibold rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg'>
                     {valor}
-                    <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800' />
+                    <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800' />
                   </div>
                 </div>
               )}
@@ -80,7 +80,7 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
           <span
             key={d}
             className={`flex-1 text-center text-[11px] font-medium ${
-              i === TODAY_INDEX ? 'text-primary' : 'text-slate-400'
+              i === TODAY_INDEX ? 'text-primary' : 'text-gray-400'
             }`}
           >
             {d}

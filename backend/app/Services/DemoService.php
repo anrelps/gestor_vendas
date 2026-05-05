@@ -136,7 +136,7 @@ class DemoService
                     'venda_id'             => $v->id,
                     'produto_id'           => $item['produto_id'],
                     'quantidade'           => $item['qtd'],
-                    'valor'                => $item['valor'],
+                    'valor'                => $item['valor'] * $item['qtd'],
                     'porcentagem_desconto' => $item['desconto'] ?? 0,
                 ]);
             }

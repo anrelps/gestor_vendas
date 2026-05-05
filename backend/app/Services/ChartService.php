@@ -31,34 +31,52 @@ class ChartService {
         return $lucroSemana;
     }
 
-    public function resumoFinanceiro() // Porcentagem entre vendas pagas e pendentes
+    public function resumoFinanceiro()
     {
-        $vendas = Venda::where('empresa_id', auth()->user()->empresa_id)
+        $start = Carbon::now()->startOfMonth();
+        $end   = Carbon::now()->endOfMonth();
+
+        $mes = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->whereBetween('created_at', [$start, $end])
             ->selectRaw('SUM(valor_pago) as total_pago, SUM(valor_total) as total')
             ->first();
-        $resumo = [
-            'total' => $vendas->total ?? 0,
-            'pago' => $vendas->total_pago ?? 0,
-            'pendente' => ($vendas->total ?? 0) - ($vendas->total_pago ?? 0),
+
+        $geral = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->selectRaw('SUM(valor_total) as total, SUM(valor_pago) as pago')
+            ->first();
+
+        return [
+            'total'          => $mes->total ?? 0,
+            'pago'           => $mes->total_pago ?? 0,
+            'pendente'       => ($mes->total ?? 0) - ($mes->total_pago ?? 0),
+            'pendente_total' => ($geral->total ?? 0) - ($geral->pago ?? 0),
         ];
-        return $resumo;
     }
 
     public function resumoMes() {
-        $startActualMonth = Carbon::now()->startOfMonth();
-        $endActualMonth = Carbon::now()->endOfMonth();
-        $startPreviousMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endPreviousMonth = Carbon::now()->subMonth()->endOfMonth();
+        $startAtual    = Carbon::now()->startOfMonth();
+        $endAtual      = Carbon::now()->endOfMonth();
+        $startAnterior = Carbon::now()->subMonth()->startOfMonth();
+        $endAnterior   = Carbon::now()->subMonth()->endOfMonth();
+        $startRetrasado = Carbon::now()->subMonths(2)->startOfMonth();
+        $endRetrasado   = Carbon::now()->subMonths(2)->endOfMonth();
 
-        $totalLucroMesAtual = Venda::where('empresa_id', auth()->user()->empresa_id)
-            ->whereBetween('created_at', [$startActualMonth, $endActualMonth])
+        $atual = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->whereBetween('created_at', [$startAtual, $endAtual])
             ->sum('valor_pago');
-        $totalLucroMesAnterior = Venda::where('empresa_id', auth()->user()->empresa_id)
-            ->whereBetween('created_at', [$startPreviousMonth, $endPreviousMonth])
+
+        $anterior = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->whereBetween('created_at', [$startAnterior, $endAnterior])
             ->sum('valor_pago');
+
+        $retrasado = Venda::where('empresa_id', auth()->user()->empresa_id)
+            ->whereBetween('created_at', [$startRetrasado, $endRetrasado])
+            ->sum('valor_pago');
+
         return [
-            'atual' => $totalLucroMesAtual ?? 0,
-            'anterior' => $totalLucroMesAnterior ?? 0,
+            'atual'     => $atual ?? 0,
+            'anterior'  => $anterior ?? 0,
+            'retrasado' => $retrasado ?? 0,
         ];
     }
 }

@@ -23,16 +23,17 @@ const Dashboard = () => {
       <div className='mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 space-y-8'>
         <WelcomeBanner userName={user?.nome} />
 
-        <MonthlyResume atual={resumoMes.atual} anterior={resumoMes.anterior} />
-
-        <div className='grid gap-6 lg:grid-cols-2'>
+        <div className='grid gap-6 lg:grid-cols-2 items-stretch'>
+          <MonthlyResume atual={resumoMes.atual} anterior={resumoMes.anterior} retrasado={resumoMes.retrasado} />
           <WeeklyRevenueChart lucroSemanal={lucroSemanal} />
-          <DonutChart
-            total={resumoFinanceiro.total}
-            pago={resumoFinanceiro.pago}
-            pendente={resumoFinanceiro.pendente}
-          />
         </div>
+
+        <DonutChart
+          total={resumoFinanceiro.total}
+          pago={resumoFinanceiro.pago}
+          pendente={resumoFinanceiro.pendente}
+          pendente_total={resumoFinanceiro.pendente_total}
+        />
       </div>
     </div>
   );

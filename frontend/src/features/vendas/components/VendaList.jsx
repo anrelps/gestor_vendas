@@ -10,6 +10,7 @@ import NewButton from '../../../components/ui/NewButton';
 import Pagination from '../../../components/ui/Pagination';
 import { useLoading } from '../../../context/LoadingContext';
 import { index as indexClientes } from '../../../redux/slices/clienteSlice';
+import { pagamentosIndex } from '../../../redux/slices/registroPagamentoSlice';
 import { destroy, gerarRelatorioVendas, index, quickPay, realizarMultiplePayment } from '../../../redux/slices/vendaSlice';
 import MultiplePaymentPopup from './MultiplePaymentPopup';
 import VendaCard from './VendaCard';
@@ -110,6 +111,8 @@ const VendaList = () => {
 
   const handleQuickPay = async (vendaId) => {
     await dispatch(quickPay({ empresa_id: user.empresa.id, venda_id: vendaId })).unwrap();
+    dispatch(index({ empresa_id: user.empresa.id, data_max: filters.data_max, data_min: filters.data_min, pendencias: filters.pendencias, cliente: filters.cliente }));
+    dispatch(pagamentosIndex({ empresa_id: user.empresa.id, page: 1 }));
     toast.success('Venda marcada como paga!');
   };
 
@@ -169,6 +172,7 @@ const VendaList = () => {
     try {
       await dispatch(realizarMultiplePayment({ empresa_id: user.empresa.id, valor, metodo, cliente, vendasIds })).unwrap();
       await dispatch(index({ empresa_id: user?.empresa?.id, data_max: filters.data_max, data_min: filters.data_min, pendencias: filters.pendencias, cliente: filters.cliente })).unwrap();
+      dispatch(pagamentosIndex({ empresa_id: user.empresa.id, page: 1 }));
       setShowPopupMultiplePayment(false);
       toast.success('Pagamentos processados com sucesso!');
     } catch {

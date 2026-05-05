@@ -42,10 +42,12 @@ const chartSlice = createSlice({
             total: 0,
             pago: 0,
             pendente: 0,
+            pendente_total: 0,
         },
         resumoMes: {
             atual: 0,
-            anterior: 0
+            anterior: 0,
+            retrasado: 0,
         },
         loading: false,
         error: null
@@ -90,8 +92,8 @@ const chartSlice = createSlice({
             })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.lucroSemanal = { Seg: 0, Ter: 0, Qua: 0, Qui: 0, Sex: 0, Sab: 0, Dom: 0 };
-                state.resumoFinanceiro = { total: 0, pago: 0, pendente: 0 };
-                state.resumoMes = { atual: 0, anterior: 0 };
+                state.resumoFinanceiro = { total: 0, pago: 0, pendente: 0, pendente_total: 0 };
+                state.resumoMes = { atual: 0, anterior: 0, retrasado: 0 };
                 state.error = null;
             });
     }

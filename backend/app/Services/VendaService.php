@@ -104,7 +104,7 @@ class VendaService {
                 $venda->detalhesVendas()->create([
                     'produto_id' => $produto['produto_id'],
                     'quantidade' => $produto['quantidade'],
-                    'valor' => $produto['valor'],
+                    'valor' => $produto['valor'] * $produto['quantidade'],
                     'porcentagem_desconto' => $produto['porcentagem_desconto'] ?? 0,
                 ]);
             }

@@ -1,4 +1,3 @@
-import { Pencil } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
@@ -153,21 +152,26 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
 
   return (
     <>
-      {/* Título */}
-      <div className='mt-4 flex items-center gap-2' style={{ maxWidth: 500 }}>
-        <div className='relative w-full'>
+      {/* Breadcrumb */}
+      <p className='text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4'>
+        {isEditing ? 'Editar Venda' : 'Nova Venda'}
+      </p>
+
+      {/* Formulário principal */}
+      <div className='mx-auto bg-white rounded-xl border border-gray-100 shadow-xs p-6'>
+        {/* Título da venda */}
+        <div className='mb-5'>
+          <label className='block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5'>
+            Título
+          </label>
           <input
-            className='w-full px-0 py-1 pr-8 border-0 border-b-2 border-gray-200 focus:border-primary focus:outline-none bg-transparent text-3xl transition-colors duration-150'
+            className='w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-gray-700 placeholder-gray-400'
             value={tituloVenda}
             onChange={(e) => setTituloVenda(e.target.value)}
             placeholder='Título da venda'
           />
-          <Pencil size={22} className='absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none' />
         </div>
-      </div>
 
-      {/* Formulário principal */}
-      <div className='mx-auto mt-2 bg-white rounded-md shadow p-6'>
         <ClienteSelector
           clientes={clientes}
           value={clienteSelecionado}
@@ -178,7 +182,7 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         />
 
         <textarea
-          className='mt-4 w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-primary text-base resize-none'
+          className='mt-4 w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-gray-700 resize-none placeholder-gray-400'
           value={descricaoVenda}
           onChange={(e) => setDescricaoVenda(e.target.value)}
           placeholder='Descrição da venda'

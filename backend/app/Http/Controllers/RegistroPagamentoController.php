@@ -27,7 +27,7 @@ class RegistroPagamentoController extends Controller
                 'data_fim' => 'nullable|date',
             ]);
             $pagamentos = $this->service->index($filters);
-            return $this->successResponse(RegistroPagamentoResource::collection($pagamentos), 200);
+            return RegistroPagamentoResource::collection($pagamentos);
         } catch(Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }

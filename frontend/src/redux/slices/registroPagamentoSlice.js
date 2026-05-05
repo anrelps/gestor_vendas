@@ -12,7 +12,7 @@ export const pagamentosIndex = createAsyncThunk(
 const registroPagamentoSlice = createSlice({
     name: 'pagamento',
     initialState: {
-        pagamentos: {},
+        pagamentos: [],
         loading: false,
         error: null,
         pagination: {
@@ -33,6 +33,12 @@ const registroPagamentoSlice = createSlice({
                 state.loading = false;
                 state.error = null;
                 state.pagamentos = action.payload.data;
+                state.pagination = {
+                    current_page: action.payload.meta.current_page,
+                    last_page: action.payload.meta.last_page,
+                    per_page: action.payload.meta.per_page,
+                    total: action.payload.meta.total,
+                };
             })
             .addCase(pagamentosIndex.rejected, function(state, action) {
                 state.loading = false;
