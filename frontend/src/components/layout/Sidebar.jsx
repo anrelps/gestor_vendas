@@ -172,7 +172,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       <img
         src={logoSrc}
         alt='Logo'
-        className={collapsed ? 'w-10' : 'h-[clamp(5rem,18vh,12rem)] w-auto'}
+        className={collapsed ? 'w-10' : 'h-[clamp(4rem,16vh,12rem)] w-auto'}
       />
       {!collapsed && (
         <div className='mb-[clamp(0.25rem,1.5vh,2.5rem)] text-center'>
@@ -221,7 +221,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
   const renderDesktopUserFooter = () => (
     <div
-      className={`p-4 flex flex-col gap-2 ${collapsed ? 'items-center' : ''}`}
+      className={`p-[clamp(0.5rem,1.5vh,1rem)] flex flex-col gap-2 ${collapsed ? 'items-center' : ''}`}
     >
       {collapsed ? renderCollapsedFooter() : renderExpandedFooter()}
     </div>
@@ -311,7 +311,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
         <div className='flex items-center gap-4'>
           <div
-            className='relative isolate overflow-hidden flex items-center justify-center rounded-full w-14 h-14
+            className='relative isolate overflow-hidden flex items-center justify-center rounded-full w-[clamp(2rem,4.5vh,3.5rem)] h-[clamp(2rem,4.5vh,3.5rem)]
             bg-white/14 backdrop-blur-xl border border-white/22
             shadow-[0_4px_12px_-8px_rgba(0,0,0,0.14)]'
           >
@@ -326,7 +326,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 className='w-full h-full object-cover'
               />
             ) : (
-              <span className='text-xl font-bold text-white/90 select-none'>
+              <span className='text-[clamp(0.875rem,2vh,1.25rem)] font-bold text-white/90 select-none'>
                 {authUser.name?.[0]?.toUpperCase() ?? '?'}
               </span>
             )}
@@ -344,9 +344,9 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
         <button
           onClick={() => navigate('/editar-perfil')}
-          className='mt-5 group/btn relative isolate overflow-hidden w-full
+          className='mt-[clamp(0.5rem,1.5vh,1.25rem)] group/btn relative isolate overflow-hidden w-full
           text-sm flex items-center justify-center gap-2 cursor-pointer
-          py-3 px-5 font-medium rounded-xl
+          py-[clamp(0.375rem,1vh,0.75rem)] px-5 font-medium rounded-xl
           bg-white/10 backdrop-blur-xl border border-white/18
           shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]
           hover:bg-white/14 hover:shadow-[0_16px_40px_-14px_rgba(0,0,0,0.55)]
