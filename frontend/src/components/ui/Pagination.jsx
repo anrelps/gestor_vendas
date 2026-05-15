@@ -13,8 +13,6 @@ const Pagination = ({current_page, lastPage, onPageChange}) => {
 
         let startPage = Math.max(1, current_page - 2);
         let endPage = Math.min(lastPage, startPage + maxVisible - 1);
-
-        // Ajusta se estiver no final
         if (endPage - startPage < maxVisible - 1) {
             startPage = Math.max(1, endPage - maxVisible + 1);
         }

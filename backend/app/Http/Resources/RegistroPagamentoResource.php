@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class RegistroPagamentoResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -21,7 +16,6 @@ class RegistroPagamentoResource extends JsonResource
             'amount' => $this->amount,
             'description' => $this->description,
             'created_at' => $this->created_at,
-            //'venda' => $this->venda,
             'venda' => new VendaResource($this->venda),
         ];
     }

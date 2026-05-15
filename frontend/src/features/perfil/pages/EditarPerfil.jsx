@@ -2,8 +2,6 @@ import { Building2, Calendar, Upload, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-
-// Redux
 import { updateEmpresa } from '../../../redux/slices/empresaSlice';
 import { changePassword, updateUser } from '../../../redux/slices/userSlice';
 
@@ -13,16 +11,12 @@ const EditarPerfil = () => {
   const { loading: loadingEmpresa } = useSelector((state) => state.empresa);
 
   const [activeTab, setActiveTab] = useState('perfil'); // 'perfil' ou 'empresa'
-
-  // Profile data
   const [nome, setNome] = useState(user.nome);
   const [email, setEmail] = useState(user.email);
   const [telefone, setTelefone] = useState(user.telefone ?? '');
   const [actualPassword, setActualPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  // Company data
   const [empresaNome, setEmpresaNome] = useState(user.empresa.nome);
   const [empresaEmail, setEmpresaEmail] = useState(user.empresa.email ?? '');
   const [empresaTelefone, setEmpresaTelefone] = useState(
@@ -109,12 +103,12 @@ const EditarPerfil = () => {
 
   return (
     <div className='w-full max-w-3xl mx-auto'>
-      {/* Container Unificado */}
+
       <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-        {/* Container de Abas com borda */}
+
         <div className='flex justify-center mb-6'>
           <div className='flex gap-1 p-1 bg-gray-100 rounded-lg border border-gray-200 w-full'>
-            {/* Aba: Editar Perfil */}
+
             <button
               onClick={() => setActiveTab('perfil')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 cursor-pointer ${
@@ -127,7 +121,6 @@ const EditarPerfil = () => {
               <span>Editar Perfil</span>
             </button>
 
-            {/* Aba: Editar Empresa */}
             <button
               onClick={() => setActiveTab('empresa')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 cursor-pointer ${
@@ -142,7 +135,6 @@ const EditarPerfil = () => {
           </div>
         </div>
 
-        {/* Conteúdo das Abas */}
         <div>
           {activeTab === 'perfil' && (
             <div>
@@ -150,9 +142,8 @@ const EditarPerfil = () => {
                 Editar Perfil
               </h2>
 
-              {/* Formulário de Perfil */}
               <div className='space-y-5'>
-                {/* Nome */}
+
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Nome
@@ -166,7 +157,6 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Email */}
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Email
@@ -180,7 +170,6 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Telefone */}
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Telefone
@@ -194,14 +183,13 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Separador - Troca de Senha */}
                 <div className='pt-4 border-t border-gray-200'>
                   <h3 className='text-lg font-semibold text-gray-900 mb-4'>
                     Alterar Senha
                   </h3>
 
                   <div className='space-y-4'>
-                    {/* Senha Atual */}
+
                     <div>
                       <label className='block text-sm font-medium text-gray-700 mb-2'>
                         Senha Atual
@@ -214,7 +202,6 @@ const EditarPerfil = () => {
                       />
                     </div>
 
-                    {/* Nova Senha */}
                     <div>
                       <label className='block text-sm font-medium text-gray-700 mb-2'>
                         Nova Senha
@@ -232,7 +219,6 @@ const EditarPerfil = () => {
                       )}
                     </div>
 
-                    {/* Confirmar Nova Senha */}
                     <div>
                       <label className='block text-sm font-medium text-gray-700 mb-2'>
                         Confirmar Nova Senha
@@ -252,7 +238,6 @@ const EditarPerfil = () => {
                   </div>
                 </div>
 
-                {/* Botões de Ação */}
                 <div className='flex gap-3 pt-4'>
                   <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition cursor-pointer'>
                     Cancelar
@@ -275,9 +260,8 @@ const EditarPerfil = () => {
                 Editar Empresa
               </h2>
 
-              {/* Formulário de Empresa */}
               <div className='space-y-5'>
-                {/* Nome */}
+
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Nome da Empresa
@@ -291,7 +275,6 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Email */}
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Email da Empresa
@@ -305,7 +288,6 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Telefone */}
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Telefone da Empresa
@@ -319,13 +301,12 @@ const EditarPerfil = () => {
                   />
                 </div>
 
-                {/* Logomarca */}
                 <div>
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     Logomarca
                   </label>
                   <div className='flex items-center gap-4'>
-                    {/* Preview da Logo */}
+
                     <div className='w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50'>
                       {empresaLogoPreview && empresaLogoPreview !== '' ? (
                         <img
@@ -336,9 +317,9 @@ const EditarPerfil = () => {
                         <Building2 size={32} className='text-gray-400' />
                       )}
                     </div>
-                    {/* Botão Upload */}
+
                     <div className='flex-1'>
-                      {/* Input escondido */}
+
                       <input
                         type='file'
                         accept='image/*'
@@ -363,7 +344,6 @@ const EditarPerfil = () => {
                   </div>
                 </div>
 
-                {/* Separador - Assinatura */}
                 <div className='pt-4 border-t border-gray-200'>
                   <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
                     <Calendar size={20} />
@@ -371,7 +351,7 @@ const EditarPerfil = () => {
                   </h3>
 
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                    {/* Data de Início */}
+
                     <div>
                       <label className='block text-sm font-medium text-gray-700 mb-2'>
                         Data de Início
@@ -387,7 +367,6 @@ const EditarPerfil = () => {
                       </p>
                     </div>
 
-                    {/* Data de Fim */}
                     <div>
                       <label className='block text-sm font-medium text-gray-700 mb-2'>
                         Data de Término
@@ -404,7 +383,6 @@ const EditarPerfil = () => {
                     </div>
                   </div>
 
-                  {/* Status da Assinatura */}
                   {new Date(user.empresa.data_fim_assinatura) < new Date() ? (
                     <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
                       <div className='flex items-center gap-2'>
@@ -433,7 +411,6 @@ const EditarPerfil = () => {
                   )}
                 </div>
 
-                {/* Botões de Ação */}
                 <div className='flex gap-3 pt-4'>
                   <button className='flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition cursor-pointer'>
                     Cancelar

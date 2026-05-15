@@ -4,8 +4,6 @@ import { Provider } from 'react-redux';
 import App from './App.jsx';
 import './index.css';
 import { store } from './redux/store.js';
-
-// Contexts
 import { LoadingProvider } from './context/LoadingContext.jsx';
 
 createRoot(document.getElementById('root')).render(

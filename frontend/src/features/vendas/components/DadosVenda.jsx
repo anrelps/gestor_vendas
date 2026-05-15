@@ -152,14 +152,13 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
 
   return (
     <>
-      {/* Breadcrumb */}
+
       <p className='text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4'>
         {isEditing ? 'Editar Venda' : 'Nova Venda'}
       </p>
 
-      {/* Formulário principal */}
       <div className='mx-auto bg-white rounded-xl border border-gray-100 shadow-xs p-6'>
-        {/* Título da venda */}
+
         <div className='mb-5'>
           <label className='block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5'>
             Título
@@ -203,7 +202,6 @@ const DadosVenda = ({ isEditing = false, vendaId = null }) => {
         )}
       </div>
 
-      {/* Pagamento */}
       <PagamentoForm
         valorPago={valorPago}
         valorTotal={valorTotal}

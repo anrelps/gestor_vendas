@@ -9,8 +9,6 @@ import {
 import { navItems } from '../../constants/navItems';
 
 import LoadingBar from '../ui/LoadingBar';
-
-// Context
 import { useLoading } from '../../context/LoadingContext';
 
 const Layout = ({ children }) => {
@@ -18,13 +16,9 @@ const Layout = ({ children }) => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved ? JSON.parse(saved) : false;
   });
-
-  // Persistir no localStorage (não bloqueia pintura)
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
   }, [collapsed]);
-
-  // Atualizar CSS variable usando matchMedia (executa antes de pintar)
   useLayoutEffect(() => {
     const mediaQuery = window.matchMedia(`(min-width: ${BREAKPOINT_MD}px)`);
 
@@ -45,7 +39,6 @@ const Layout = ({ children }) => {
 
     return () => {
       mediaQuery.removeEventListener('change', updateSidebarWidth);
-      // Limpar variable no cleanup (evitar efeito colateral em outras páginas)
       document.documentElement.style.removeProperty('--sidebar-width');
     };
   }, [collapsed]);

@@ -17,9 +17,8 @@ const MonthlyResume = ({ atual, anterior, retrasado }) => {
   return (
     <div className='rounded-xl overflow-hidden border border-gray-100 shadow-xs flex flex-col h-full'>
 
-      {/* Mês atual — fundo primary com decoração */}
       <div className='relative bg-primary px-6 pt-6 pb-8 flex-1 flex flex-col justify-between overflow-hidden'>
-        {/* Círculos decorativos */}
+
         <div className='pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/5' />
         <div className='pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-white/5' />
 
@@ -35,7 +34,6 @@ const MonthlyResume = ({ atual, anterior, retrasado }) => {
         </div>
       </div>
 
-      {/* Mês anterior */}
       <div className='bg-white px-6 py-5 flex items-center justify-between gap-3'>
         <div>
           <span className='text-[11px] font-semibold text-gray-400 uppercase tracking-widest block mb-1.5'>

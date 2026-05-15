@@ -9,7 +9,7 @@ const ProdutoSelector = ({ produtos, produtosSelecionados, query, onQueryChange,
       <span className='text-xs font-semibold text-gray-500 uppercase tracking-widest'>Produtos</span>
 
       <div className='mt-2 rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
-        {/* Search */}
+
         <div className='relative bg-white border-b border-gray-100'>
           <Search size={15} className='absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400' />
           <input
@@ -46,7 +46,6 @@ const ProdutoSelector = ({ produtos, produtosSelecionados, query, onQueryChange,
                     {produto.titulo}
                   </span>
 
-                  {/* Quantity control */}
                   <div className='flex items-center mr-4 shrink-0'>
                     <div className={`inline-flex items-center rounded-md border overflow-hidden text-sm ${
                       checked ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50'

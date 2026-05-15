@@ -2,11 +2,7 @@ import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-
-// Redux
 import { checkAuth } from './redux/slices/userSlice';
-
-// Pages
 import Clients from './features/clientes/pages/Clients';
 import Dashboard from './features/dashboard/pages/Dashboard';
 import EditarPerfil from './features/perfil/pages/EditarPerfil';
@@ -17,8 +13,6 @@ import NovaVenda from './features/vendas/pages/NovaVenda';
 import Products from './features/produtos/pages/Products';
 import Vendas from './features/vendas/pages/Vendas';
 import RegistroPagamentos from './features/pagamentos/pages/RegistroPagamentos';
-
-// Components
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 

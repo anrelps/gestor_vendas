@@ -53,8 +53,6 @@ export const destroyVenda = async ({empresa_id, venda_id}) => {
     const res = await api.delete(`/${empresa_id}/vendas/${venda_id}`);
     return res;
 }
-
-// Relatorios PDF
 export const relatorioVendasPdf = async({
     empresa_id, 
     valor_min = '', 

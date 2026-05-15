@@ -41,7 +41,7 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
               onMouseLeave={() => setActiveBar(null)}
               onClick={() => setActiveBar(isActive ? null : index)}
             >
-              {/* Tooltip */}
+
               {isActive && (
                 <div
                   className='absolute bottom-full mb-2 z-10 pointer-events-none'
@@ -58,7 +58,6 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
                 </div>
               )}
 
-              {/* Barra */}
               <div
                 className={`w-full rounded-lg transition-all duration-200 ${
                   isToday
@@ -74,7 +73,6 @@ const WeeklyRevenueChart = ({ lucroSemanal }) => {
         })}
       </div>
 
-      {/* Labels dos dias */}
       <div className='mt-2 flex justify-between'>
         {DAYS.map((d, i) => (
           <span

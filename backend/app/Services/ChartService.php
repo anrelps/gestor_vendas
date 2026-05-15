@@ -8,7 +8,6 @@ use Carbon\Carbon;
 class ChartService {
 
     public function lucroSemana() {
-        // ISODOW: 1=Segunda, 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo
         $keys = [1 => 'Seg', 2 => 'Ter', 3 => 'Qua', 4 => 'Qui', 5 => 'Sex', 6 => 'Sab', 7 => 'Dom'];
         $lucroSemana = array_fill_keys(array_values($keys), 0);
 

@@ -19,7 +19,7 @@ const DonutChart = ({ total, pago, pendente, pendente_total }) => {
       </div>
 
       <div className='flex flex-col sm:flex-row items-center gap-8'>
-        {/* Donut */}
+
         <div className='relative shrink-0 h-40 w-40'>
           <div
             className='absolute inset-0 rounded-full'
@@ -39,9 +39,8 @@ const DonutChart = ({ total, pago, pendente, pendente_total }) => {
           </div>
         </div>
 
-        {/* Stats */}
         <div className='flex-1 w-full flex flex-col gap-4'>
-          {/* Recebido e Pendente do mês */}
+
           <div className='grid grid-cols-2 gap-4'>
             <div className='flex flex-col gap-1'>
               <div className='flex items-center gap-1.5'>
@@ -66,7 +65,6 @@ const DonutChart = ({ total, pago, pendente, pendente_total }) => {
             </div>
           </div>
 
-          {/* Total pendente geral — destaque */}
           <div className='rounded-lg bg-red-50 border border-red-100 px-4 py-3 flex items-center justify-between gap-3'>
             <div>
               <span className='text-[11px] font-semibold text-red-400 uppercase tracking-widest block mb-0.5'>Total pendente geral</span>

@@ -209,7 +209,7 @@ const VendaList = () => {
 
       <div className='w-full max-w-5xl'>
         <div className='bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden'>
-          {/* Header + Cards */}
+
           <div className='px-6 pt-6 pb-4 border-b border-gray-100'>
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
               <div>
@@ -221,7 +221,6 @@ const VendaList = () => {
             <VendaSummaryCards valorTotalPendente={valorTotalPendente} valorTotal={valorTotal} count={vendas.length} />
           </div>
 
-          {/* Filtros */}
           <div className='px-6 py-3 border-b border-gray-100'>
             <VendaClientFilter
               clientes={clientes}
@@ -249,7 +248,6 @@ const VendaList = () => {
             />
           </div>
 
-          {/* Lista */}
           <div className='divide-y divide-gray-100'>
             {vendas.length === 0 && <EmptyState message='Nenhuma venda encontrada.' />}
             {vendas.length > 0 && (
@@ -283,7 +281,6 @@ const VendaList = () => {
             }))}
           />
 
-          {/* Ações de relatório */}
           <div className='px-6 py-4 border-t border-gray-100 flex flex-col md:flex-row gap-2'>
             <button
               onClick={handleGerarRelatorio}

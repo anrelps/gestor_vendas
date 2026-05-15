@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getUserData, userLogin, userUpdate, userLogout, userChangePassword, userDemoLogin } from '../services/userService';
-
-// AsyncThunks
 export const login = createAsyncThunk(
   'user/login',
   async ({ email, password }) => {
@@ -37,7 +35,6 @@ export const logoutUser = createAsyncThunk(
     return res;
   }
 )
-// End AssyncThunks
 
 const userSlice = createSlice({
   name: 'user',
@@ -61,8 +58,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
-      // demoLogin
       .addCase(demoLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -84,8 +79,6 @@ const userSlice = createSlice({
         state.error = action.error.message;
         localStorage.removeItem('token');
       })
-
-      // login
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -108,8 +101,6 @@ const userSlice = createSlice({
         state.error = action.error.message;
         localStorage.removeItem('token');
       })
-
-      // Logout
       .addCase(logoutUser.pending, (state) => {
         state.error = null;
         state.loading = true;
@@ -127,8 +118,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-
-      // CheckAuth
       .addCase(checkAuth.pending, (state) => {
         state.loading = true;
       })
@@ -146,8 +135,6 @@ const userSlice = createSlice({
         state.token = null;
         localStorage.removeItem('token');
       })
-
-      // Update
       .addCase(updateUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -160,8 +147,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-
-      // Change Password
       .addCase(changePassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -177,8 +162,6 @@ const userSlice = createSlice({
 });
 
 export const { logout } = userSlice.actions;
-
-// Selectors
 export const selectAuthUserDisplayName = (state) => {
   const user = state.user.user;
   return user?.name || user?.nome || 'Usuário';

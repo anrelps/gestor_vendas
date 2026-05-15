@@ -10,7 +10,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-
 class RelatorioController extends Controller
 {
     private $service;

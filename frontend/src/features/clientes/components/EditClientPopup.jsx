@@ -32,18 +32,11 @@ const EditClientPopup = ({
   }, [client]);
 
   useEffect(() => {
-    // Guardar foco anterior
     previousFocusRef.current = document.activeElement;
-
-    // Focar no primeiro input quando o modal abre
     if (firstInputRef.current) {
       firstInputRef.current.focus();
     }
-
-    // Travar scroll do body
     document.body.style.overflow = 'hidden';
-
-    // Fechar com ESC
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         handleClose();
@@ -53,11 +46,8 @@ const EditClientPopup = ({
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      // Restaurar scroll
       document.body.style.overflow = '';
-      // Remover listener
       document.removeEventListener('keydown', handleKeyDown);
-      // Restaurar foco anterior
       if (previousFocusRef.current && previousFocusRef.current.focus) {
         previousFocusRef.current.focus();
       }
@@ -73,7 +63,6 @@ const EditClientPopup = ({
 
   const handleSubmit = async () => {
     try {
-      // Guard clauses - validações
       if (!user?.empresa?.id) {
         toast.error('Erro: Empresa não identificada. Faça login novamente.');
         return;
@@ -84,8 +73,6 @@ const EditClientPopup = ({
         toast.error('Nome completo é obrigatório.');
         return;
       }
-
-      // Validação simples de email (se preenchido)
       if (form.email && form.email.trim() !== '') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(form.email)) {
@@ -116,8 +103,6 @@ const EditClientPopup = ({
           }),
         ).unwrap();
       }
-
-      // Chamar callback de sucesso antes de fechar
       onSave();
       handleClose();
     } catch (error) {

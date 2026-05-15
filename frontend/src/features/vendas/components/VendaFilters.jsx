@@ -25,7 +25,7 @@ const VendaFilters = ({
   onToggleMultiplePayment,
 }) => (
   <div className='flex flex-wrap lg:flex-nowrap items-center gap-2'>
-    {/* Selecionar todas */}
+
     <div className={`flex items-center gap-2 text-sm font-medium rounded-lg px-2 h-9 border shrink-0 ${
       allSelected ? 'text-primary bg-primary/10 border-primary/20' : 'text-gray-600 bg-white border-gray-200'
     }`}>
@@ -49,7 +49,6 @@ const VendaFilters = ({
       )}
     </div>
 
-    {/* Não pagas */}
     <button
       value={filters.pendencias == 1 ? 0 : 1}
       onClick={onFilterChange('pendencias')}
@@ -78,7 +77,6 @@ const VendaFilters = ({
       }}
     />
 
-    {/* Realizar Vários Pagamentos */}
     {filters.cliente && (
       <button
         onClick={onToggleMultiplePayment}

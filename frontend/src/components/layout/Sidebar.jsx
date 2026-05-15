@@ -42,29 +42,19 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
   const toggleSidebar = () => setCollapsed((v) => !v);
   const closeMobile = () => setMobileOpen(false);
-
-  // Gerenciar scroll, ESC, foco, focus trap e acessibilidade do drawer mobile
   useEffect(() => {
     if (mobileOpen) {
-      // Bloquear scroll
       document.body.style.overflow = 'hidden';
-
-      // Salvar foco anterior
       previousFocusRef.current = document.activeElement;
-
-      // Focar no botão de fechar (foco inicial)
       setTimeout(() => {
         closeButtonRef.current?.focus();
       }, 0);
 
       const handleKeyDown = (e) => {
-        // ESC fecha o drawer
         if (e.key === 'Escape') {
           closeMobile();
           return;
         }
-
-        // Focus trap: Tab dentro do drawer
         if (e.key === 'Tab' && drawerRef.current) {
           const focusableElements = drawerRef.current.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -73,13 +63,11 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
           const currentIndex = focusableArray.indexOf(document.activeElement);
 
           if (e.shiftKey) {
-            // Shift+Tab no primeiro elemento -> ir para o último
             if (currentIndex === 0) {
               e.preventDefault();
               focusableArray[focusableArray.length - 1]?.focus();
             }
           } else {
-            // Tab no último elemento -> ir para o primeiro
             if (currentIndex === focusableArray.length - 1) {
               e.preventDefault();
               focusableArray[0]?.focus();
@@ -94,7 +82,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         document.removeEventListener('keydown', handleKeyDown);
       };
     } else {
-      // Restaurar foco anterior ao fechar (com validações robustas)
       const previousElement = previousFocusRef.current;
       if (
         previousElement instanceof HTMLElement &&
@@ -104,8 +91,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
       }
     }
   }, [mobileOpen]);
-
-  // Funções render para reduzir parede de JSX
   const renderMobileHeader = () => (
     <header
       className='md:hidden fixed top-0 left-0 right-0 h-14 bg-primary text-white flex items-center justify-between px-4'
@@ -229,7 +214,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
   const renderCollapsedFooter = () => (
     <>
-      {/* Botão Perfil */}
+
       <div className='mb-4 flex justify-center'>
         <button
           title={`${authUser.name} • ${authUser.role}`}
@@ -241,12 +226,11 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
           transition-all duration-200 ease-out active:scale-[0.98]'
           type='button'
         >
-          {/* Removido acentos visuais */}
+
           <User size={26} className='text-white/90' />
         </button>
       </div>
 
-      {/* Colapsado: Sair em cima, Abrir em baixo */}
       <div className='flex flex-col items-center justify-between w-full h-36'>
         <button
           type='button'
@@ -257,7 +241,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
           border-none
           transition-all duration-200 ease-out active:scale-[0.98]'
         >
-          {/* Removido acentos visuais */}
+
           <LogOut size={22} className='text-white/85' />
         </button>
 
@@ -290,7 +274,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
 
   const renderExpandedFooter = () => (
     <>
-      {/* Card Usuário (glass) */}
+
       <div
         className='group relative isolate overflow-hidden mb-[clamp(0.5rem,1vh,1.5rem)] py-[clamp(0.75rem,1.5vh,1.5rem)] px-[clamp(0.75rem,1.5vw,1.5rem)] rounded-2xl
         bg-white/10 backdrop-blur-2xl border border-white/18
@@ -362,7 +346,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
         </button>
       </div>
 
-      {/* Borda bonita/arredondada acima dos botões */}
       <div className='mt-2 pt-4 px-2 border-t border-white/15 rounded-xl'>
         <div className='flex gap-6 w-full'>
           <button
@@ -424,7 +407,7 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 'linear-gradient(160deg, hsl(275, 93%, 24%) 0%, hsl(276, 76%, 31%) 35%, hsl(277, 60%, 38%) 100%)',
             }}
           >
-            {/* Elementos decorativos de fundo mobile */}
+
             <div className='absolute inset-0 overflow-hidden pointer-events-none'>
               <div
                 className='absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-30'
@@ -449,7 +432,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 }}
               />
 
-              {/* Círculo adicional meio */}
               <div
                 className='absolute top-1/2 right-0 w-32 h-32 rounded-full opacity-20 blur-xl'
                 style={{
@@ -458,7 +440,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 }}
               />
 
-              {/* Linha de luz sutil */}
               <div
                 className='absolute top-0 left-1/4 h-full w-20 opacity-8'
                 style={{
@@ -477,7 +458,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
                 }}
               />
 
-              {/* Padrão diagonal */}
               <div
                 className='absolute inset-0 opacity-3'
                 style={{
@@ -492,7 +472,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
               />
             </div>
 
-            {/* Conteúdo do menu mobile */}
             <div className='relative z-10 flex flex-col h-full'>
               {renderMobileMenuHeader()}
               {renderMobileMenuItems()}
@@ -636,7 +615,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
     <>
       {renderMobileHeader()}
 
-      {/* Sidebar Desktop */}
       <div
         className='hidden md:flex fixed left-0 top-0 h-full overflow-hidden text-white flex-col'
         style={{
@@ -646,9 +624,9 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             'linear-gradient(160deg, hsl(275, 93%, 24%) 0%, hsl(276, 76%, 31%) 35%, hsl(277, 60%, 38%) 100%)',
         }}
       >
-        {/* Elementos decorativos de fundo */}
+
         <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-          {/* Círculo grande superior direito - efeito glow */}
+
           <div
             className='absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-30'
             style={{
@@ -657,7 +635,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Círculo médio inferior esquerdo */}
           <div
             className='absolute -bottom-48 -left-48 w-96 h-96 rounded-full opacity-25'
             style={{
@@ -666,7 +643,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Forma oval central com interpolação */}
           <div
             className='absolute top-1/4 -left-24 w-80 h-96 rounded-full opacity-15 blur-3xl'
             style={{
@@ -676,7 +652,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Forma no canto superior direito */}
           <div
             className='absolute top-12 right-8 w-32 h-32 rounded-full opacity-20 blur-2xl'
             style={{
@@ -685,7 +660,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Círculo médio central */}
           <div
             className='absolute top-1/2 left-1/3 w-40 h-40 rounded-full opacity-15 blur-2xl'
             style={{
@@ -695,7 +669,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Círculo pequeno inferior direito */}
           <div
             className='absolute -bottom-16 right-1/4 w-48 h-48 rounded-full opacity-12 blur-3xl'
             style={{
@@ -704,7 +677,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Círculo mínimo topo central */}
           <div
             className='absolute top-1/4 right-1/3 w-20 h-20 rounded-full opacity-25 blur-xl'
             style={{
@@ -713,7 +685,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Padrão de grid sutil */}
           <div
             className='absolute inset-0 opacity-5'
             style={{
@@ -723,7 +694,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Padrão diagonal sutil */}
           <div
             className='absolute inset-0 opacity-3'
             style={{
@@ -737,7 +707,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Linha di luz vertical sutil */}
           <div
             className='absolute top-0 left-1/3 h-full w-32 opacity-10'
             style={{
@@ -747,7 +716,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Linha de luz horizontal sutil */}
           <div
             className='absolute top-1/3 left-0 right-0 h-20 opacity-8'
             style={{
@@ -757,7 +725,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Gradiente overlay radial */}
           <div
             className='absolute inset-0 opacity-40'
             style={{
@@ -766,7 +733,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Overlay adicional inferior */}
           <div
             className='absolute inset-0 opacity-30'
             style={{
@@ -775,7 +741,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
             }}
           />
 
-          {/* Camada de profundidade central */}
           <div
             className='absolute inset-0 opacity-20'
             style={{
@@ -785,7 +750,6 @@ const Sidebar = ({ logoSrc, navItems, collapsed, setCollapsed }) => {
           />
         </div>
 
-        {/* Conteúdo do sidebar */}
         <div className='relative z-10 flex flex-col h-full overflow-y-auto'>
           {renderNewVendaButton()}
           {renderLogo()}

@@ -5,13 +5,9 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, token, authChecked } = useSelector(
     (state) => state.user,
   );
-
-  // Estado 1: Sem token → redirecionar imediatamente
   if (!token) {
     return <Navigate to='/login' replace />;
   }
-
-  // Estado 2: Com token mas ainda não checou → mostrar loading
   if (!authChecked) {
     return (
       <div
@@ -27,13 +23,9 @@ const ProtectedRoute = ({ children }) => {
       </div>
     );
   }
-
-  // Estado 3: Checado mas não autenticado → redirecionar
   if (!isAuthenticated) {
     return <Navigate to='/login' replace />;
   }
-
-  // Estado 4: Autenticado → renderizar children
   return children;
 };
 

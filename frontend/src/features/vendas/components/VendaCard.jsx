@@ -71,7 +71,7 @@ const VendaCard = ({ venda, isSelected, onSelect, onDelete, onQuickPay }) => {
       }`}
     >
       <div className='flex flex-col gap-2 flex-1'>
-        {/* Title row */}
+
         <div className='flex items-center gap-3 min-w-0'>
           <input
             type='checkbox'
@@ -87,7 +87,6 @@ const VendaCard = ({ venda, isSelected, onSelect, onDelete, onQuickPay }) => {
           </span>
         </div>
 
-        {/* Mobile layout */}
         <div className='pl-7 sm:hidden flex flex-col gap-2'>
           <div>
             <span className='text-sm text-gray-500 font-medium truncate block'>
@@ -121,7 +120,6 @@ const VendaCard = ({ venda, isSelected, onSelect, onDelete, onQuickPay }) => {
           </div>
         </div>
 
-        {/* Desktop layout */}
         <div className='pl-7 hidden sm:block'>
           <div className='flex items-center gap-2 flex-wrap'>
             <span className='text-sm text-gray-500 truncate font-medium max-w-[60%]'>
@@ -137,7 +135,6 @@ const VendaCard = ({ venda, isSelected, onSelect, onDelete, onQuickPay }) => {
         </div>
       </div>
 
-      {/* Desktop footer */}
       <div className='hidden sm:flex items-center justify-between mt-3 gap-2 pl-7'>
         <Link
           to={`/vendas/${venda.id}/editar`}

@@ -15,7 +15,7 @@ const PagamentoCard = ({ pagamento }) => {
 
   return (
     <li className='flex flex-col rounded-xl border border-gray-200 bg-gray-50 hover:border-primary/50 transition-colors duration-150 p-3.5 gap-2'>
-      {/* Linha 1: ícone + título + data */}
+
       <div className='flex items-center gap-3 min-w-0'>
         <div className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg ${
           isGeneral ? 'bg-primary/10 text-primary' : 'bg-primary/15 text-primary-light'
@@ -30,7 +30,6 @@ const PagamentoCard = ({ pagamento }) => {
         </span>
       </div>
 
-      {/* Linha 2: descrição do pagamento + descrição da venda */}
       <div className='pl-11'>
         {pagamento.description && (
           <p className='text-sm text-gray-500'>{pagamento.description}</p>
@@ -40,7 +39,6 @@ const PagamentoCard = ({ pagamento }) => {
         )}
       </div>
 
-      {/* Linha 3: badges + valor */}
       <div className='pl-11 flex items-center gap-2 flex-wrap'>
         {isGeneral ? (
           <span className='inline-flex items-center gap-1 rounded-md bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 text-xs font-semibold'>

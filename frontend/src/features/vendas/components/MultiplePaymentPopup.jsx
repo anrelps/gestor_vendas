@@ -62,7 +62,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
             <div className={`fixed inset-0 bg-black/65 backdrop-blur-md flex items-center justify-center z-9999 p-4 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`} onClick={(e) => e.target === e.currentTarget && handleClose()}>
                 <div className="bg-gray-50 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all duration-350" role="dialog" aria-modal="true" aria-labelledby="mpp-title" style={{boxShadow: '0 0 0 1px rgba(85, 5, 143, 0.12), 0 32px 64px rgba(85, 5, 143, 0.18), 0 8px 16px rgba(0,0,0,0.08)', transform: visible ? 'translateY(0) scale(1)' : 'translateY(6px) scale(0.97)', opacity: visible ? 1 : 0}}>
 
-                    {/* Header */}
                     <div className="bg-purple-900 px-7 py-6 relative flex items-start gap-3.5">
                         <div className="w-10 h-10 min-w-10 bg-white/15 rounded-xl flex items-center justify-center mt-0.5">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -80,7 +79,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                         </button>
                     </div>
 
-                    {/* Warning */}
                     <div className="mx-6 mt-5 bg-yellow-50 border-l-4 border border-yellow-400 rounded-xl p-3 flex gap-2.5 items-start">
                         <svg className="w-4 h-4 mt-0.5 shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" stroke="#f5c842" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -91,7 +89,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                         </p>
                     </div>
 
-                    {/* Context badges */}
                     {(cliente || (vendasIds && vendasIds.length > 0)) && (
                         <div className="mx-6 mt-3.5 flex gap-2 flex-wrap">
                             {cliente && (
@@ -114,7 +111,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                         </div>
                     )}
 
-                    {/* Body */}
                     <div className="px-6 py-5">
                         <p className="text-xs font-bold text-gray-700 mb-2 tracking-wide uppercase">Valor a distribuir</p>
                         <div className="relative mb-1.5">
@@ -139,7 +135,7 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                         </div>
 
                         <div className="flex flex-col gap-2.5 mb-1.5">
-                            {/* Opção 1 */}
+
                             <button
                                 className={`border-2 rounded-2xl px-4 py-3.5 cursor-pointer transition-all flex items-center gap-3.5 bg-white text-left w-full ${metodo === 'split_equally' ? 'border-purple-900 bg-purple-900/5 shadow-lg shadow-purple-900/8' : 'border-gray-300 hover:border-purple-900/40 hover:bg-purple-900/3'}`}
                                 onClick={() => { setMetodo('split_equally'); setMetodoError(''); }}
@@ -160,7 +156,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                                 </div>
                             </button>
 
-                            {/* Opção 2 */}
                             <button
                                 className={`border-2 rounded-2xl px-4 py-3.5 cursor-pointer transition-all flex items-center gap-3.5 bg-white text-left w-full ${metodo === 'oldest_first' ? 'border-purple-900 bg-purple-900/5 shadow-lg shadow-purple-900/8' : 'border-gray-300 hover:border-purple-900/40 hover:bg-purple-900/3'}`}
                                 onClick={() => { setMetodo('oldest_first'); setMetodoError(''); }}
@@ -185,7 +180,6 @@ const MultiplePaymentPopup = ({ cliente = null, vendasIds = null, onClose, onCon
                         {metodoError && <p className="text-xs text-red-500 font-medium">{metodoError}</p>}
                     </div>
 
-                    {/* Footer */}
                     <div className="flex gap-2.5 px-6 pb-6">
                         <button className="flex-1 px-3 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-700 text-sm font-bold cursor-pointer font-sans transition-all hover:border-gray-400 hover:bg-gray-50" onClick={handleClose}>Cancelar</button>
                         <button className="flex-2 px-3 py-3 border-0 rounded-xl bg-purple-900 text-white text-sm font-bold cursor-pointer font-sans flex items-center justify-center gap-2 transition-all hover:bg-purple-950 active:scale-98 shadow-lg shadow-purple-900/35 hover:shadow-purple-900/45 hover:shadow-xl" onClick={handleConfirm}>

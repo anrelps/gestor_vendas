@@ -3,8 +3,6 @@ import DadosVenda from '../components/DadosVenda';
 
 const EditarVenda = () => {
   const { id } = useParams();
-
-  // Validar ID numérico
   if (!id || !Number.isFinite(Number(id))) {
     return <Navigate to='/vendas' replace />;
   }

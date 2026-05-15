@@ -46,7 +46,6 @@ class DemoService
 
     public function deleteSession(Empresa $empresa): void
     {
-        // Deletar na ordem correta para respeitar as FK constraints
         $vendaIds = Venda::where('empresa_id', $empresa->id)->pluck('id');
 
         RegistroPagamento::whereIn('venda_id', $vendaIds)->delete();
@@ -118,7 +117,6 @@ class DemoService
             string $createdAt,
             array $itens
         ) use ($empresa) {
-            // timestamps = false evita que o Eloquent sobrescreva created_at/updated_at
             $v = new Venda();
             $v->timestamps = false;
             $v->empresa_id  = $empresa->id;
@@ -156,26 +154,22 @@ class DemoService
             }
         };
 
-        // Referências de tempo relativas ao momento da criação da sessão
         $w  = now()->startOfWeek(); // segunda-feira da semana atual
         $m1 = now()->subMonth()->startOfMonth();  // início do mês anterior
         $m2 = now()->subMonths(2)->startOfMonth(); // início de 2 meses atrás
         $m3 = now()->subMonths(3)->startOfMonth(); // início de 3 meses atrás
 
-        // ── Semana atual (para o gráfico de receita semanal) ─────
         $venda($rafael,   'Landing Page — Escritório Mendonça',  null,                                        800,   800,  $w->copy()->addHours(9)->toDateTimeString(),            [['produto_id' => $landing->id,  'qtd' => 1, 'valor' => 800]]);
         $venda($thiago,   'Identidade Visual Pessoal',           'Logo e paleta para uso profissional.',     1200,  1200,  $w->copy()->addDay()->addHours(10)->toDateTimeString(), [['produto_id' => $marca->id,    'qtd' => 1, 'valor' => 1200]]);
         $venda($cafe,     'Manutenção Mensal',                   null,                                        350,   350,  $w->copy()->addDays(2)->addHours(8)->toDateTimeString(),[['produto_id' => $manutencao->id,'qtd'=> 1, 'valor' => 350]]);
         $venda($academia, 'SEO — Pacote Mensal',                 'Otimização e relatório mensal.',            650,   650,  $w->copy()->addDays(3)->addHours(14)->toDateTimeString(),[['produto_id' => $seo->id,      'qtd' => 1, 'valor' => 650]]);
         $venda($isabela,  'Consultoria — Planejamento Digital',  '4h de consultoria estratégica.',            600,   600,  $w->copy()->addDays(4)->addHours(11)->toDateTimeString(),[['produto_id' => $consultoria->id,'qtd'=> 4,'valor' => 150]]);
 
-        // ── Mês atual — antes da semana corrente (usando datas relativas ao início da semana) ─────
         $venda($greentech,   'Site Institucional GreenTech',     'Site com portfólio e formulário de contato.',  2200, 2200, $w->copy()->subDays(14)->addHours(10)->toDateTimeString(), [['produto_id' => $site->id,    'qtd' => 1, 'valor' => 2200]]);
         $venda($boutique,    'Integração Mercado Pago',          'Integração de gateway na loja existente.',     1800, 1800, $w->copy()->subDays(11)->addHours(14)->toDateTimeString(), [['produto_id' => $api->id,     'qtd' => 1, 'valor' => 1800]]);
         $venda($construtora, 'Landing Page — Captação de Obras', null,                                            800,    0, $w->copy()->subDays(8)->addHours(9)->toDateTimeString(),   [['produto_id' => $landing->id, 'qtd' => 1, 'valor' => 800]]);
         $venda($paulo,       'Manutenção Mensal',                null,                                            350,  350, $w->copy()->subDays(5)->addHours(8)->toDateTimeString(),   [['produto_id' => $manutencao->id,'qtd'=> 1,'valor' => 350]]);
 
-        // ── Mês anterior ─────────────────────────────────────────
         $venda($clinica,  'Site Clínica VidaPlena',              'Site com agendamento e área do paciente.',    2200, 2200, $m1->copy()->addDays(3)->addHours(10)->toDateTimeString(),  [['produto_id' => $site->id,     'qtd' => 1, 'valor' => 2200]]);
         $venda($bruno,    'E-commerce — Produtos Artesanais',    'Loja online com catálogo e checkout.',        4500, 2250, $m1->copy()->addDays(6)->addHours(14)->toDateTimeString(),  [['produto_id' => $ecommerce->id,'qtd' => 1, 'valor' => 4500]]);
         $venda($fernanda, 'Identidade Visual + Landing Page',    'Branding completo e página de lançamento.',   2000, 2000, $m1->copy()->addDays(9)->addHours(11)->toDateTimeString(),  [['produto_id' => $marca->id, 'qtd' => 1, 'valor' => 1200], ['produto_id' => $landing->id, 'qtd' => 1, 'valor' => 800]]);
@@ -184,7 +178,6 @@ class DemoService
         $venda($greentech,'Consultoria — Arquitetura de Sistema','3h de consultoria técnica.',                   450,  450, $m1->copy()->addDays(18)->addHours(16)->toDateTimeString(), [['produto_id' => $consultoria->id,'qtd'=>3,'valor' => 150]]);
         $venda($thiago,   'Sistema de Agendamento',              'Sistema web para barbearia.',                 6800,    0, $m1->copy()->addDays(22)->addHours(10)->toDateTimeString(), [['produto_id' => $sistema->id,  'qtd' => 1, 'valor' => 6800]]);
 
-        // ── 2 meses atrás ─────────────────────────────────────────
         $venda($cafe,        'Site + SEO Inicial',               'Site institucional e configuração SEO.',      2850, 2850, $m2->copy()->addDays(4)->addHours(10)->toDateTimeString(),  [['produto_id' => $site->id, 'qtd' => 1, 'valor' => 2200], ['produto_id' => $seo->id, 'qtd' => 1, 'valor' => 650]]);
         $venda($construtora, 'Sistema de Gestão de Obras',       'Sistema web para orçamentos e contratos.',    6800, 3400, $m2->copy()->addDays(7)->addHours(9)->toDateTimeString(),   [['produto_id' => $sistema->id, 'qtd' => 1, 'valor' => 6800]]);
         $venda($paulo,       'Manutenção Mensal',                null,                                           350,  350, $m2->copy()->addDays(10)->addHours(8)->toDateTimeString(),  [['produto_id' => $manutencao->id,'qtd'=> 1,'valor' => 350]]);
@@ -192,7 +185,6 @@ class DemoService
         $venda($boutique,    'Integração de APIs — ERP',         'Integração loja + sistema de estoque.',       1800, 1800, $m2->copy()->addDays(20)->addHours(15)->toDateTimeString(), [['produto_id' => $api->id,      'qtd' => 1, 'valor' => 1800]]);
         $venda($rafael,      'Manutenção Mensal',                null,                                           350,  350, $m2->copy()->addDays(25)->addHours(8)->toDateTimeString(),  [['produto_id' => $manutencao->id,'qtd'=> 1,'valor' => 350]]);
 
-        // ── 3 meses atrás ─────────────────────────────────────────
         $venda($clinica,  'Landing Page — Campanha Verão',       null,                                           800,  800, $m3->copy()->addDays(5)->addHours(10)->toDateTimeString(),  [['produto_id' => $landing->id,  'qtd' => 1, 'valor' => 800]]);
         $venda($greentech,'Site Institucional v2',               'Redesign completo do site.',                  2200, 2200, $m3->copy()->addDays(8)->addHours(14)->toDateTimeString(),  [['produto_id' => $site->id,     'qtd' => 1, 'valor' => 2200]]);
         $venda($bruno,    'Manutenção Mensal',                   null,                                           350,  350, $m3->copy()->addDays(12)->addHours(8)->toDateTimeString(),  [['produto_id' => $manutencao->id,'qtd'=> 1,'valor' => 350]]);

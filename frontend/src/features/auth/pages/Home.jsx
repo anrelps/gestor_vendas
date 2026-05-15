@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import {
   ArrowRight,
   Package,
@@ -142,7 +141,7 @@ const Home = () => {
       `}</style>
 
       <div className='noise-overlay relative min-h-screen overflow-x-hidden bg-linear-to-b from-violet-100/50 via-white to-purple-100/50'>
-        {/* Grid overlay sutil */}
+
         <div
           className='fixed inset-0 pointer-events-none z-0'
           style={{
@@ -154,15 +153,12 @@ const Home = () => {
           }}
         />
 
-        {/* Blobs - mais visíveis */}
         <div className='blob-1 fixed w-[60vw] h-[60vw] -top-[20%] -left-[15%] rounded-full blur-[100px] pointer-events-none z-0 bg-gradient-radial from-violet-400/20 to-transparent' />
         <div className='blob-2 fixed w-[50vw] h-[50vw] -bottom-[15%] -right-[10%] rounded-full blur-[100px] pointer-events-none z-0 bg-gradient-radial from-purple-400/18 to-transparent' />
         <div className='blob-3 fixed w-[35vw] h-[35vw] top-[30%] left-[55%] rounded-full blur-[90px] pointer-events-none z-0 bg-gradient-radial from-violet-300/15 to-transparent' />
 
-        {/* Camada adicional de luz */}
         <div className='fixed top-0 left-1/2 -translate-x-1/2 w-200 h-150 bg-linear-to-b from-violet-200/30 via-purple-200/20 to-transparent blur-3xl pointer-events-none z-0' />
 
-        {/* Nav */}
         <nav className='fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-12 py-5 bg-linear-to-br from-white/80 via-violet-50/55 to-white/75 backdrop-blur-2xl backdrop-saturate-150 border-b border-violet-100/50 ring-1 ring-white/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(139,92,246,0.08),0_12px_30px_-20px_rgba(139,92,246,0.45)]'>
           <div className='flex items-center gap-0'>
             <h1 className='text-2xl font-bold font-lumenz uppercase text-violet-600'>
@@ -180,15 +176,13 @@ const Home = () => {
           </Link>
         </nav>
 
-        {/* Hero */}
         <section className='relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 pt-24 pb-16'>
-          {/* Badge */}
+
           <div className='inline-flex items-center gap-2 px-4 py-2 mb-8 text-xs font-semibold tracking-wide uppercase rounded-full bg-violet-100/60 border border-violet-300/40 text-violet-700 animate-fade-up'>
             <span className='w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse-dot' />
             Gestão de Vendas · Para Pequenos Negócios
           </div>
 
-          {/* Title */}
           <h1 className='hero-title font-lumenz max-w-5xl'>
             <div className='text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight text-dark mb-3 leading-[0.95] uppercase'>
               Venda mais.
@@ -198,13 +192,11 @@ const Home = () => {
             </div>
           </h1>
 
-          {/* Subtitle */}
           <p className='hero-subtitle mt-8 max-w-xl text-lg sm:text-xl font-normal text-muted/70 leading-relaxed'>
             O Lumenz reúne clientes, produtos e vendas em um só lugar — simples
             e direto para o seu negócio crescer sem complicação.
           </p>
 
-          {/* CTA Buttons */}
           <div className='hero-buttons flex flex-wrap gap-4 mt-10 justify-center'>
             <Link
               to='/login'
@@ -224,21 +216,18 @@ const Home = () => {
             </a>
           </div>
 
-          {/* UI Preview card */}
           <div className='hero-card relative w-full max-w-xl mt-16'>
-            {/* Background glow */}
+
             <div className='absolute -inset-8 bg-linear-to-br from-violet-200/30 via-purple-200/20 to-violet-200/30 rounded-[48px] blur-2xl -z-10' />
 
-            {/* Card principal */}
             <div className='relative rounded-3xl p-6 sm:p-8 bg-linear-to-br from-white/80 via-violet-50/50 to-white/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/60 ring-1 ring-violet-100/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_20px_60px_-12px_rgba(139,92,246,0.25)]'>
-              {/* Card Header - dots */}
+
               <div className='flex items-center gap-2 mb-6'>
                 <div className='w-3 h-3 rounded-full bg-red-400' />
                 <div className='w-3 h-3 rounded-full bg-yellow-400' />
                 <div className='w-3 h-3 rounded-full bg-green-400' />
               </div>
 
-              {/* Stats Grid - sem background, apenas espaçamento */}
               <div className='grid grid-cols-3 gap-4 mb-6'>
                 <div className='text-center'>
                   <div
@@ -275,7 +264,6 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Recent Sales */}
               <div className='rounded-2xl p-5 bg-linear-to-br from-white/70 via-violet-50/55 to-purple-50/45 backdrop-blur-xl backdrop-saturate-150 border border-white/60 ring-1 ring-violet-100/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_12px_30px_-22px_rgba(139,92,246,0.45)]'>
                 <div className='text-xs font-bold tracking-wider uppercase text-violet-700 mb-4'>
                   ÚLTIMAS VENDAS
@@ -344,7 +332,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Divider */}
         <div className='relative z-10 flex items-center gap-6 max-w-4xl mx-auto my-12 sm:my-14 px-6'>
           <div className='flex-1 h-px bg-linear-to-r from-transparent via-violet-300/30 to-transparent' />
           <span className='text-xs font-bold tracking-widest uppercase text-violet-700 whitespace-nowrap'>
@@ -353,7 +340,6 @@ const Home = () => {
           <div className='flex-1 h-px bg-linear-to-r from-transparent via-violet-300/30 to-transparent' />
         </div>
 
-        {/* Features */}
         <div
           id='features'
           className='hero-features relative z-10 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 max-w-6xl mx-auto px-6 pb-14 sm:pb-16'

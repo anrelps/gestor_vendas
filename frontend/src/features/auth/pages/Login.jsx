@@ -33,7 +33,7 @@ const Login = () => {
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 p-4 overflow-hidden'>
       <div className='border border-gray-200 rounded-xl max-w-md w-full mx-auto shadow-xl overflow-hidden bg-white'>
-        {/* Header */}
+
         <div className='bg-linear-to-r from-primary to-primary/80 px-10 pt-10 pb-8'>
           <h1 className='text-3xl font-bold text-center text-white'>
             Gestor de Vendas
@@ -45,7 +45,7 @@ const Login = () => {
         </div>
 
         <div className='p-8 flex flex-col gap-5'>
-          {/* Botão Demo */}
+
           <button
             type='button'
             onClick={handleDemoLogin}
@@ -66,14 +66,12 @@ const Login = () => {
             Acessa um ambiente de demonstração com dados fictícios.
           </p>
 
-          {/* Separador */}
           <div className='flex items-center gap-3'>
             <div className='flex-1 h-px bg-gray-200' />
             <span className='text-xs text-gray-400 font-medium'>ou</span>
             <div className='flex-1 h-px bg-gray-200' />
           </div>
 
-          {/* Toggle login normal */}
           {!showForm ? (
             <button
               type='button'

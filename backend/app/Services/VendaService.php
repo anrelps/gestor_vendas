@@ -153,7 +153,6 @@ class VendaService {
                 if ($vendas_qty === 0) break;
                 if($value >= ($vendas->sum('valor_total') - $vendas->sum('valor_pago'))) {
                     foreach ($vendas as $venda) {
-                        // Inserindo registro na tabela de registro de pagamentos
                         $valorPagoVenda = $venda->valor_total - $venda->valor_pago;
                         $registroData  = ['type' => 'general', 'amount' => $valorPagoVenda, 'description' => "Venda quitada via pagamento geral de R$ {$value}."];
                         $this->registroPagamentoService->createFromSale($venda, $registroData);
@@ -167,7 +166,6 @@ class VendaService {
                     $valueToDiscount = min($valuePerSale, $venda->valor_total - $venda->valor_pago);
                     $venda->update(['valor_pago' => $venda->valor_pago + $valueToDiscount]);
 
-                    // Inserindo registro na tabela de registro de pagamentos
                     $registroData  = ['type' => 'general', 'amount' => $valueToDiscount, 'description' => "R$ {$valueToDiscount} abatido via pagamento geral de R$ {$value} dividido igualmente entre as vendas."];
                     $this->registroPagamentoService->createFromSale($venda, $registroData);
                 }
@@ -183,7 +181,6 @@ class VendaService {
                         ]);
                         $value -= $valueToDiscount;
 
-                        // Inserindo registro na tabela de registro de pagamentos
                         $registroData  = ['type' => 'general', 'amount' => $valueToDiscount, 'description' => "R$ {$valueToDiscount} abatido via pagamento geral de R$ {$total}, priorizando vendas mais antigas."];
                         $this->registroPagamentoService->createFromSale($venda, $registroData);
                     }
